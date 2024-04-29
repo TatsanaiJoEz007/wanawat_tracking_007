@@ -7,6 +7,7 @@
     background: #fff;
     border-radius: 50px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    height: 60px;
   }
   .track-button {
     position: absolute;
@@ -17,11 +18,13 @@
     background-color: #ff5722;
     color: white;
     padding: 0 25px;
-    border-top-right-radius: 50px;
-    border-bottom-right-radius: 50px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
     font-weight: 700;
     transition: background-color 0.3s ease;
+    
   }
+
   .track-button:hover {
     background-color: #e64a19;
     cursor: pointer;
@@ -29,14 +32,15 @@
   .tracking-input {
     border: none;
     box-shadow: none;
-    border-radius: 50px;
+    border-radius: 80px;
     padding-left: 140px;
     padding-right: 90px;
+    height: 60px;
   }
   .mascot {
     width: 100px;
     position: absolute;
-    left: -100px;
+    left: -130px;
     top: 50%;
     transform: translateY(-50%);
     border-radius: 50%;
