@@ -8,6 +8,7 @@
       height: auto;
   
   }
+}
 </style>
 
 <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">

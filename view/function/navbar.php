@@ -38,5 +38,4 @@
         </ul>
     </div>
 </nav>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-rdX2dFTIj8IrrMbiRY8jiP7lEihYcrLvsb/ROhLoxAfBBJmIgK2ghTuK9p5l1x7v" crossorigin="anonymous"></script>
 
