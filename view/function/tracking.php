@@ -1,4 +1,3 @@
-
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -43,10 +42,25 @@
     border-radius: 50%;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   }
-</style>
-</head>
-<body>
 
+  @media screen and (max-width: 768px){
+    .tracking-input-group {
+      margin-top: 20px;
+    }
+    .tracking-input {
+      padding-left: 100px;
+      padding-right: 70px;
+    }
+    .mascot {
+      width: 70px;
+      left: 10px;
+    }
+    
+  }
+</style>
+
+
+<body>
 <div class="container text-center">
   <div class="tracking-input-group">
     <img src="../view/assets/img/logo/mascot.png" alt="Mascot" class="mascot">

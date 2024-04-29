@@ -20,18 +20,23 @@
     <div class="collapse navbar-collapse justify-content-md-center" id="navbarsExample08">
         <ul class="navbar-nav">
             <li class="nav-item active">
-                <a class="nav-link" href="#">คำถามที่พบบ่อย?</a>
+                <a class="nav-link" href="../view/freqquestion.php">คำถามที่พบบ่อย?</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">ติดต่อเรา</a>
+                <a class="nav-link" href="../view/contact.php">ติดต่อเรา</a>
             </li>
+            <!-- Dropdown menu -->
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="dropdown08" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">เข้าสู่ระบบ/สมัครสมาชิก</a>
-                <div class="dropdown-menu" aria-labelledby="dropdown08">
-                    <a class="dropdown-item" href="../view/login.php">เข้าสู่ระบบ</a>
-                    <a class="dropdown-item" href="../view/register.php">สมัครสมาชิก</a>
-                </div>
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    เข้าสู่ระบบ/ลงทะเบียน
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="../view/login.php">เข้าสู่ระบบ</a></li>
+                    <li><a class="dropdown-item" href="../view/register.php">ลงทะเบียน</a></li>
+                </ul>
             </li>
         </ul>
     </div>
 </nav>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-rdX2dFTIj8IrrMbiRY8jiP7lEihYcrLvsb/ROhLoxAfBBJmIgK2ghTuK9p5l1x7v" crossorigin="anonymous"></script>
+
