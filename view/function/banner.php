@@ -2,13 +2,12 @@
 <link rel="stylesheet" type="text/css" href="../view/assets/css/style.css">
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap" rel="stylesheet">
 <style>
-  @media screen and (max-width: 768px) {
+ @media (max-width: 768px) {
     .carousel-inner img {
-      width: 50%;
-      height: auto;
-  
+        width: 1000px;
+        height: 250px;
+    }
   }
-}
 </style>
 
 <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
