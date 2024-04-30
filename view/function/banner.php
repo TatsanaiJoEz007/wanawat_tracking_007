@@ -19,7 +19,7 @@
       <img src="../view/assets/img/banner/banner2.jpg" class="d-block w-100" alt="Second slide" width="1280" height="500">
     </div>
     <div class="carousel-item">
-      <img src="../view/assets/img/banner/banner3.jpg" class="d-block w-100" alt="Second slide" width="1280" height="500">
+      <img src="../view/assets/img/banner/banner4.png" class="d-block w-100" alt="Second slide" width="1280" height="500">
     </div>
   </div>
   <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">

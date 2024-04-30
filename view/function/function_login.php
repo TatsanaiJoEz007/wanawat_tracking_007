@@ -61,7 +61,7 @@ $(document).ready(function () {
                         timer: 1500
                     });
                     setTimeout(() => {
-                        location.href = "index";
+                        location.href = "../view/index.php";
                     }, 900);
                 }
             }

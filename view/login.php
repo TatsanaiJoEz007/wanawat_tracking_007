@@ -42,10 +42,10 @@
                             <button type="submit" name="login" class="btn btn-custom">Log In</button>
                         </div>
                         <p class="mt-3">
-                            <a href="#" class="form-link">Forgot password?</a>
+                            <a href="#forgotPasswordModal" class="form-link" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">Forgot password?</a>
                         </p>
-                        <p>
-                            Don't have an account? <a href="#" class="form-link">Sign up</a>
+                        <p class="mb-0">
+                            Don't have an account? <a href="register.php" class="form-link">Sign up</a>
                         </p>
                     </form>
                 </div>
@@ -53,7 +53,29 @@
         </div>
     </div>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <?php require_once('function/function_login.php'); ?>
+<!-- Forgot Password Modal -->
+<div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">กรุณาติดต่อแอดมิน</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="forgotPasswordForm">
+                    <div class="mb-3">
+                        <h1>Line ID : @admin</h1>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary bg-orange" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

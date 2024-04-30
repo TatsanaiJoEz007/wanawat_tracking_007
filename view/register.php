@@ -1,7 +1,3 @@
-<?php
-require_once('function/navbar.php');
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,6 +8,7 @@ require_once('function/navbar.php');
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="../view/assets/css/style.css">
 <style>
     body {
         background-color: #f8f9fa; /* Light grey background */
@@ -29,9 +26,12 @@ require_once('function/navbar.php');
 </style>
 </head>
 <body>
+<?php
+require_once('function/navbar.php');
+?>
 <div class="container">
-    <div class="row justify-content-center align-items-center" style="height: 100vh;">
-        <div class="col-4">
+    <div class="row justify-content-center align-items-center" style="min-height: 100vh;">
+        <div class="col-md-4">
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title text-center mb-4">Register</h4>
@@ -56,7 +56,7 @@ require_once('function/navbar.php');
                             <button type="submit" name="register" class="btn btn-custom">Register</button>
                         </div>
                         <p class="mt-3">
-                            Already have an account? <a href="#" class="form-link">Log in</a>
+                            Already have an account? <a href="login.php" class="form-link">Log in</a>
                         </p>
                     </form>
                 </div>

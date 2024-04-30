@@ -9,7 +9,6 @@
 <style>
     body {
         font-family: 'Kanit', sans-serif;
-        font-style: bold;
     }
 </style>
 </head>
