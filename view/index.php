@@ -1,28 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
-    <?php
-    require_once('function/head.php');
-    ?>
-<body>
-    <?php
-    require_once('function/navbar.php');
-    ?>
-    <?php
-    require_once('function/banner.php');
-    ?>
+    <html lang="en">
+
+    <head>
+        <?php
+            require_once('function/head.php');
+        ?>
+    </head>
+    <body>
+        <?php
+            require_once('function/navbar.php');
+        ?>
+        <?php
+            require_once('function/banner.php');
+        ?>
+        <br>
+        <br>
+        <br>
+        <?php
+            require_once('function/tracking.php');
+        ?>  
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
 <br>
 <br>
 <br>
-    <?php
-    require_once('function/tracking.php');
-    ?>  
-</body>
 <br>
 <br>
-<br>
-<br>
-<br>
+    <footer>
     <?php
     require_once('function/footer.php');
     ?>
+    </footer>
 </html>

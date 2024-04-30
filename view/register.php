@@ -35,25 +35,25 @@ require_once('function/navbar.php');
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title text-center mb-4">Register</h4>
-                    <form>
+                    <form action="#" id="register" method="post">
                         <div class="mb-3">
-                            <label for="username" class="form-label">Username</label>
-                            <input type="text" class="form-control" id="username" placeholder="Enter username">
+                            <label for="register-email" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="register-name" name="register-name" require placeholder="Enter username">
                         </div>
                         <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" placeholder="Enter email">
+                            <label for="register-email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="register-email" name="register-name" require placeholder="Enter email">
                         </div>
                         <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" placeholder="Password">
+                            <label for="register-password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="register-password" name="register-password" required placeholder="Password">
                         </div>
                         <div class="mb-3">
-                            <label for="confirm-password" class="form-label">Confirm Password</label>
-                            <input type="password" class="form-control" id="confirm-password" placeholder="Confirm Password">
+                            <label for="register-password" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" id="register-c-password" name="register-c-password" required placeholder="Confirm Password">
                         </div>
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-custom">Register</button>
+                            <button type="submit" name="register" class="btn btn-custom">Register</button>
                         </div>
                         <p class="mt-3">
                             Already have an account? <a href="#" class="form-link">Log in</a>

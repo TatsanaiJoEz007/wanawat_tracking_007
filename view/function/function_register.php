@@ -9,7 +9,7 @@
         let c_pass = $('#register-c-password').val()
         let name = $('#register-name').val()
         let option = {
-            url: 'function/action_register.php',
+            url: '../view/function/action_register.php',
             type: 'post',
             data: {
                 pass: pass,

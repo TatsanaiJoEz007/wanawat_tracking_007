@@ -3,13 +3,13 @@
   body, html {
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Kanit', sans-serif;
 }
 
 .sidebar {
     width: 250px;
     height: 100vh;
-    background-color: #ff8c00; /* Orange background */
+    background-color: #F0592E; /* Orange background */
     color: white;
     padding: 20px;
 }
@@ -105,7 +105,7 @@
 .sidebar {
     width: 250px; /* Fixed width for larger screens */
     height: 100vh;
-    background-color: #ff8c00; /* Orange background */
+    background-color: #F0592E; /* Orange background */
     color: white;
     padding: 20px;
     transition: width 0.3s ease;
@@ -186,6 +186,12 @@
     display: block; /* Always block in mobile view */
     position: relative; /* Avoids overlap and positioning issues */
 }
+.sildout{
+    color: #DC143C;
+    text-decoration: none;
+    display: block;
+    transition: color 0.3s;
+}
 
 </style>
 
@@ -202,7 +208,7 @@
     </div>
     <nav class="nav-menu">
     <ul>
-        <a href="#" class="sildout">ออกจากระบบ</a>
+        
         <li class="dropdown">
             <a href="#" class="dropbtn">รอใส่อะไรสักอย่างครับ</a>
             <div class="dropdown-content">
@@ -227,7 +233,9 @@
                 <a href="#">ใส่ผมเข้ามาที 3</a>
             </div>
         </li>
-       
+
+        <a href="#" class="sildout" >ออกจากระบบ</a>
+        
     </ul>
 </nav>
 
