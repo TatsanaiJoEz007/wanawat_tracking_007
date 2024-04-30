@@ -11,6 +11,8 @@ require_once('function/navbar.php');
 <link rel="icon" type="image/x-icon" href="https://wehome.co.th/wp-content/uploads/2023/01/logo-WeHome-BUILDER-788x624.png">
 <title>Login Page</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <style>
     body {
         background-color: #f8f9fa; /* Light grey background */
@@ -34,17 +36,17 @@ require_once('function/navbar.php');
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title text-center mb-4">Login</h4>
-                    <form>
+                    <form action="#" method="post" id="login">
                         <div class="mb-3">
-                            <label for="username" class="form-label">Username</label>
-                            <input type="text" class="form-control" id="username" placeholder="Enter username">
+                            <label for="singin-email" class="form-label">Email</label>
+                            <input type="text" class="form-control" id="signin-email" name="signin-email" required placeholder="Enter username">
                         </div>
                         <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" placeholder="Password">
+                            <label for="signin-password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="signin-password" name="signin-password" placeholder="Password">
                         </div>
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-custom">Log In</button>
+                            <button type="submit" name="login" class="btn btn-custom">Log In</button>
                         </div>
                         <p class="mt-3">
                             <a href="#" class="form-link">Forgot password?</a>
@@ -59,7 +61,9 @@ require_once('function/navbar.php');
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<?php require_once('function/function_login.php'); ?>
 </body>
 </html>
 
-<?php require_once('function/login_function.php'); ?>
+

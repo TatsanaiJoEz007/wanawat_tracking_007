@@ -11,6 +11,7 @@
     }
 </style>
 
+
 <nav class="navbar navbar-expand-lg navbar-light bg-orange"> <!-- Check or define bg-orange -->
         <div class="container-fluid">
             <a class="logo" href="../view/index.php"><img src="../view/assets/img/logo/logo.png" width="65" height="52"></a>
@@ -37,7 +38,6 @@
                 </ul>
             </div>
         </div>
-    </nav>
-    <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

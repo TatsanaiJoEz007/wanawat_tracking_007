@@ -1,107 +1,278 @@
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
-    <meta name="generator" content="Hugo 0.84.0">
-    
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
 
-    <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/sidebars/">
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background-color: #ff8c00; /* Orange background */
+    color: white;
+    padding: 20px;
+}
 
-    
+.brand h1 {
+    margin: 0;
+    font-size: 20px;
+}
 
-    <!-- Bootstrap core CSS -->
-<link href="/docs/5.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+.user-panel {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
 
-    <!-- Favicons -->
-<link rel="apple-touch-icon" href="/docs/5.0/assets/img/favicons/apple-touch-icon.png" sizes="180x180">
-<link rel="icon" href="/docs/5.0/assets/img/favicons/favicon-32x32.png" sizes="32x32" type="image/png">
-<link rel="icon" href="/docs/5.0/assets/img/favicons/favicon-16x16.png" sizes="16x16" type="image/png">
-<link rel="manifest" href="/docs/5.0/assets/img/favicons/manifest.json">
-<link rel="mask-icon" href="/docs/5.0/assets/img/favicons/safari-pinned-tab.svg" color="#7952b3">
-<link rel="icon" href="/docs/5.0/assets/img/favicons/favicon.ico">
-<meta name="theme-color" content="#7952b3">
+.user-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
 
+.user-info p {
+    margin: 0;
+    font-weight: bold;
+}
 
-    <style>
-      .bd-placeholder-img {
-        font-size: 1.125rem;
-        text-anchor: middle;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        user-select: none;
-      }
+.nav-menu ul {
+    list-style-type: none;
+    padding: 0;
+}
 
-      @media (min-width: 768px) {
-        .bd-placeholder-img-lg {
-          font-size: 3.5rem;
-        }
-      }
-    </style>
+.nav-menu li {
+    padding: 10px 0;
+}
 
-    
-    <!-- Custom styles for this template -->
-    <link href="sidebars.css" rel="stylesheet">
-  </head>
+.nav-menu a {
+    color: white;
+    text-decoration: none;
+    transition: color 0.3s;
+}
 
-<div class="flex-shrink-0 p-3 bg-white" style="width: 280px;">
-    <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
-      <svg class="bi me-2" width="30" height="24"><use xlink:href="#bootstrap"></use></svg>
-      <span class="fs-5 fw-semibold">Collapsible</span>
-    </a>
-    <ul class="list-unstyled ps-0">
-      <li class="mb-1">
-        <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="false">
-          Home
-        </button>
-        <div class="collapse" id="home-collapse" style="">
-          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-            <li><a href="#" class="link-dark rounded">Overview</a></li>
-            <li><a href="#" class="link-dark rounded">Updates</a></li>
-            <li><a href="#" class="link-dark rounded">Reports</a></li>
-          </ul>
+.nav-menu a:hover {
+    color: #e67e22; /* Lighter orange for hover */
+}
+.nav-menu ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-menu li {
+    position: relative;
+    padding: 10px 0;
+}
+
+.nav-menu a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    transition: color 0.3s;
+}
+
+.nav-menu a:hover, .dropbtn:hover {
+    color: #e67e22; /* Lighter orange for hover */
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #ff8c00; /* Same as sidebar */
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: white;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    background-color: #e67e22; /* Hover state for dropdown items */
+}
+
+.dropdown:hover .dropdown-content {
+    display: block; /* Show dropdown content on hover */
+}
+/* Base styles */
+/* (Already in your CSS, shown for context) */
+.sidebar {
+    width: 250px; /* Fixed width for larger screens */
+    height: 100vh;
+    background-color: #ff8c00; /* Orange background */
+    color: white;
+    padding: 20px;
+    transition: width 0.3s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 50%; /* Full width on smaller screens */
+        padding: 10px;
+    }
+    .nav-menu ul {
+        padding: 0;
+    }
+    .nav-menu li {
+        padding: 8px 0; /* Smaller padding */
+    }
+    .dropdown-content {
+        position: relative; /* Change position for better view on small screens */
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebar {
+        padding: 5px;
+    }
+    .brand h1, .user-info p {
+        font-size: 16px; /* Smaller font size */
+    }
+    .user-panel {
+        flex-direction: column; /* Stack elements vertically */
+        align-items: center;
+    }
+    .user-image {
+        margin: 10px 0; /* Adjust margin for vertical stacking */
+    }
+    .nav-menu a, .dropdown-content a {
+        font-size: 14px; /* Smaller font size for links */
+    }
+}
+/* Hamburger Menu Style */
+.hamburger {
+    display: none; /* Hidden by default */
+    font-size: 30px; /* Icon size */
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+}
+
+/* Existing styles... */
+
+/* Media query for devices with max-width of 768px */
+@media (max-width: 768px) {
+    .hamburger {
+        display: block; /* Show hamburger icon */
+        position: fixed; /* Fixed at the top */
+        top: 0; right: 0;
+        z-index: 2; /* Above other content */
+        background-color: #ff8c00; /* Match sidebar color */
+    }
+
+    .sidebar {
+        width: 100%; /* Full width */
+        height: 100vh; /* Full height */
+        position: fixed;
+        top: 0; left: -100%; /* Start off-screen */
+        overflow-y: auto; /* Scrollable sidebar */
+        transition: left 0.3s; /* Smooth transition for sidebar */
+    }
+
+    .sidebar.open {
+        left: 0; /* Move sidebar on-screen */
+    }
+}
+
+/* Ensure dropdowns work nicely within the responsive sidebar */
+.dropdown-content {
+    display: block; /* Always block in mobile view */
+    position: relative; /* Avoids overlap and positioning issues */
+}
+
+</style>
+
+<div class="hamburger">&#9776; Menu</div> <!-- Hamburger icon -->
+<aside class="sidebar">
+    <div class="brand">
+    <img src="../assets/img/logo/logo.png" alt="User Image" class="logo" width="65" height="52" >
+    </div>
+    <div class="user-panel">
+        <img src="../assets/img/logo/mascot.png" alt="User Image" class="user-image">
+        <div class="user-info">
+            <p>Admin JA</p>
         </div>
-      </li>
-      <li class="mb-1">
-        <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
-          Dashboard
-        </button>
-        <div class="collapse" id="dashboard-collapse" style="">
-          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-            <li><a href="#" class="link-dark rounded">Overview</a></li>
-            <li><a href="#" class="link-dark rounded">Weekly</a></li>
-            <li><a href="#" class="link-dark rounded">Monthly</a></li>
-            <li><a href="#" class="link-dark rounded">Annually</a></li>
-          </ul>
-        </div>
-      </li>
-      <li class="mb-1">
-        <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false">
-          Orders
-        </button>
-        <div class="collapse" id="orders-collapse" style="">
-          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-            <li><a href="#" class="link-dark rounded">New</a></li>
-            <li><a href="#" class="link-dark rounded">Processed</a></li>
-            <li><a href="#" class="link-dark rounded">Shipped</a></li>
-            <li><a href="#" class="link-dark rounded">Returned</a></li>
-          </ul>
-        </div>
-      </li>
-      <li class="border-top my-3"></li>
-      <li class="mb-1">
-        <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false">
-          Account
-        </button>
-        <div class="collapse" id="account-collapse" style="">
-          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-            <li><a href="#" class="link-dark rounded">New...</a></li>
-            <li><a href="#" class="link-dark rounded">Profile</a></li>
-            <li><a href="#" class="link-dark rounded">Settings</a></li>
-            <li><a href="#" class="link-dark rounded">Sign out</a></li>
-          </ul>
-        </div>
-      </li>
+    </div>
+    <nav class="nav-menu">
+    <ul>
+        <a href="#" class="sildout">ออกจากระบบ</a>
+        <li class="dropdown">
+            <a href="#" class="dropbtn">รอใส่อะไรสักอย่างครับ</a>
+            <div class="dropdown-content">
+                <a href="#">ใส่ผมเข้ามาที 1</a>
+                <a href="#">ใส่ผมเข้ามาที 2</a>
+                <a href="#">ใส่ผมเข้ามาที 3</a>
+            </div>
+        </li>
+        <li class="dropdown">
+            <a href="#" class="dropbtn">รอใส่อะไรสักอย่างครับ</a>
+            <div class="dropdown-content">
+                <a href="#">ใส่ผมเข้ามาที 1</a>
+                <a href="#">ใส่ผมเข้ามาที 2</a>
+                <a href="#">ใส่ผมเข้ามาที 3</a>
+            </div>
+        </li>
+        <li class="dropdown">
+            <a href="#" class="dropbtn">รอใส่อะไรสักอย่างครับ</a>
+            <div class="dropdown-content">
+                <a href="#">ใส่ผมเข้ามาที 1</a>
+                <a href="#">ใส่ผมเข้ามาที 2</a>
+                <a href="#">ใส่ผมเข้ามาที 3</a>
+            </div>
+        </li>
+       
     </ul>
-  </div>
+</nav>
+
+</aside>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var hamburger = document.querySelector('.hamburger');
+    var sidebar = document.querySelector('.sidebar');
+    var dropdowns = document.querySelectorAll('.dropdown');
+
+    // Hamburger menu toggle
+    hamburger.addEventListener('click', function() {
+        sidebar.classList.toggle('open');
+    });
+
+    // Dropdown toggle
+    dropdowns.forEach(function(dropdown) {
+        dropdown.addEventListener('click', function(event) {
+            // Close all open dropdowns
+            dropdowns.forEach(function(d) {
+                if (d !== dropdown) {
+                    d.querySelector('.dropdown-content').style.display = 'none';
+                }
+            });
+
+            // Toggle this dropdown
+            var dropdownContent = dropdown.querySelector('.dropdown-content');
+            if (dropdownContent.style.display == 'block') {
+                dropdownContent.style.display = 'none';
+            } else {
+                dropdownContent.style.display = 'block';
+            }
+            event.stopPropagation(); // Stop click event from bubbling up further
+        });
+    });
+
+    // Click anywhere to close dropdown
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('.dropdown')) {
+            var openDropdowns = document.querySelectorAll('.dropdown-content');
+            openDropdowns.forEach(function(openDropdown) {
+                openDropdown.style.display = 'none';
+            });
+        }
+    });
+});
+</script>
