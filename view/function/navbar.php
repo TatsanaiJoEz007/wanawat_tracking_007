@@ -1,6 +1,3 @@
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" type="text/css" href="../view/assets/css/style.css">
-<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap" rel="stylesheet">
 <style>
     body {
         font-family: 'Kanit', sans-serif;
@@ -10,7 +7,6 @@
     color: white !important;    
     }
 </style>
-
 
 <nav class="navbar navbar-expand-lg navbar-light bg-orange"> <!-- Check or define bg-orange -->
         <div class="container-fluid">
@@ -40,4 +36,4 @@
         </div>
 </nav>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+

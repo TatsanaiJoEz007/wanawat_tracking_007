@@ -5,3 +5,8 @@
 .bg-orange{
     background-color: #F0592E !important;
 }
+
+body {
+    font-family: 'Kanit', sans-serif;
+    font-weight: bold; /* Corrected from font-style to font-weight */
+}
