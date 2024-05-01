@@ -8,7 +8,7 @@
     </head>
     <body>
         <?php
-            require_once('function/navbar.php');
+            require_once('function/navindex.php');
         ?>
         <?php
             require_once('function/banner.php');
