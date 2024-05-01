@@ -69,7 +69,7 @@
 <div class="container text-center">
   <div class="tracking-input-group">
     <img src="../view/assets/img/logo/mascot.png" alt="Mascot" class="mascot">
-    <input type="text" class="form-control tracking-input" placeholder="enter your tracking ID">
+    <input type="text" class="form-control tracking-input" placeholder="Enter your tracking number here!">
     <button class="track-button">Track</button>
   </div>
 </div>
