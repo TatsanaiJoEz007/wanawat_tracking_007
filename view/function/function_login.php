@@ -15,7 +15,8 @@ $(document).ready(function () {
                 login: 1
             },
             success: function(res) {
-                if (res == 'failuser') {
+                console.log(res);
+                if (res.trim() == 'failuser') {
                     Swal.fire({
                         position: 'center',
                         icon: 'error',
@@ -24,7 +25,7 @@ $(document).ready(function () {
                         timer: 1500
                     });
                     $('#signin-password').val('');
-                } else if (res == 'failpass') {
+                } else if (res.trim() == 'failpass') {
                     Swal.fire({
                         position: 'center',
                         icon: 'error',
@@ -33,7 +34,7 @@ $(document).ready(function () {
                         timer: 1500
                     });
                     $('#signin-password').val('');
-                } else if (res == 'admin') {
+                } else if (res.trim() == 'admin') {
                     Swal.fire({
                         position: 'center',
                         icon: 'success',
@@ -66,7 +67,10 @@ $(document).ready(function () {
                 }
             }
         };
-        $.ajax(option);
+        $.ajax(option).fail(function(jqXHR, textStatus, errorThrown) {
+        console.log("AJAX call failed: " + textStatus + ", " + errorThrown);
+});
+
     });
 });
 </script>

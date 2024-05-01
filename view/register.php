@@ -24,6 +24,7 @@
         color: #F0592E; /* Custom orange color for links */
     }
 </style>
+
 </head>
 <body>
 <?php
@@ -64,7 +65,6 @@ require_once('function/navbar.php');
         </div>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <?php require_once('function/function_register.php'); ?>
 </body>
 </html>
