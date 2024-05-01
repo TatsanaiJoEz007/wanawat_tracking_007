@@ -36,3 +36,39 @@ if (isset($_POST['login'])) {
     $stmt->close();
 }
 ?>
+
+<?php
+	if(isset($_POST) && !empty($_POST)){
+		// echo '<pre>';
+		// print_r($_POST);
+		// echo '</pre>';
+
+		$user = $_POST['user'];
+		$pass = $_POST['pass'];
+		$sql = "SELECT * FROM tb_admin WHERE user = '$user' AND pass = '$pass' ";
+		$query = mysqli_query($connection,$sql);
+		$row = mysqli_num_rows($query);
+		if($row > 0 ){
+			$result = mysqli_fetch_assoc($query);
+			$_SESSION['user_login'] = $result['User'];
+			$_SESSION['image_login'] = $result['image'];
+
+			$alert = '<script type = "text/javascript">';
+			$alert .= 'alert("เข้าสู่ระบบสำเร็จ");';
+			$alert .= 'window.location.href = "";';
+			$alert .= '</script>';
+			echo $alert;
+			exit();
+			
+		}else{
+			$alert = '<script type = "text/javascript">';
+			$alert .= 'alert("ชื่อผู้ใช้ หรือ รหัสผ่านไม่ถูกต้อง ");';
+			$alert .= 'window.location.href = "";';
+			$alert .= '</script>';
+			echo $alert;
+			exit();
+			
+		}
+	}	
+
+?>

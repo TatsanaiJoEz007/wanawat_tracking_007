@@ -1,19 +1,4 @@
-<style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 50%;
-            display: flex;
-            flex-direction: column;
-        }
 
-        .content {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-    </style>
     
     <?php require_once('../function/sidebar.php');  ?>
 <body>

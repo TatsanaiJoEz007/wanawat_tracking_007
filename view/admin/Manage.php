@@ -1,1 +1,4 @@
 <?php require_once('../function/sidebar.php');  ?>
+<body>
+
+</body>

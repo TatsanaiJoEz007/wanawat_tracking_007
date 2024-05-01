@@ -147,7 +147,7 @@
     }
 
     .height-100 {
-        height: 100vh
+        height: 50vh
     }
 
     @media screen and (min-width: 768px) {
@@ -251,11 +251,10 @@
                     class="nav_name">SignOut</span> </a>
         </nav>
     </div>
-    <!--Container Main start-->
-    <div class="height-100 bg-light">
-        <h4>Main Components</h4>
-    </div>
-    <!--Container Main end-->
+    <!-- Container Main start -->
+    <div class="height-100 bg-white">
+    </div> 
+    <!-- Container Main end -->
 </body>
 <script>
     document.addEventListener("DOMContentLoaded", function (event) {
