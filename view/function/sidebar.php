@@ -1,5 +1,5 @@
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
 <style>
     @import url("https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap");
 
@@ -146,9 +146,7 @@
         background-color: var(--white-color)
     }
 
-    .height-100 {
-        height: 50vh
-    }
+   
 
     @media screen and (min-width: 768px) {
         body {
@@ -240,15 +238,46 @@
                             <span class="nav_name">Manage Web</span>
                         </a>
                         <div class="dropdown-content">
-                            <a href="#">Banner</a>
+                            <a href="../admin/banner.php">Banner</a>
                             <a href="#">Contact</a>
                             <a href="#">Question</a>
                         </div>
                     </div>
                     
                 </div>
-            </div> <a href="#" class="nav_link"> <i class='bx bx-log-out nav_icon'></i> <span
-                    class="nav_name">SignOut</span> </a>
+            </div> <a href="#" onclick="logout()" class="nav_link"> <i class='bx bx-log-out nav_icon'></i> <span
+                    class="nav_name">SignOut</span> 
+                    <script>
+                        function logout(){
+                             let option = {
+                                url:'../function/action_logout.php',
+                                type:'post',
+                        data:{
+                                logout:1
+                             },
+                                 success:function(res){
+                                 setTimeout(() => {
+                                location.reload()
+                            }, 500);
+                            }
+                             }
+                                    Swal.fire({
+                                    title: 'ต้องการออกจากระบบ?',
+                                    text: "",
+                                    icon: 'warning',
+                                    showCancelButton: true,
+                                    confirmButtonColor: '#3085d6',
+                                    cancelButtonColor: '#d33',
+                                    confirmButtonText: 'ตกลง',
+                                    cancelButtonText: 'ยกเลิก',
+                                }).then((result) => {   
+                                    if (result.isConfirmed) {
+                                        $.ajax(option)
+                                    }
+                                })
+                                }
+                     </script>
+                    </a>
         </nav>
     </div>
     <!-- Container Main start -->
@@ -300,7 +329,7 @@
 
 
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">

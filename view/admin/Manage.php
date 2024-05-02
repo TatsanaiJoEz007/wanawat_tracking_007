@@ -1,4 +1,4 @@
-<?php require_once('../function/sidebar.php');  ?>
+<?php include('../function/sidebar.php');  ?>
 <body>
 
 </body>
