@@ -36,19 +36,19 @@ $(document).ready(function () {
                         timer: 1500
                     });
                     $('#signin-password').val('');
-                } else if (res.trim() == '999') {
-                    // Redirect admin users
-                    Swal.fire({
-                        position: 'center',
-                        icon: 'success',
-                        title: 'เข้าสู่ระบบสำเร็จ!!',
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                    setTimeout(() => {
-                        location.href = "../view/admin/index.php";
-                    }, 900);
-                } else if (res == 'close') {
+                } else if (res.trim() == 'admin') {
+    // Redirect admin users
+    Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'เข้าสู่ระบบสำเร็จ!!',
+        showConfirmButton: false,
+        timer: 1500
+    });
+    setTimeout(() => {
+        location.href = "../view/admin/index.php";
+    }, 900);
+} else if (res == 'close') {
                     // Handle closed account case
                     Swal.fire({
                         position: 'center',
@@ -67,7 +67,7 @@ $(document).ready(function () {
                         timer: 1500
                     });
                     setTimeout(() => {
-                        location.href = "../view/index.php";
+                        location.href = "../view/mainpage.php";
                     }, 900);
                 }
             }

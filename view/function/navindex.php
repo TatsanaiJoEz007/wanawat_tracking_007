@@ -49,7 +49,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-orange" style="position: relative;">
         <div class="container-fluid">
-            <a class="navbar-brand" href="../view/index.php">
+            <a class="navbar-brand" href="../view/mainpage.php">
                 <img src="../view/assets/img/logo/logo.png" width="65" height="52" alt="Logo">
             </a>
        
@@ -64,15 +64,6 @@
                     <li class="nav-item">
                         <a class="nav-link" href="../view/contact.php">ติดต่อเรา</a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            เข้าสู่ระบบ / ลงทะเบียน
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <li><a class="dropdown-item" href="../view/login.php">เข้าสู่ระบบ</a></li>
-                            <li><a class="dropdown-item" href="../view/register.php">ลงทะเบียน</a></li>
-                        </ul>
-                    </li>
                 </ul>
                 <div class="navbar-right">
                     <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
@@ -80,7 +71,10 @@
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                         <li><a class="dropdown-item" href="#">View Profile</a></li>
-                        <li><a class="dropdown-item" href="#">Logout</a></li>
+                        <li>
+                            <button type="logout" class="btn btn-link" onclick="logout()">
+                            <a class="dropdown-item" href="#">Logout</a> </button>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -88,4 +82,5 @@
     </nav>
 
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-beta1/js/bootstrap.min.js"></script>
+    <?php require_once('function/function_logout.php'); ?>
 </body>

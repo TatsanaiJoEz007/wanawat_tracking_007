@@ -6,9 +6,10 @@
 </head>
 
 <body>
-    <?php require_once('function/navindex.php'); ?>
+    <?php require_once('function/navbar.php'); ?>
 
     <?php require_once('function/contactcard.php'); ?>
+
     <footer>
         <?php require_once('function/footer.php'); ?>
     </footer>

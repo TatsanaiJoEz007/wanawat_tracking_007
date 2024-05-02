@@ -27,7 +27,7 @@
                         timer: 1500
                     })
                     setTimeout(() => {
-                        location.href="../view/index.php"
+                        location.href="../view/mainpage.php"
                     }, 600)
                     $('#register-password').val('')
                     $('#register-email').val('')

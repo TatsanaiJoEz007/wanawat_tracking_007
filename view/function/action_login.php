@@ -1,6 +1,6 @@
-<?php 
+<?php
 session_start();
-require_once('../config/connect.php'); 
+require_once('../config/connect.php');
 
 if (isset($_POST['login'])) {
     $email = $_POST['email'];
@@ -16,16 +16,25 @@ if (isset($_POST['login'])) {
         $user = $result->fetch_assoc();
         if ($user['status'] != 0) {
             $_SESSION['login'] = true;
-            $_SESSION['user_id'] = $user['User_ID'];
-            $_SESSION['user_img'] = $user['user_img'];
-            $_SESSION['user_username'] = $user['user_username'];
-            $_SESSION['user_create'] = $user['created_at'];
+            if (isset($user['User_ID'])) {
+                $_SESSION['user_id'] = $user['User_ID'];
+            }
+            if (isset($user['user_img'])) {
+                $_SESSION['user_img'] = $user['user_img'];
+            }
+            if (isset($user['user_username'])) {
+                $_SESSION['user_username'] = $user['user_username'];
+            }
+            if (isset($user['created_at'])) {
+                $_SESSION['user_create'] = $user['created_at'];
+            }
+            if (isset($user['user_type'])) {
+                $_SESSION['user_type'] = $user['user_type'];
+            }
             if ($user['user_type'] == 999) {
-                // Check if the user type is 999 directly
-                $_SESSION['user_type'] = 'admin';
                 echo 'admin'; // This response will be handled in JavaScript
             } else {
-                $_SESSION['user_type'] = 'user';
+                echo 'user';
             }
         } else {
             echo 'close';

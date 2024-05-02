@@ -18,7 +18,7 @@
                     timer: 1500
                 })
                 setTimeout(() => {
-                    location.href = 'login'
+                    location.href = '../view/index.php'
                 }, 900)
             }
         }

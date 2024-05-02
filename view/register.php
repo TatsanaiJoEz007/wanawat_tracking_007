@@ -21,7 +21,7 @@
 </head>
 <body>
 <?php
-require_once('function/navbar.php');
+require_once('function/navacc.php');
 ?>
 <div class="container">
     <div class="row justify-content-center align-items-center" style="min-height: 100vh;">

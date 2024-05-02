@@ -1,5 +1,7 @@
-<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
-<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
+
+
 <style>
     @import url("https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap");
 
@@ -110,10 +112,6 @@
         font-weight: 700
     }
 
-    .heightza007 {
-        height: 50vh
-    }
-
     .nav_link {
         position: relative;
         color: var(--first-color-light);
@@ -150,7 +148,9 @@
         background-color: var(--white-color)
     }
 
-   
+    .height-100 {
+        height: 50vh
+    }
 
     @media screen and (min-width: 768px) {
         body {
@@ -185,47 +185,42 @@
             padding-left: calc(var(--nav-width) + 188px)
         }
     }
-    
+
     .dropdown {
-            position: relative;
-            display: inline-block;
-        }
+    position: relative;
+    display: inline-block;
+}
 
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: #f9f9f9;
-            min-width: 160px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-            z-index: 1;
-        }
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    border-radius: 5px; /* Add border-radius for styling */
+}
 
-        .dropdown-content a {
-            color: black;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-        }
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    transition: 0.3s; /* Add transition effect for smooth appearance */
+}
 
-        .dropdown-content a:hover {
-            background-color: #ddd;
-        }
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
 
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
+.dropdown:hover .dropdown-content {
+    display: block;
+}
 
-        .nav_icon {
-            margin-right: 5px;
-        }
+.nav_link.collapsed + .dropdown .dropdown-content {
+    display: none;
+}
 
-        .high-100{
-            height: 50px;
-        }
-
-
-
-        
 </style>
 
 <body id="body-pd">
@@ -235,113 +230,120 @@
     </header>
     <div class="l-navbar" id="nav-bar">
         <nav class="nav">
-            <div> <a href="../admin/Dashboard.php" class="nav_logo"> <i class='bx bx-layer nav_logo-icon'></i> <span
-                        class="nav_logo-name">Admin</span> </a>
-                <div class="nav_list"> <a href="../admin/Dashboard.php" class="nav_link active"> <i class='bx bx-grid-alt nav_icon'></i>
+            <div> <a href="" class="nav_logo">
+                    <i class='bx bx-angry nav_logo-icon'></i>
+                    <span class="nav_logo-name">Admin</span>
+                </a>
+
+                <div class="nav_list"> <a href="../admin/Dashboard.php" class="nav_link active"> <i
+                            class='bx bx-grid-alt nav_icon'></i>
                         <span class="nav_name">Dashboard</span> </a>
                     <a href="../admin/Users.php" class="nav_link"> <i class='bx bx-user nav_icon'></i> <span
                             class="nav_name">Users</span> </a>
-                    <a href="../admin/ImportCSV.php" class="nav_link"> <i class='bx bx-message-square-detail nav_icon'></i> <span
+                    <a href="../admin/ImportCSV.php" class="nav_link"> <i class='bx bxs-file-import nav_icon'></i> <span
                             class="nav_name">Import.CSV</span> </a>
 
                     <div class="dropdown">
                         <a href="#" class="nav_link">
-                            <i class='bx bx-bookmark nav_icon'></i>
+                            <i class='bx bx-cog nav_icon'></i>
                             <span class="nav_name">Manage Web</span>
                         </a>
                         <div class="dropdown-content">
                             <a href="../admin/banner.php">Banner</a>
-                            <a href="#">Contact</a>
-                            <a href="#">Question</a>
+                            <a href="../admin/contact.php">Contact</a>
+                            <a href="../admin/question.php">Question</a>
                         </div>
                     </div>
-                    
+
                 </div>
-            </div> <a href="#" onclick="logout()" class="nav_link"> <i class='bx bx-log-out nav_icon'></i> <span
-                    class="nav_name">SignOut</span> 
-                    <script>
-                        function logout(){
-                             let option = {
-                                url:'../function/action_logout.php',
-                                type:'post',
-                        data:{
-                                logout:1
-                             },
-                                 success:function(res){
-                                 setTimeout(() => {
-                                location.reload()
-                            }, 500);
-                            }
-                             }
-                                    Swal.fire({
-                                    title: 'ต้องการออกจากระบบ?',
-                                    text: "",
-                                    icon: 'warning',
-                                    showCancelButton: true,
-                                    confirmButtonColor: '#3085d6',
-                                    cancelButtonColor: '#d33',
-                                    confirmButtonText: 'ตกลง',
-                                    cancelButtonText: 'ยกเลิก',
-                                }).then((result) => {   
-                                    if (result.isConfirmed) {
-                                        $.ajax(option)
-                                    }
-                                })
-                                }
-                     </script>
-                    </a>
+            </div> <a href="javascript:void(0)" onclick="logout()" class="nav_link">
+                <i class='bx bx-log-out nav_icon'></i>
+                <span class="nav_name">Sign Out</span>
+            </a>
+
         </nav>
     </div>
+
+    <?php
+    require_once ('../../view/admin/function/logout.php');
+    ?>
+
     <!-- Container Main start -->
-    <div class="high-100 bg-white">     
-    </div> 
+    <div class="bg-white">
+    </div>
     <!-- Container Main end -->
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+
+    <script>
+document.addEventListener("DOMContentLoaded", function (event) {
+
+const showNavbar = (toggleId, navId, bodyId, headerId) => {
+    const toggle = document.getElementById(toggleId),
+        nav = document.getElementById(navId),
+        bodypd = document.getElementById(bodyId),
+        headerpd = document.getElementById(headerId)
+
+    // Validate that all variables exist
+    if (toggle && nav && bodypd && headerpd) {
+        toggle.addEventListener('click', () => {
+            // show navbar
+            nav.classList.toggle('show')
+            // change icon
+            toggle.classList.toggle('bx-x')
+            // add padding to body
+            bodypd.classList.toggle('body-pd')
+            // add padding to header
+            headerpd.classList.toggle('body-pd')
+        });
+
+        // Add event listener to handle dropdown behavior when sidebar is collapsed
+        const navLinks = nav.querySelectorAll('.nav_link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (!nav.classList.contains('show')) {
+                    link.classList.toggle('collapsed');
+                }
+            });
+        });
+    }
+}
+
+showNavbar('header-toggle', 'nav-bar', 'body-pd', 'header')
+
+/*===== LINK ACTIVE =====*/
+const linkColor = document.querySelectorAll('.nav_link')
+
+function colorLink() {
+    if (linkColor) {
+        linkColor.forEach(l => l.classList.remove('active'))
+        this.classList.add('active')
+    }
+}
+linkColor.forEach(l => l.addEventListener('click', colorLink))
+
+// Your code to run since DOM is loaded and ready
+});
+
+
+const handleDropdownCollapse = () => {
+        const navLinks = document.querySelectorAll('.nav_link');
+        const sidebarToggle = document.getElementById('header-toggle');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (sidebarToggle.classList.contains('bx-x')) {
+                    link.classList.toggle('collapsed');
+                }
+            });
+        });
+    };
+
+    handleDropdownCollapse();
+    </script>
 </body>
-<script>
-    document.addEventListener("DOMContentLoaded", function (event) {
-
-        const showNavbar = (toggleId, navId, bodyId, headerId) => {
-            const toggle = document.getElementById(toggleId),
-                nav = document.getElementById(navId),
-                bodypd = document.getElementById(bodyId),
-                headerpd = document.getElementById(headerId)
-
-            // Validate that all variables exist
-            if (toggle && nav && bodypd && headerpd) {
-                toggle.addEventListener('click', () => {
-                    // show navbar
-                    nav.classList.toggle('show')
-                    // change icon
-                    toggle.classList.toggle('bx-x')
-                    // add padding to body
-                    bodypd.classList.toggle('body-pd')
-                    // add padding to header
-                    headerpd.classList.toggle('body-pd')
-                })
-            }
-        }
-
-        showNavbar('header-toggle', 'nav-bar', 'body-pd', 'header')
-
-        /*===== LINK ACTIVE =====*/
-        const linkColor = document.querySelectorAll('.nav_link')
-
-        function colorLink() {
-            if (linkColor) {
-                linkColor.forEach(l => l.classList.remove('active'))
-                this.classList.add('active')
-            }
-        }
-        linkColor.forEach(l => l.addEventListener('click', colorLink))
-
-        // Your code to run since DOM is loaded and ready
-    });
-</script>
-
-
-
-
-<script src="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
-<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">

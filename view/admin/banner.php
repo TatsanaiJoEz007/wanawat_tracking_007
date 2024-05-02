@@ -3,7 +3,7 @@
 
 
 <head>
-    <title> Manage - Banner</title>
+    <title>Manage - Banner</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
 
@@ -13,7 +13,10 @@
 </head>
 
 ิ<body>
-    
+<br>
+<br>
+<br>
+<br>
 <?php 
 require_once('function/sidebar.php');  
 require_once('../config/connect.php');
@@ -120,3 +123,4 @@ require_once('../config/connect.php');
     <script src="assets/banner.js"></script>
 
 </body>
+</html>

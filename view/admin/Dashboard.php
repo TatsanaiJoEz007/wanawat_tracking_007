@@ -1,14 +1,28 @@
-<sytle>
-    .content {
-        margin-top: 100px;
-    }
+<!DOCTYPE html>
+<html lang="th">
 
-</style>
+
+<head>
+    <title>Dashboard</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+
     
+    <!-- เรียกใช้ Bootstrap CSS จาก CDN -->
+    <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
+</head>
+
     <?php require_once('function/sidebar.php');  ?>
 <body>
 
 
+<br>
+
+<br>
+
+<br>
+
+<br>
 
 <div class="row">
     <div class="col-lg-3 col-6">
@@ -77,3 +91,4 @@
 <!-- Other content goes here -->
 
 </body>
+</html>
