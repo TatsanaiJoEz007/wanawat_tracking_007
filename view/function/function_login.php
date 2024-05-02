@@ -15,8 +15,9 @@ $(document).ready(function () {
                 login: 1
             },
             success: function(res) {
-                console.log(res);
+                console.log('Response:', res);
                 if (res.trim() == 'failuser') {
+                    // Handle invalid user case
                     Swal.fire({
                         position: 'center',
                         icon: 'error',
@@ -26,6 +27,7 @@ $(document).ready(function () {
                     });
                     $('#signin-password').val('');
                 } else if (res.trim() == 'failpass') {
+                    // Handle invalid password case
                     Swal.fire({
                         position: 'center',
                         icon: 'error',
@@ -34,7 +36,8 @@ $(document).ready(function () {
                         timer: 1500
                     });
                     $('#signin-password').val('');
-                } else if (res.trim() == 'admin') {
+                } else if (res.trim() == '999') {
+                    // Redirect admin users
                     Swal.fire({
                         position: 'center',
                         icon: 'success',
@@ -43,9 +46,10 @@ $(document).ready(function () {
                         timer: 1500
                     });
                     setTimeout(() => {
-                        location.href = "../admin/index.php";
+                        location.href = "../view/admin/index.php";
                     }, 900);
                 } else if (res == 'close') {
+                    // Handle closed account case
                     Swal.fire({
                         position: 'center',
                         icon: 'error',
@@ -54,6 +58,7 @@ $(document).ready(function () {
                         timer: 1500
                     });
                 } else {
+                    // Redirect non-admin users
                     Swal.fire({
                         position: 'center',
                         icon: 'success',
@@ -68,9 +73,9 @@ $(document).ready(function () {
             }
         };
         $.ajax(option).fail(function(jqXHR, textStatus, errorThrown) {
-        console.log("AJAX call failed: " + textStatus + ", " + errorThrown);
-});
-
+            console.log("AJAX call failed: " + textStatus + ", " + errorThrown);
+        });
     });
 });
+
 </script>

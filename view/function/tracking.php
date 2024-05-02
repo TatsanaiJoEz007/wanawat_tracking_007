@@ -36,16 +36,18 @@
     padding-left: 140px;
     padding-right: 90px;
     height: 60px;
+    width: 100%;
   }
   .mascot {
     width: 100px;
     position: absolute;
-    left: -130px;
+    left: -100px;
     top: 50%;
     transform: translateY(-50%);
     border-radius: 50%;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   }
+  
 
   @media (max-width: 768px) {
   .tracking-input-group {
@@ -61,15 +63,32 @@
     right: 10px; /* Position from the right */
   }
 }
+.form-control {
+    width: 100%;       /* Makes the input width responsive to the container size */
+    padding: 8px 12px; /* Adds some padding inside the input */
+    box-sizing: border-box; /* Includes padding and border in the element's total width and height */
+    border: 1px solid #ccc; /* Adds a light grey border */
+    border-radius: 4px; /* Rounds the corners of the input field */
+}
+
+/* Optional: Media query for smaller screens */
+@media (max-width: 600px) {
+    .form-control {
+        padding: 4px 7px; /* Smaller padding on smaller screens */
+    }
+ 
+}
+
 
 </style>
 
 
 <body>
-<div class="container text-center">
+<div class="container text-center" >
   <div class="tracking-input-group">
     <img src="../view/assets/img/logo/mascot.png" alt="Mascot" class="mascot">
-    <input type="text" class="form-control tracking-input" placeholder="Enter your tracking number here!">
+    <input type="text" class="form-control tracking-input" placeholder=" Enter your tracking number here!">
+
     <button class="track-button">Track</button>
   </div>
 </div>
