@@ -1,57 +1,86 @@
-<style>
-.card {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  max-width: 300px;
-  margin: auto;
-  text-align: center;
-  font-family: arial;
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Assuming 'function/head.php' includes necessary meta tags, stylesheets, etc. -->
+    <?php require_once('function/head.php'); ?>
+
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-.title {
-  color: grey;
-  font-size: 18px;
+
+.profile-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    margin-top: 50px;
 }
 
-button {
-  border: none;
-  outline: 0;
-  display: inline-block;
-  padding: 8px;
-  color: white;
-  background-color: #000;
-  text-align: center;
-  cursor: pointer;
-  width: 100%;
-  font-size: 18px;
+.profile-picture {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
 }
 
-a {
-  text-decoration: none;
-  font-size: 22px;
-  color: black;
+.profile-picture img {
+    width: 100%;
+    height: auto;
+    border-radius: 50%;
 }
 
-button:hover, a:hover {
-  opacity: 0.7;
+.profile-details {
+    margin-left: 20px;
+    max-width: 400px; /* Adjust as needed */
 }
-</style>
+
+.profile-details h2 {
+    margin-top: 0;
+}
+
+.profile-details p {
+    margin: 5px 0;
+}
+
+    </style>
 </head>
+
 <body>
+    <nav>
+        <?php require_once('function/navindex.php'); ?>
+    </nav>
 
-<h2 style="text-align:center">User Profile Card</h2>
+    <div class="profile-container">
+        <div class="profile-picture">
+            <?php 
+                // Assuming $userProfilePicture contains the path to the user's profile picture
+                echo '<img src="' . $userProfilePicture . '" alt="User Profile Picture">';
+            ?>
+        </div>
+        <div class="profile-details">
+            <h2>User's Name</h2>
+            <p>Email: user@example.com</p>
+            <p>Location: City, Country</p>
+            <p>About: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        </div>
+    </div>
 
-<div class="card">
-  <img src="/w3images/team2.jpg" alt="John" style="width:100%">
-  <h1>John Doe</h1>
-  <p class="title">CEO & Founder, Example</p>
-  <p>Harvard University</p>
-  <div style="margin: 24px 0;">
-    <a href="#"><i class="fa fa-dribbble"></i></a> 
-    <a href="#"><i class="fa fa-twitter"></i></a>  
-    <a href="#"><i class="fa fa-linkedin"></i></a>  
-    <a href="#"><i class="fa fa-facebook"></i></a> 
-  </div>
-  <p><button>Contact</button></p>
-</div>
-
+    <footer>
+        <?php require_once('function/footer.php'); ?>
+    </footer>
+    <script src="https://fastly.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
+</html>

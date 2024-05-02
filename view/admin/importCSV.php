@@ -79,10 +79,12 @@ h1 {
 
 </style>
 
-<?php require_once('../function/sidebar.php');  ?>
+<?php require_once('function/sidebar.php');  ?>
 <body>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
 <div class="container">
+    
         <h1>Upload CSV</h1>
         <form id="uploadForm">
             <div class="file-upload-wrapper">
@@ -122,4 +124,3 @@ function handleUpload() {
     </script>
 
     </body>
-

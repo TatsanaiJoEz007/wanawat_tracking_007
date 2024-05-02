@@ -15,7 +15,7 @@
 ิ<body>
     
 <?php 
-require_once('../function/sidebar.php');  
+require_once('function/sidebar.php');  
 require_once('../config/connect.php');
 ?>
 

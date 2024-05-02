@@ -1,16 +1,15 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Dashboard</title>
+    <title>employeenaja</title>
     <link rel="icon" type="image/x-icon" href="https://wehome.co.th/wp-content/uploads/2023/01/logo-WeHome-BUILDER-788x624.png">
 </head>
 <body>
 
 
-<?php require_once('../function/sidebar.php');  ?>
+<?php require_once('function/sidebar_employee.php');  ?>
 
 
 <script src="https://fastly.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

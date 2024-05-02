@@ -1,0 +1,9 @@
+tb_user
+user_id int(100)
+username varchar(200)
+user_username varchar(200)
+user_pass text
+user_img varchar(255)
+user_type int(1) //store user level 999 = admin 1 = user default value is 1
+created_at varchar(100)
+status int(1)

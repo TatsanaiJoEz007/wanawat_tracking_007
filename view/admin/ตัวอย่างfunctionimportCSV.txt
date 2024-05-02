@@ -1,0 +1,46 @@
+const express = require('express');
+const multer = require('multer');
+const mysql = require('mysql');
+const csvParser = require('csv-parser');
+const fs = require('fs');
+
+const app = express();
+const upload = multer({ dest: 'uploads/' });
+
+// ตั้งค่าการเชื่อมต่อ MySQL
+const db = mysql.createConnection({
+    host: 'your-hostname',
+    user: 'your-username',
+    password: 'your-password',
+    database: 'your-database'
+});
+
+db.connect(err => {
+    if (err) throw err;
+    console.log('Connected to the MySQL server.');
+});
+
+app.post('/upload-csv', upload.single('file'), (req, res) => {
+    const results = [];
+
+    fs.createReadStream(req.file.path)
+        .pipe(csvParser())
+        .on('data', (data) => results.push(data))
+        .on('end', () => {
+            // ลบไฟล์ที่อัปโหลดหลังจากอ่านเสร็จ
+            fs.unlinkSync(req.file.path);
+
+            // นำเข้าข้อมูลลงในฐานข้อมูล
+            results.forEach(row => {
+                db.query('INSERT INTO tableName SET ?', row, (err, result) => {
+                    if (err) throw err;
+                });
+            });
+
+            res.send('CSV file has been successfully imported into the database.');
+        });
+});
+
+app.listen(3000, () => {
+    console.log('Server is running on port 3000');
+});

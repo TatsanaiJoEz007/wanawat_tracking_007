@@ -16,7 +16,7 @@
     </style>
 <body>
 
-<?php require_once('../function/sidebar.php');  ?>
+<?php require_once('function/sidebar.php');  ?>
 
 
 <h1 class="app-page-title"><br>ตารางข้อมูลผู้ใช้งาน</br></h1>

@@ -1,6 +1,11 @@
+<sytle>
+    .content {
+        margin-top: 100px;
+    }
 
+</style>
     
-    <?php require_once('../function/sidebar.php');  ?>
+    <?php require_once('function/sidebar.php');  ?>
 <body>
 
 

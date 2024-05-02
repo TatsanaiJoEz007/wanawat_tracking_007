@@ -110,6 +110,10 @@
         font-weight: 700
     }
 
+    .heightza007 {
+        height: 50vh
+    }
+
     .nav_link {
         position: relative;
         color: var(--first-color-light);
@@ -214,6 +218,14 @@
         .nav_icon {
             margin-right: 5px;
         }
+
+        .high-100{
+            height: 50px;
+        }
+
+
+
+        
 </style>
 
 <body id="body-pd">
@@ -281,7 +293,7 @@
         </nav>
     </div>
     <!-- Container Main start -->
-    <div class="height-100 bg-white">
+    <div class="high-100 bg-white">     
     </div> 
     <!-- Container Main end -->
 </body>

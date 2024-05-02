@@ -2,15 +2,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clerk Dashboard</title>
-    <link rel="icon" type="image/x-icon" href="https://wehome.co.th/wp-content/uploads/2023/01/logo-WeHome-BUILDER-788x624.png">
+    <?php require_once('../function/head.php');  ?>
 </head>
 <body>
 
 
-<?php require_once('../function/sidebar.php');  ?>
+<?php require_once('function/sidebar_clerk.php');  ?>
 
 
 <script src="https://fastly.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
