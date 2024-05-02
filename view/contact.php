@@ -142,11 +142,11 @@
         function confirmCall() {
             Swal.fire({
                 title: "Confirmation",
-                text: "Would you like to make a call?",
+                text: "คุณต้องการจะโทรหาบริษัท วนาวัฒน์ วัสดุ จำกัด หรือไม่",
                 icon: "info",
                 showCancelButton: true,
-                confirmButtonText: "Yes",
-                cancelButtonText: "No",
+                confirmButtonText: "ใช่ โทรเลย",
+                cancelButtonText: "ไม่",
             }).then((result) => {
                 if (result.isConfirmed) {
                     window.location.href = "tel:+6674324697";

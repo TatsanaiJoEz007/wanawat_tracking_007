@@ -59,32 +59,39 @@
 </style>
 
 <div class="container">
-        <br>
-        <h1>คำถามที่พบบ่อย</h1>
-        <div class="accordion-container">
-            <button class="accordion">หากสินค้าขึ้นสถานะว่ากำลังนำส่งหมายถึงอะไร?<i class="fas fa-caret-down"></i></button>
-            <div class="panel">
-                <div class="panel-content">
+    <br>
+    <h1>คำถามที่พบบ่อย</h1>
+    <div class="accordion-container">
+        <button class="accordion">หากสินค้าขึ้นสถานะว่ากำลังนำส่งหมายถึงอะไร?<i class="fas fa-caret-down"></i></button>
+        <div class="panel">
+            <div class="panel-content">
+                <div class="box-widget">
                     <p>&nbsp;&nbsp;&nbsp; สถานะ "กำลังนำส่งนั้น" หมายถึง ขณะนี้สินค้ากำลังไปส่งให้ถึงมือคุณลูกค้าตามที่อยู่ที่ลูกค้าระบุไว้ และจะถึงภายในวันที่ขึ้นสถานะ</p>
                 </div>
             </div>
+        </div>
 
-            <button class="accordion">หากสินค้าไม่ขึ้นสถานะหลังจากกดสั่งซื้อ หมายถึงอะไร?<i class="fas fa-caret-down"></i></button>
-            <div class="panel">
-                <div class="panel-content">
+        <button class="accordion">หากสินค้าไม่ขึ้นสถานะหลังจากกดสั่งซื้อ หมายถึงอะไร?<i class="fas fa-caret-down"></i></button>
+        <div class="panel">
+            <div class="panel-content">
+                <div class="box-widget">
                     <p>บลาๆๆๆๆ</p>
                 </div>
             </div>
+        </div>
 
-            <button class="accordion">เลข Tracking นำมาจากไหน?<i class="fas fa-caret-down"></i></button>
-            <div class="panel">
-                <div class="panel-content">
+        <button class="accordion">เลข Tracking นำมาจากไหน?<i class="fas fa-caret-down"></i></button>
+        <div class="panel">
+            <div class="panel-content">
+                <div class="box-widget">
                     <p>บลาๆๆๆ</p>
                 </div>
             </div>
-            <!-- Add more questions here -->
         </div>
+        <!-- Add more questions here -->
     </div>
+</div>
+
 
     <script src="https://fastly.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
