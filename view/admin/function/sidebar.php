@@ -10,7 +10,6 @@
     --nav-width: 68px;
     --first-color: #F0592E;
     --first-color-light: #AFA5D9;
-    --white-color: #F7F6FB;
     --body-font: 'Kanit', sans-serif;
     --normal-font-size: 1rem;
     --z-fixed: 100;
@@ -253,9 +252,9 @@ a {
                 <div class="nav_list"> <a href="../admin/Dashboard.php" class="nav_link active"> <i
                             class='bx bx-grid-alt nav_icon'></i>
                         <span class="nav_name">Dashboard</span> </a>
-                    <a href="../admin/Users.php" class="nav_link"> <i class='bx bx-user nav_icon'></i> <span
+                    <a href="../admin/users" class="nav_link"> <i class='bx bx-user nav_icon'></i> <span
                             class="nav_name">Users</span> </a>
-                    <a href="../admin/ImportCSV.php" class="nav_link"> <i class='bx bxs-file-import nav_icon'></i> <span
+                    <a href="../admin/ImportCSV" class="nav_link"> <i class='bx bxs-file-import nav_icon'></i> <span
                             class="nav_name">Import CSV</span> </a>
 
                     <div class="dropdown">
@@ -264,9 +263,9 @@ a {
                             <span class="nav_name">Manage Web</span>
                         </a>
                         <div class="dropdown-content">
-                            <a href="../admin/banner.php">Banner</a>
-                            <a href="../admin/contact.php">Contact</a>
-                            <a href="../admin/question.php">Question</a>
+                            <a href="../admin/banner">Banner</a>
+                            <a href="../admin/contact">Contact</a>
+                            <a href="../admin/question">Question</a>
                         </div>
                     </div>
 

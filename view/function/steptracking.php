@@ -162,7 +162,7 @@ ul li .active .uil{
                     <p>1</p>
                     <i class="uil uil-check"></i>
                 </div>
-                <p class="text">Add To Cart</p>
+                <p class="text">สินค้าเข้าระบบ</p>
             </li>
             <li>
                 <i class="icon uil uil-clipboard-notes"></i>
@@ -170,7 +170,7 @@ ul li .active .uil{
                     <p>2</p>
                     <i class="uil uil-check"></i>
                 </div>
-                <p class="text">Fill Details</p>
+                <p class="text">ขนส่งจากต้นทาง</p>
             </li>
             <li>
                 <i class="icon uil uil-credit-card"></i>
@@ -178,7 +178,7 @@ ul li .active .uil{
                     <p>3</p>
                     <i class="uil uil-check"></i>
                 </div>
-                <p class="text">Make Payment</p>
+                <p class="text">ถึงปลายทาง</p>
             </li>
             <li>
                 <i class="icon uil uil-exchange"></i>
@@ -186,7 +186,7 @@ ul li .active .uil{
                     <p>4</p>
                     <i class="uil uil-check"></i>
                 </div>
-                <p class="text">Order in Progress</p>
+                <p class="text">นำส่งลูกค้า</p>
             </li>
             <li>
                 <i class="icon uil uil-map-marker"></i>
@@ -194,7 +194,7 @@ ul li .active .uil{
                     <p>5</p>
                     <i class="uil uil-check"></i>
                 </div>
-                <p class="text">Order Arrived</p>
+                <p class="text">จัดส่งสำเร็จ</p>
             </li>
         </ul>
 

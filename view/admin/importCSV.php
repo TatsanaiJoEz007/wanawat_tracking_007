@@ -86,6 +86,18 @@ h1 {
     word-wrap: break-word;
 }
 
+#uploadIcon {
+    display: block;
+    margin: 0 auto;
+    font-size: 48px;
+    color: #007bff;
+    cursor: pointer;
+}
+
+#uploadIcon:hover {
+    color: #0056b3;
+}
+
 </style>
 
 <?php require_once('function/sidebar.php');  ?>
@@ -99,7 +111,9 @@ h1 {
         <h1>Upload CSV</h1>
         <form id="uploadForm">
             <div class="file-upload-wrapper">
-                <label for="fileUpload" class="file-upload-label">เลือกไฟล์ CSV</label>
+                <label for="fileUpload" class="file-upload-label">
+                    <i class="bi bi-cloud-upload" id="uploadIcon"></i> เลือกไฟล์ CSV
+                </label>
                 <input type="file" id="fileUpload" class="file-upload-input" accept=".csv">
                 <span id="fileName" class="file-name">ไม่มีไฟล์ที่เลือก</span>
             </div>

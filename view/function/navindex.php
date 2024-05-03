@@ -43,43 +43,62 @@
     }
 }
 
+/* Style for language switcher icons */
+.language-switcher {
+    display: flex;
+    align-items: center;
+    margin-right: 75px;
+    
+}
+
+.language-switcher img {
+    width: 30px;
+    cursor: pointer;
+}
 
 </style>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-orange" style="position: relative;">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="../view/mainpage.php">
-                <img src="../view/assets/img/logo/logo.png" width="65" height="52" alt="Logo">
-            </a>
-       
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNavDropdown">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="../view/freqquestion.php">คำถามที่พบบ่อย ?</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="../view/contact.php">ติดต่อเรา</a>
+<nav class="navbar navbar-expand-lg navbar-light bg-orange" style="position: relative;">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="../view/mainpage">
+            <img src="../view/assets/img/logo/logo.png" width="65" height="52" alt="Logo">
+        </a>
+   
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="../view/freqquestion">คำถามที่พบบ่อย ?</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="../view/contact">ติดต่อเรา</a>
+                </li>
+            </ul>
+            <!-- Language Switcher -->
+            <div class="language-switcher">
+                <img src="../view/assets/img/logo/thai.png" alt="Thai Flag" onclick="changeLanguage('th')">
+                <p>&nbsp;&nbsp;&nbsp;</p>
+                <img src="../view/assets/img/logo/eng.png" alt="British Flag" onclick="changeLanguage('en')">
+            </div>
+            <div class="navbar-right">
+                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="../view/assets/img/logo/mascot.png" alt="Profile Image" class="profile-image">
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                    <li><a class="dropdown-item" href="#">ดูโปรไฟล์</a></li>
+                    <li>
+                        <button type="logout" class="btn btn-link" onclick="logout()">
+                        <a class="dropdown-item" href="#">ออกจากระบบ</a> </button>
                     </li>
                 </ul>
-                <div class="navbar-right">
-                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="../view/assets/img/logo/mascot.png" alt="Profile Image" class="profile-image">
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                        <li><a class="dropdown-item" href="#">View Profile</a></li>
-                        <li>
-                            <button type="logout" class="btn btn-link" onclick="logout()">
-                            <a class="dropdown-item" href="#">Logout</a> </button>
-                        </li>
-                    </ul>
-                </div>
             </div>
         </div>
-    </nav>
+    </div>
+</nav>
+
 
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-beta1/js/bootstrap.min.js"></script>
     <?php require_once('function/function_logout.php'); ?>

@@ -30,10 +30,7 @@
             width: 100%;
             text-align: left;
             color: #F0592E;
-        }
-
-        .accordion:hover {
-            color: #FF7E47;
+            /* Removed hover effect */
         }
 
         .panel {
