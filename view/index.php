@@ -26,6 +26,12 @@
 <br>
 <br>
 <br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
     <footer>
     <?php
     require_once('function/footer.php');

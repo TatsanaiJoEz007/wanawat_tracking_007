@@ -11,7 +11,17 @@
     <?php require_once('function/freqpage.php'); ?>
 
 </body>
-
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
 <footer>
         <?php require_once('function/footer.php'); ?>
 </footer>

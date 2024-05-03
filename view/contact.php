@@ -9,6 +9,17 @@
     <?php require_once('function/navindex.php'); ?>
 
     <?php require_once('function/contactcard.php'); ?>
+    <br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
     <footer>
         <?php require_once('function/footer.php'); ?>
     </footer>

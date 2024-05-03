@@ -1,4 +1,6 @@
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-beta1/css/bootstrap.min.css">
+<?php require_once('th_eng.php'); ?>
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-beta1/css/bootstrap.min.css">
     <style>
         .navbar.navbar-expand-lg.navbar-light .navbar-nav .nav-link {
             color: white !important;    
@@ -38,7 +40,7 @@
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        เข้าสู่ระบบ / ลงทะเบียน
+                        <?php echo $lang_login ?>  / <?php echo $lang_register ?>
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                         <li><a class="dropdown-item" href="../view/login">เข้าสู่ระบบ </a></li>
@@ -49,21 +51,16 @@
         </div>
         <!-- Language Switcher -->
         <div class="language-switcher">
-        <?php require_once('function/head.php'); ?>
-            <img src="../view/assets/img/logo/thai.png" alt="Thai Flag"  <?php echo $lang_th_language ?> >
-            <img src="../view/assets/img/logo/eng.png" alt="British Flag"  <?php echo $lang_en_language ?>  >
+        
+             
+            <a href="index.php?lang=th"><img src="../view/assets/img/logo/thai.png" alt="<?php echo $lang_th_language ?>"></a>
+
+            
+            <a href="index.php?lang=en"><img src="../view/assets/img/logo/eng.png" alt="<?php echo $lang_en_language ?>"></a>
+
         </div>
     </div>
 </nav>
 
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-beta1/js/bootstrap.bundle.min.js"></script>
-
-<script>
-    function changeLanguage(languageCode) {
-        // Implement logic to change language
-        // For example, you can reload the page with a query parameter indicating the selected language
-        // window.location.href = `../view/index?lang=${languageCode}`;
-    }
-</script>
-
 </body>
