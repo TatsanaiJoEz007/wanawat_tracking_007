@@ -1,3 +1,14 @@
+<?php
+
+require_once('config/connect.php');
+
+if (!isset($_SESSION['login'])) {
+    //echo '<script>location.href="login"</script>';
+}
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -161,6 +172,13 @@
             ?>
         </div>
         <div class="profile-details">
+
+            <?php
+            $sql = "SELECT * FROM tb_user WHERE User_ID = '$_SESSION[user_id]'";
+            $query = $conn->query($sql);
+            $myprofile = $query->fetch_array();
+            ?>
+
             <h2>User's Name</h2>
             <p><i class="fas fa-envelope"></i>Email: user@example.com</p>
             <p><i class="fas fa-map-marker-alt"></i>Location: City, Country</p>

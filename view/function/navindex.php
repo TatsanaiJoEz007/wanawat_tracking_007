@@ -1,3 +1,5 @@
+<?php require_once('th_eng.php'); ?>
+
 <style>
 .navbar.navbar-expand-lg.navbar-light .navbar-nav .nav-link {
     color: white !important;
@@ -56,6 +58,14 @@
     cursor: pointer;
 }
 
+.navbar-right .dropdown-menu {
+    position: absolute;
+    right: 0; /* ตั้งให้ dropdown ชิดขวา */
+    top: 100%; /* ตั้งให้ dropdown เริ่มต้นจากตำแหน่งด้านล่างของ toggle button */
+    transform: translateX(-50%); /* จัดตำแหน่งให้ dropdown ไม่ล้นขอบจอ */
+}
+
+
 </style>
 
 <body>
@@ -71,27 +81,33 @@
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="../view/freqquestion">คำถามที่พบบ่อย ?</a>
+                    <a class="nav-link active" aria-current="page" href="../view/freqquestion"><?php echo $lang_question ?> </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="../view/contact">ติดต่อเรา</a>
+                    <a class="nav-link" href="../view/contact"><?php echo $lang_contact ?></a>
                 </li>
             </ul>
             <!-- Language Switcher -->
-            <div class="language-switcher">
-                <img src="../view/assets/img/logo/thai.png" alt="Thai Flag" onclick="changeLanguage('th')">
-                <p>&nbsp;&nbsp;&nbsp;</p>
-                <img src="../view/assets/img/logo/eng.png" alt="British Flag" onclick="changeLanguage('en')">
-            </div>
+        <div class="language-switcher">
+        
+             
+        <a href="mainpage.php?lang=th"><img src="../view/assets/img/logo/thai.png" alt="<?php echo $lang_th_language ?>"></a>
+
+        
+        <a href="mainpage.php?lang=en"><img src="../view/assets/img/logo/eng.png" alt="<?php echo $lang_en_language ?>"></a>
+
+        </div>
+
+
             <div class="navbar-right">
                 <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                     <img src="../view/assets/img/logo/mascot.png" alt="Profile Image" class="profile-image">
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                    <li><a class="dropdown-item" href="#">ดูโปรไฟล์</a></li>
+                    <li><a class="dropdown-item" href="../view/profile"> <?php echo $lang_profile ?> </a></li>
                     <li>
                         <button type="logout" class="btn btn-link" onclick="logout()">
-                        <a class="dropdown-item" href="#">ออกจากระบบ</a> </button>
+                        <a class="dropdown-item" href="#"> <?php echo $lang_logout ?> </a> </button>
                     </li>
                 </ul>
             </div>

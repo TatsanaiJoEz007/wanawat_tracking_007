@@ -33,18 +33,18 @@
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="../view/freqquestion_main">คำถามที่พบบ่อย ?</a>
+                    <a class="nav-link active" aria-current="page" href="../view/freqquestion_main"><?php echo $lang_question ?> ?</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="../view/contact_main">ติดต่อเรา</a>
+                    <a class="nav-link" href="../view/contact_main"><?php echo $lang_contact ?></a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <?php echo $lang_login ?>  / <?php echo $lang_register ?>
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <li><a class="dropdown-item" href="../view/login">เข้าสู่ระบบ </a></li>
-                        <li><a class="dropdown-item" href="../view/register">ลงทะเบียน</a></li>
+                        <li><a class="dropdown-item" href="../view/login"><?php echo $lang_login ?> </a></li>
+                        <li><a class="dropdown-item" href="../view/register"><?php echo $lang_register ?></a></li>
                     </ul>
                 </li>
             </ul>

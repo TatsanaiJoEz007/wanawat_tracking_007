@@ -9,7 +9,7 @@
 
 
 
-
+    //Navbar Function
 
     $login_translate = array('th' => 'เข้าสู่ระบบ' , 'en' => 'Login');
     $lang_login = $login_translate[$lang];
@@ -23,7 +23,7 @@
     $contact_translate = array('th' => 'ติดต่อเรา' , 'en' => 'Contact Us');
     $lang_contact = $contact_translate[$lang];
 
-    $question_translate = array('th' => 'ถามคำถาม หรือแsจ้งปัญหาในการใช้งาน' , 'en' => 'Ask a question or report a problem');
+    $question_translate = array('th' => 'ถามคำถาม หรือแจ้งปัญหาในการใช้งาน' , 'en' => 'Ask a question or report a problem');
     $lang_question = $question_translate[$lang];
 
     $profile_translate = array('th' => 'ดูโปรไฟล์' , 'en' => 'View Profile');
@@ -32,5 +32,29 @@
     $logout_translate = array('th' => 'ออกจากระบบ' , 'en' => 'Logout');
     $lang_logout = $logout_translate[$lang];
     
+    //End Navbar Function
+
+
+    //Tracking Function
+
+    $track_translate = array('th' => 'กรอกหมายเลขติดตามของคุณที่นี่!' , 'en' => 'Enter your tracking number here!');
+    $lang_track = $track_translate[$lang];
+
+    $ex_translate = array('th' => 'ตัวอย่าง' , 'en' => 'Ex.');
+    $lang_ex = $track_translate[$lang];
+
+
+    //End Tracking Function
+
+
+
+
+    //Login Page 
+
+    $email_translate = array('th' => 'อีเมล' , 'en' => 'Email');
+    $lang_email = $email_translate[$lang];
+
+    $password_translate = array('th' => 'รหัสผ่าน' , 'en' => 'Password');
+    $lang_password = $password_translate[$lang];
 
 ?>

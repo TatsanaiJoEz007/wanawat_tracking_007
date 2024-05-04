@@ -235,6 +235,23 @@ a {
     pointer-events: auto;
     transform: scaleY(1);
 }
+
+
+.dropdown {
+    position: relative; /* ตั้งให้เป็นตำแหน่งสัมพันธ์ */
+}
+
+.dropdown-content {
+    position: absolute; /* ตั้งให้เป็นตำแหน่งสัมพันธ์ */
+    left: 0; /* จัดให้อยู่ทางด้านซ้าย */
+    top: 100%; /* ตั้งให้เริ่มจากด้านล่างของแถบที่คลิก */
+    background-color: #ffffff; /* ตั้งสีพื้นหลังของ Dropdown */
+    width: 100%; /* ตั้งความกว้าง */
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); /* เพิ่มเงาให้กับ Dropdown */
+    z-index: 1; /* ตั้งให้ Dropdown แสดงผลอยู่ด้านบนสุด */
+}
+
+
 </style>
 
 <body id="body-pd">
@@ -245,16 +262,18 @@ a {
     <div class="l-navbar" id="nav-bar">
         <nav class="nav">
             <div> <a href="" class="nav_logo">
-                    <i class='bx bx-angry nav_logo-icon'></i>
+                    <i class='bx bx-happy nav_logo-icon'></i>
                     <span class="nav_logo-name">Admin</span>
                 </a>
 
-                <div class="nav_list"> <a href="../admin/Dashboard.php" class="nav_link active"> <i
+                <div class="nav_list"> <a href="../admin/dashboard" class="nav_link "> <i
                             class='bx bx-grid-alt nav_icon'></i>
                         <span class="nav_name">Dashboard</span> </a>
+
                     <a href="../admin/users" class="nav_link"> <i class='bx bx-user nav_icon'></i> <span
                             class="nav_name">Users</span> </a>
-                    <a href="../admin/ImportCSV" class="nav_link"> <i class='bx bxs-file-import nav_icon'></i> <span
+                            
+                    <a href="../admin/importCSV" class="nav_link"> <i class='bx bxs-file-import nav_icon'></i> <span
                             class="nav_name">Import CSV</span> </a>
 
                     <div class="dropdown">
