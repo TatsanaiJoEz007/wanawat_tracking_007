@@ -28,24 +28,24 @@
         <div class="col-md-4 col-sm-6 col-xs-12">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="card-title text-center mb-4">Login</h4>
+                    <h4 class="card-title text-center mb-4"><?php echo $lang_login ?></h4>
                     <form action="#" method="post" id="login">
                         <div class="mb-3">
-                            <label for="signin-email" class="form-label">Email</label>
+                            <label for="signin-email" class="form-label"><?php echo $lang_email ?></label>
                             <input type="email" class="form-control" id="signin-email" name="signin-email" required placeholder="Enter email">
                         </div>
                         <div class="mb-3">
-                            <label for="signin-password" class="form-label">Password</label>
+                            <label for="signin-password" class="form-label"><?php echo $lang_password ?></label>
                             <input type="password" class="form-control" id="signin-password" name="signin-password" required placeholder="Password">
                         </div>
                         <div class="d-grid gap-2">
-                            <button type="submit" name="login" class="btn btn-custom">Log In</button>
+                            <button type="submit" name="login" class="btn btn-custom"><?php echo $lang_login ?></button>
                         </div>
                         <p class="mt-3">
-                            <a href="#forgotPasswordModal" class="form-link" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal">Forgot password?</a>
+                            <a href="#forgotPasswordModal" class="form-link" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal"><?php echo $lang_forgotpassword ?></a>
                         </p>
                         <p class="mb-0">
-                            Don't have an account? <a href="register.php" class="form-link">Sign up</a>
+                        <?php echo $lang_donthaveaccount ?> <a href="register.php" class="form-link"><?php echo $lang_signup ?></a>
                         </p>
                     </form>
                 </div>

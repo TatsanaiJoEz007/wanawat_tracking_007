@@ -116,7 +116,7 @@
 <!-- Contact Us Section -->
 <section id="contact">
     <div class="container">
-        <h2>ติดต่อเรา</h2>
+        <h2><?php echo $lang_contact ?></h2>
         <div class="contact-widget">
             <!-- Facebook Card -->
             <div class="contact-card" onclick="window.open('https://www.facebook.com/WanawatGroup/', '_blank')">
@@ -124,7 +124,7 @@
                     <i class="bi bi-facebook"></i>
                 </div>
                 <div class="contact-info">
-                    <span class="contact-label">Facebook</span>
+                    <span class="contact-label"><?php echo $lang_facebook ?></span>
                     <span class="contact-link">https://www.facebook.com/WanawatGroup/</span>
                 </div>
             </div>
@@ -134,7 +134,7 @@
                     <i class="bi bi-browser-safari"></i>
                 </div>
                 <div class="contact-info">
-                    <span class="contact-label">Website</span>
+                    <span class="contact-label"><?php echo $lang_website?></span>
                     <span class="contact-link">https://wehome.co.th/</span>
                 </div>
             </div>
@@ -144,7 +144,7 @@
                     <i class="bi bi-phone"></i>
                 </div>
                 <div class="contact-info">
-                    <span class="contact-label">Call</span>
+                    <span class="contact-label"><?php echo $lang_call?></span>
                     <span class="contact-link">+6674324697</span>
                 </div>
             </div>
@@ -152,11 +152,11 @@
             <div class="contact-card form-widget"> <!-- Add form-widget class to make the widget box bigger -->
                 <form id="bug-report-form" action="your_server_script.php" method="post">
                     <div class="contact-info">
-                        <span class="contact-label">ถามคำถาม หรือแจ้งปัญหาในการใช้งาน</span>
-                        <input type="text" name="name" placeholder="Your Name" required>
-                        <input type="email" name="email" placeholder="Your Email" required>
-                        <textarea name="description" placeholder="Description" required></textarea>
-                        <button type="submit" id="submit-button">Submit</button>
+                        <span class="contact-label"><?php echo $lang_askquestion?></span>
+                        <input type="text" name="name" placeholder="<?php echo $lang_yourname?>" required>
+                        <input type="email" name="email" placeholder="<?php echo  $lang_youremail?>" required>
+                        <textarea name="description" placeholder="<?php echo  $lang_description?>" required></textarea>
+                        <button type="submit" id="submit-button"><?php echo $lang_submit?></button>
                     </div>
                 </form>
             </div>

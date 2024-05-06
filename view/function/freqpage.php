@@ -60,7 +60,7 @@
 
 <div class="container">
     <br>
-    <h1>คำถามที่พบบ่อย</h1>
+    <h1><?php echo $lang_freq?></h1>
     <div class="accordion-container">
         <button class="accordion">หากสินค้าขึ้นสถานะว่ากำลังนำส่งหมายถึงอะไร?<i class="fas fa-caret-down"></i></button>
         <div class="panel">
