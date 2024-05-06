@@ -193,27 +193,26 @@ a {
 .dropdown-content {
     display: none;
     position: absolute;
-    background-color: #fff;
+    background-color: #ffffff;
     min-width: 160px;
-    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
-    z-index: 1;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
-    padding: 8px 0;
+    padding: 12px 16px;
     opacity: 0;
-    pointer-events: none;
-    transform: translateY(-10px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    z-index: 1000;  /* Ensure dropdown is above other content */
 }
 
 .dropdown-content a {
     color: #333;
     padding: 10px 20px;
     display: block;
-    transition: 0.3s;
+    transition: background-color 0.3s;
 }
 
 .dropdown-content a:hover {
-    background-color: #f2f2f2;
+    background-color: #f1f1f1;
 }
 
 .dropdown:hover .dropdown-content {
@@ -269,10 +268,17 @@ a {
                 <div class="nav_list"> <a href="../admin/dashboard" class="nav_link "> <i
                             class='bx bx-grid-alt nav_icon'></i>
                         <span class="nav_name">Dashboard</span> </a>
-
-                    <a href="../admin/users" class="nav_link"> <i class='bx bx-user nav_icon'></i> <span
-                            class="nav_name">Users</span> </a>
-                            
+                <div class="dropdown">
+                    <a href="../admin/users" class="nav_link"> 
+                        <i class='bx bx-user nav_icon'></i> <span
+                            class="nav_name">Users</span> 
+                    </a>
+                    <div class="dropdown-content">
+                            <a href="../admin/banner">Employee</a>
+                            <a href="../admin/contact">Clerk</a>
+                    </div>
+                </div> 
+                          
                     <a href="../admin/importCSV" class="nav_link"> <i class='bx bxs-file-import nav_icon'></i> <span
                             class="nav_name">Import CSV</span> </a>
 

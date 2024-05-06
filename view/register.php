@@ -31,7 +31,11 @@ require_once('function/navbar.php');
                     <h4 class="card-title text-center mb-4">Register</h4>
                     <form action="#" id="register" method="post">
                         <div class="mb-3">
-                            <label for="register-email" class="form-label">Username</label>
+                            <label for="register-email" class="form-label">Fristname</label>
+                            <input type="text" class="form-control" id="register-name" name="register-name" require placeholder="Enter username">
+                        </div>
+                        <div class="mb-3">
+                            <label for="register-email" class="form-label">Lastname</label>
                             <input type="text" class="form-control" id="register-name" name="register-name" require placeholder="Enter username">
                         </div>
                         <div class="mb-3">

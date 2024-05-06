@@ -7,14 +7,15 @@
         let pass = $('#register-password').val()
         let email = $('#register-email').val()
         let c_pass = $('#register-c-password').val()
-        let name = $('#register-name').val()
+        let firstname = $('#register-firstname').val()
+        let lastname = $('#register-lastname').val()
         let option = {
             url: '../view/function/action_register.php',
             type: 'post',
-            data: {
-                pass: pass,
+            data: { 
                 email: email,
-                name: name,
+                firstname: firstname,
+                lastname: lastname,
                 register: 1
             },
             success: function(res) {
@@ -32,7 +33,8 @@
                     $('#register-password').val('')
                     $('#register-email').val('')
                     $('#register-c-password').val('')
-                    $('#register-name').val('')
+                    $('#register-firstname').val('')
+                    $('#register-lastname').val('')
                 } else {
                     Swal.fire({
                         position: 'center',
