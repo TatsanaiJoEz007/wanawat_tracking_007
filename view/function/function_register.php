@@ -9,6 +9,12 @@
         let c_pass = $('#register-c-password').val()
         let firstname = $('#register-firstname').val()
         let lastname = $('#register-lastname').val()
+        let address = $('#register-address').val()
+        let provinceId = $('#province').val()
+        let amphureId = $('#amphure').val()
+        let districtId = $('#district').val()
+        let tel = $('#register-tel').val()
+        
         let option = {
             url: '../view/function/action_register.php',
             type: 'post',
@@ -16,6 +22,11 @@
                 email: email,
                 firstname: firstname,
                 lastname: lastname,
+                address: address,
+                provinceId: provinceId,
+                amphureId: amphureId,
+                districtId: districtId,
+                tel: tel,
                 register: 1
             },
             success: function(res) {
@@ -35,6 +46,11 @@
                     $('#register-c-password').val('')
                     $('#register-firstname').val('')
                     $('#register-lastname').val('')
+                    $('#register-address').val('')
+                    $('#province').val('')
+                    $('#amphure').val('')
+                    $('#district').val('')
+                    $('#register-tel').val('')
                 } else {
                     Swal.fire({
                         position: 'center',

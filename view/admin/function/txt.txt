@@ -1,0 +1,91 @@
+<?php
+require_once('../config/connect.php');
+
+header('Content-Type: application/json'); // Important: Set output to JSON
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Check if all required variables are present
+    if (isset($_POST['banner_id'])) {
+        $bannerId = $_POST['banner_id'];
+
+        // Check if banner name is provided
+        if (isset($_POST['user_firstname'])) {
+            $bannerName = $_POST['user_firstname'];
+
+            // Check if banner image is uploaded
+            if (isset($_FILES['user_img']['name'])) {
+                $bannerImg = $_FILES['user_img']['name'];
+
+                $uploadDir = '../uploads/';
+                $targetFile = $uploadDir . basename($_FILES['user_img']['name']);
+                $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+                $uploadOk = 1;
+
+                // Check file size
+                if ($_FILES['user_img']['size'] > 5000000) {
+                    echo json_encode(['success' => false, 'message' => 'File is too large']);
+                    $uploadOk = 0;
+                }
+
+                // Check image file type
+                if ($imageFileType != 'jpg' && $imageFileType != 'jpeg' && $imageFileType != 'png' && $imageFileType != 'gif') {
+                    echo json_encode(['success' => false, 'message' => 'Only JPG, JPEG, PNG, and GIF files are allowed']);
+                    $uploadOk = 0;
+                }
+
+                if ($uploadOk == 0) {
+                    echo json_encode(['success' => false, 'message' => 'Sorry, your file could not be uploaded']);
+                } else {
+                    if (move_uploaded_file($_FILES['user_img']['tmp_name'], $targetFile)) {
+                        $sql = "UPDATE tb_banner SET banner_name = ?, banner_img = ? WHERE banner_id = ?";
+                        $stmt = $conn->prepare($sql);
+                        $stmt->bind_param("ssi", $bannerName, $targetFile, $bannerId);
+                        $stmt->execute();
+
+                        if ($stmt->affected_rows > 0) {
+                            echo json_encode(['success' => true, 'message' => 'Banner updated successfully']);
+                        } else {
+                            echo json_encode(['success' => false, 'message' => 'No changes were made']);
+                        }
+
+                        $stmt->close();
+                    } else {
+                        echo json_encode(['success' => false, 'message' => 'Failed to upload file']);
+                    }
+                }
+            } else { // Update banner name without image
+                $sql = "UPDATE tb_banner SET banner_name = ? WHERE banner_id = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("si", $bannerName, $bannerId);
+                $stmt->execute();
+
+                if ($stmt->affected_rows > 0) {
+                    echo json_encode(['success' => true, 'message' => 'Banner name updated successfully']);
+                } else {
+                    echo json_encode(['success' => false, 'message' => 'No changes were made']);
+                }
+
+                $stmt->close();
+            }
+        } else { // Update banner image without name
+            if (isset($_FILES['user_img']['name'])) {
+                $bannerImg = $_FILES['user_img']['name'];
+
+                $uploadDir = '../uploads/';
+                $targetFile = $uploadDir . basename($_FILES['user_img']['name']);
+                $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+                $uploadOk = 1;
+
+                // Check file size
+                if ($_FILES['user_img']['size'] > 5000000) {
+                    echo json_encode(['success' => false, 'message' => 'File is too large']);
+                    $uploadOk = 0;
+                }
+
+                // Check image file type
+                if ($imageFileType != 'jpg' && $imageFileType != 'jpeg' && $imageFileType != 'png' && $imageFileType != 'gif') {
+                    echo json_encode(['success' => false, 'message' => 'Only JPG, JPEG, PNG, and GIF files are allowed']);
+                    $uploadOk = 0;
+                }
+
+                if ($uploadOk == 0) {

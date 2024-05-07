@@ -1,33 +1,43 @@
-<link href="https://fastly.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<?php
+require_once('../view/config/connect.php');
+?>
+
+<link href="https://fastly.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="../view/assets/css/style.css">
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap" rel="stylesheet">
 <style>
- @media (max-width: 768px) {
+@media (max-width: 768px) {
     .carousel-inner img {
         width: 1000px;
         height: 250px;
     }
-  }
+}
 </style>
 
-<div id="carnouselExampleControls" class="carousel slide" data-bs-ride="carousel">
-  <div class="carousel-inner">
-    <div class="carousel-item active">
-      <img src="../view/assets/img/banner/banner1.jpg" class="d-block w-100" alt="First slide" width="1280" height="500">
+<div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        <?php
+        $sql = "SELECT * FROM tb_banner";
+        $result = $conn->query($sql);
+        $active = 'active'; // ตัวแปรสำหรับกำหนดไอเทมแรกเป็น active
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                echo '<div class="carousel-item ' . $active . '">';
+                echo '<img src="admin' . $row['banner_img'] . '" class="d-block w-100" alt="Banner" style="object-fit: cover;" width="1000" height="500">';
+                echo '</div>';
+                $active = ''; // ล้างค่าตัวแปร active หลังจากไอเทมแรก
+            }
+        } else {
+            echo '<p>No banners found</p>';
+        }
+        ?>
     </div>
-    <div class="carousel-item">
-      <img src="../view/assets/img/banner/banner2.jpg" class="d-block w-100" alt="Second slide" width="1280" height="500">
-    </div>
-    <div class="carousel-item">
-      <img src="../view/assets/img/banner/banner4.png" class="d-block w-100" alt="Second slide" width="1280" height="500">
-    </div>
-  </div>
-  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Previous</span>
-  </button>
-  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Next</span>
-  </button>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
 </div>

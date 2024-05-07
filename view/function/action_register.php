@@ -2,36 +2,57 @@
 session_start();
 require_once('../config/connect.php');
 
-// ตรวจสอบว่ามีการส่งข้อมูลการลงทะเบียนหรือไม่
+// Check if registration data is sent
 if (isset($_POST['register']) && $_POST['register'] == '1') {
     $email = $_POST['email'];
-    $pass = md5($_POST['pass']);
+    $password = md5($_POST['password']); // Note: Using md5 for demonstration, consider using more secure hashing algorithms
     $firstname = $_POST['firstname'];
     $lastname = $_POST['lastname'];
+    $address = $_POST['address'];
+    $provinceId = $_POST['provinceId'];
+    $amphureId = $_POST['amphureId'];
+    $districtId = $_POST['districtId'];
+    $tel = $_POST['tel'];
 
-    // ตรวจสอบว่าอีเมลนี้มีอยู่แล้วในฐานข้อมูลหรือไม่
-    $check_usr = "SELECT * FROM tb_user WHERE user_email = '$email'";
-    $query = $conn->query($check_usr);
-    if ($query->num_rows >= 1) {
-        echo 'fail';
+    // Check if the email already exists in the database
+    $check_email_query = "SELECT * FROM tb_user WHERE user_email = '$email'";
+    $email_result = $conn->query($check_email_query);
+    if ($email_result->num_rows >= 1) {
+        echo 'fail'; // Email already exists, return 'fail'
     } else {
-        // ถ้าไม่มี, เพิ่มข้อมูลผู้ใช้ใหม่ลงในฐานข้อมูล
-        $sql = "INSERT INTO tb_user(user_firstname,user_lastname,user_email,user_pass,user_type,created_at) VALUES('$firstname','$lastname','$email','$pass',0,NOW())";
-        $conn->query($sql);
+        // If email does not exist, insert the new user data into the database
+        $insert_query = "INSERT INTO tb_user (user_firstname, user_lastname, user_email, user_pass, user_address, province_id, amphure_id, district_id, user_tel, user_type, created_at) 
+                        VALUES ('$firstname', '$lastname', '$email', '$password', '$address', '$provinceId', '$amphureId', '$districtId', '$tel', 0, NOW())";
+        $insert_result = $conn->query($insert_query);
 
-        // หลังจากเพิ่มข้อมูลเรียบร้อย, ตรวจสอบข้อมูลผู้ใช้และกำหนดเซสชั่น
-        $check_pass = $conn->query("SELECT * FROM tb_user WHERE user_email = '$email' AND user_pass = '$pass'");
-        $user = $check_pass->fetch_array();
-        $_SESSION['login'] = true;
-        $_SESSION['user_type'] = 'user';
-        $_SESSION['user_img'] = $user['user_img'];
-        $_SESSION['user_id'] = $user['user_id'];
-        $_SESSION['user_firstname'] = $user['user_firstname'];
-        $_SESSION['user_lastname'] = $user['user_lastname'];
-        $_SESSION['user_email'] = $user['user_email'];
+        if ($insert_result) {
+            // After successful registration, retrieve user data and set session variables
+            $user_query = "SELECT * FROM tb_user WHERE user_email = '$email' AND user_pass = '$password'";
+            $user_result = $conn->query($user_query);
+            if ($user_result->num_rows == 1) {
+                $user = $user_result->fetch_assoc();
+                $_SESSION['login'] = true;
+                $_SESSION['user_type'] = 'user';
+                $_SESSION['user_id'] = $user['user_id'];
+                $_SESSION['user_firstname'] = $user['user_firstname'];
+                $_SESSION['user_lastname'] = $user['user_lastname'];
+                $_SESSION['user_email'] = $user['user_email'];
+                $_SESSION['user_pass'] = $user['user_pass'];
+                $_SESSION['user_address'] = $user['user_address'];
+                $_SESSION['province_id'] = $user['province_id'];
+                $_SESSION['amphure_id'] = $user['amphure_id'];
+                $_SESSION['district_id'] = $user['district_id'];
+                $_SESSION['user_tel'] = $user['user_tel'];
+
+                // You can set more session variables as needed
+            }
+            echo 'success'; // Registration successful
+        } else {
+            echo 'error'; // Error inserting data into the database
+        }
     }
 } else {
-    // ถ้าไม่มีข้อมูลการลงทะเบียนส่งมา, อาจจะรีเดียเรกต์หรือแสดงข้อความข้อผิดพลาด
+    // If no registration data is sent, return 'Invalid request'
     echo 'Invalid request';
 }
 ?>

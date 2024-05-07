@@ -2,7 +2,6 @@ $(function(){
     var provinceObject = $('#province');
     var amphureObject = $('#amphure');
     var districtObject = $('#district');
-    var zipcodeInput = $('#zipcode');
  
     // on change province
     provinceObject.on('change', function(){
@@ -34,7 +33,6 @@ $(function(){
                 districtObject.append(
                     $('<option></option>').val(item.id).html(item.name_th)
                 );
-                zipcodeInput.val(item.zip_code);
             });
         });
     });

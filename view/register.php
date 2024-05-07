@@ -88,12 +88,7 @@ require_once('function/navbar.php');
                                 <option value="" disabled selected><?php echo $lang_districtsph?></option>
                             </select>
                         </div>
-
-                        <div class="mb-3">
-                            <label for="register-address" class="form-label"><?php echo $lang_zipcode?></label>
-                            <input type="text" disabled class="form-control" id="zipcode" name="zipcode_id" required placeholder="<?php echo $lang_zipcode?>">
-                        </div>
-
+                        
                         <div class="mb-3">
                             <label for="register-tel" class="form-label"><?php echo $lang_tel?></label>
                             <input type="text" class="form-control" id="register-tel" name="register-tel" required placeholder="<?php echo $lang_telph?>">

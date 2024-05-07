@@ -34,6 +34,9 @@
         height: 100vh !important;
     }
     </style>
+  
+  
+
 </head>
 <body>
     <?php require_once('function/sidebar.php'); ?>
@@ -131,7 +134,7 @@
                                         <td class="align-middle">
                                             <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModalEdit" onclick="editBanner('<?php echo $row['banner_name']; ?>', '<?php echo $row['banner_img']; ?>')">Edit</button>
 
-                                            <button type="button" class="btn btn-sm btn-danger">Delete</button>
+                                            <button type="button" class="btn btn-sm btn-danger" onclick="editBanner('<?php echo $row['banner_id']; ?>')" >Delete</button>
                                         </td>
                                     </tr>
                                     <?php endwhile; ?>
@@ -184,6 +187,35 @@
         document.getElementById('exampleModalLabel').innerText = 'แก้ไข Banner';
     }
 
+
+    function delBanner(id){
+    let option = {
+        url:'function/action_delbanner.php',
+        type:'post',
+        data:{
+            id:id,
+            delBanner:1
+        },
+        success:function(res){
+            alertsuccess('ลบแบนเนอร์สำเร็จ')
+        }
+    }
+    Swal.fire({
+        title: 'ต้องการลบข้อมูลใช่ไหม?',
+        text: "",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'ตกลง',
+        cancelButtonText: 'ยกเลิก',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax(option)
+        }
+    })
+}
+
     function handleResponse(data, action) {
         if (data.success) {
             Swal.fire({
@@ -215,6 +247,9 @@
             confirmButtonText: 'ตกลง'
         });
     }
+    
+
+
 </script>
 
 </body>
