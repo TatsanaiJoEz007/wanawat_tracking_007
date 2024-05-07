@@ -1,50 +1,68 @@
 <?php
 require_once('../config/connect.php');
 
-header('Content-Type: application/json'); // สำคัญ: กำหนดให้เอาต์พุทเป็น JSON
+header('Content-Type: application/json');
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // ตรวจสอบว่าตัวแปรที่จำเป็นทั้งหมดมีอยู่หรือไม่
-    if (isset($_POST['user_firstname'], $_FILES['user_img']['name'], $_POST['banner_id'])) {
-        $bannerName = $_POST['user_firstname'];
-        $bannerId = $_POST['banner_id'];
-        $bannerImg = $_FILES['user_img']['name'];
-
-        $uploadDir = '../uploads/';
-        $targetFile = $uploadDir . basename($_FILES['user_img']['name']);
-        $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
-        $uploadOk = 1;
-
-        // ตรวจสอบขนาดไฟล์
-        if ($_FILES['user_img']['size'] > 5000000) {
-            echo json_encode(['success' => false, 'message' => 'ไฟล์ใหญ่เกินไป']);
-            $uploadOk = 0;
-        }
-
-        if ($uploadOk == 0) {
-            echo json_encode(['success' => false, 'message' => 'ขออภัย, ไฟล์ของคุณไม่สามารถอัปโหลดได้']);
-        } else {
-            if (move_uploaded_file($_FILES['user_img']['tmp_name'], $targetFile)) {
-                $sql = "UPDATE tb_banner SET banner_name = ?, banner_img = ? WHERE banner_id = ?";
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("ssi", $bannerName, $targetFile, $bannerId);
-                $stmt->execute();
-
-                if ($stmt->affected_rows > 0) {
-                    echo json_encode(['success' => true, 'message' => 'Banner ถูกแก้ไขเรียบร้อยแล้ว']);
-                } else {
-                    echo json_encode(['success' => false, 'message' => 'ไม่มีการเปลี่ยนแปลงข้อมูล']);
-                }
-                $stmt->close();
-            } else {
-                echo json_encode(['success' => false, 'message' => 'ไม่สามารถอัปโหลดไฟล์ได้']);
-            }
-        }
-    } else {
-        echo json_encode(['success' => false, 'message' => 'ข้อมูลไม่ครบถ้วน']);
-    }
-} else {
-    echo json_encode(['success' => false, 'message' => 'Invalid request']);
+// ตรวจสอบว่าเป็น POST request
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    echo json_encode(['success' => false, 'message' => 'Invalid request method']);
+    exit;
 }
+
+$bannerId = $_POST['banner_id'] ?? null;
+$bannerName = $_POST['user_firstname'] ?? null;
+$bannerImage = $_FILES['user_img']['name'] ?? null;
+$uploadOk = 1;
+
+// ที่อยู่ของไฟล์ที่จะเก็บรูปภาพ
+$targetDir = "../uploads/";
+$targetFile = $targetDir . basename($_FILES['user_img']['name']);
+$imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+
+// ตรวจสอบว่าไฟล์เป็นรูปภาพจริงหรือไม่
+if(isset($_POST["submit"])) {
+    $check = getimagesize($_FILES['user_img']['tmp_name']);
+    if($check !== false) {
+        $uploadOk = 1;
+    } else {
+        echo json_encode(['success' => false, 'message' => 'File is not an image.']);
+        $uploadOk = 0;
+    }
+}
+
+// ตรวจสอบขนาดไฟล์
+if ($_FILES['user_img']['size'] > 500000) {
+    echo json_encode(['success' => false, 'message' => 'Sorry, your file is too large.']);
+    $uploadOk = 0;
+}
+
+// อนุญาตเฉพาะบางประเภทของไฟล์
+if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
+&& $imageFileType != "gif" ) {
+    echo json_encode(['success' => false, 'message' => 'Sorry, only JPG, JPEG, PNG & GIF files are allowed.']);
+    $uploadOk = 0;
+}
+
+// ตรวจสอบ $uploadOk ถูกตั้งค่าเป็น 0 หรือไม่
+if ($uploadOk == 0) {
+    echo json_encode(['success' => false, 'message' => 'Sorry, your file was not uploaded.']);
+// ถ้าทุกอย่างเรียบร้อย, ลองอัปโหลดไฟล์
+} else {
+    if (move_uploaded_file($_FILES['user_img']['tmp_name'], $targetFile)) {
+        $stmt = $conn->prepare("UPDATE tb_banner SET banner_name=?, banner_img=? WHERE banner_id=?");
+        $stmt->bind_param("ssi", $bannerName, $targetFile, $bannerId);
+        $stmt->execute();
+
+        if ($stmt->affected_rows > 0) {
+            echo json_encode(['success' => true, 'message' => 'Banner updated successfully']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'No changes were made.']);
+        }
+        $stmt->close();
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Sorry, there was an error uploading your file.']);
+    }
+}
+
 $conn->close();
 ?>

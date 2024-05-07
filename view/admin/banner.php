@@ -159,17 +159,23 @@
     }
 
     function submitEditBannerForm() {
-        var formData = new FormData(document.getElementById('edit_banner'));
-        fetch('function/action_editbanner.php', { // สมมติว่าคุณมี endpoint นี้สำหรับการแก้ไข
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
+    var formData = new FormData(document.getElementById('edit_banner'));
+    $.ajax({
+        url: 'function/action_editbanner.php', // Replace with your actual script URL
+        method: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        dataType: 'json',
+        success: function(data) {
             handleResponse(data, 'แก้ไข');
-        })
-        .catch(handleError);
-    }
+        },
+        error: function(error) {
+            handleError(error);
+        }
+    });
+}
+
 
     function editBanner(name, img) {
         document.getElementById('edit_user_firstname').value = name;

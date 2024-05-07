@@ -2,6 +2,11 @@
 <html lang="en">
 <head>
 <?php require_once('function/head.php'); ?>
+<?php 
+    require_once('config/connect.php'); 
+    $sql = "SELECT * FROM provinces";
+    $query = mysqli_query($conn, $sql);
+?>
 <style>
     body {
         background-color: #f8f9fa; /* Light grey background */
@@ -36,15 +41,15 @@ require_once('function/navbar.php');
                     <form action="#" id="register" method="post">
                         <div class="mb-3">
                             <label for="register-email" class="form-label"><?php echo $lang_fristname?></label>
-                            <input type="text" class="form-control" id="register-name" name="register-name" require placeholder="<?php echo $lang_fristname?>">
+                            <input type="text" class="form-control" id="register-name" name="register-firstname" require placeholder="<?php echo $lang_fristname?>">
                         </div>
                         <div class="mb-3">
                             <label for="register-email" class="form-label"><?php echo $lang_lastname?></label>
-                            <input type="text" class="form-control" id="register-name" name="register-name" require placeholder="<?php echo $lang_lastname?>">
+                            <input type="text" class="form-control" id="register-lastname" name="register-lastname" require placeholder="<?php echo $lang_lastname?>">
                         </div>
                         <div class="mb-3">
                             <label for="register-email" class="form-label"><?php echo $lang_email?></label>
-                            <input type="email" class="form-control" id="register-email" name="register-name" require placeholder="<?php echo $lang_email?>">
+                            <input type="email" class="form-control" id="register-email" name="register-email" require placeholder="<?php echo $lang_email?>">
                         </div>
                         <div class="mb-3">
                             <label for="register-password" class="form-label"><?php echo $lang_password?></label>
@@ -56,45 +61,37 @@ require_once('function/navbar.php');
                         </div>
                         <div class="mb-3">
                             <label for="register-address" class="form-label"><?php echo $lang_address?></label>
-                            <input type="text" class="form-control" id="register-address" name="register-address" required placeholder="<?php echo $lang_addressph?>">
+                            <textarea type="text" class="form-control" id="register-address" name="register-address" required placeholder="<?php echo $lang_addressph?>"></textarea>
                         </div>
 
                         <div class="mb-3">
                             <label for="register-country" class="form-label"><?php echo $lang_provinces?></label>
-                            <select class="form-select" id="register-country" name="register-country" required>
+                            <select class="form-select" id="province" name="province_id" required>
                                 <option value="" disabled selected><?php echo $lang_provincesph?></option>
-                                <option value="USA">United States</option>
-                                <option value="UK">United Kingdom</option>
-                                <option value="Canada">Canada</option>
-                                <!-- Add more options as needed -->
+                                <?php while($result = mysqli_fetch_assoc($query)): ?>
+                                    <option value="<?=$result['id']?>"><?=$result['name_th']?></option>
+                                <?php endwhile; ?>
                             </select>
                         </div>
 
                         <div class="mb-3">
                             <label for="register-country" class="form-label"><?php echo $lang_amphures?></label>
-                            <select class="form-select" id="register-country" name="register-country" required>
+                            <select class="form-select" id="amphure" name="amphure_id" required>
                                 <option value="" disabled selected><?php echo $lang_amphuresph?></option>
-                                <option value="USA">United States</option>
-                                <option value="UK">United Kingdom</option>
-                                <option value="Canada">Canada</option>
-                                <!-- Add more options as needed -->
+        
                             </select>
                         </div>
 
                         <div class="mb-3">
                             <label for="register-country" class="form-label"><?php echo $lang_districts?></label>
-                            <select class="form-select" id="register-country" name="register-country" required>
+                            <select class="form-select" id="district" name="district_id" required>
                                 <option value="" disabled selected><?php echo $lang_districtsph?></option>
-                                <option value="USA">United States</option>
-                                <option value="UK">United Kingdom</option>
-                                <option value="Canada">Canada</option>
-                                <!-- Add more options as needed -->
                             </select>
                         </div>
 
                         <div class="mb-3">
                             <label for="register-address" class="form-label"><?php echo $lang_zipcode?></label>
-                            <input type="text" disabled class="form-control" id="register-address" name="register-address" required placeholder="<?php echo $lang_zipcode?>">
+                            <input type="text" disabled class="form-control" id="zipcode" name="zipcode_id" required placeholder="<?php echo $lang_zipcode?>">
                         </div>
 
                         <div class="mb-3">
@@ -115,11 +112,11 @@ require_once('function/navbar.php');
 </div>
 <?php require_once('function/function_register.php'); ?>
 <script src="https://fastly.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="../view/assets/js/script.js"></script>
 <br><br><br>
 </body>
-
-
-
-
-
 </html>
+
+<?php
+mysqli_close($conn);

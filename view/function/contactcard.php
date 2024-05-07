@@ -30,7 +30,7 @@
     .contact-card:hover {
         transform: scale(1.05);
         box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-        background-color: #feede8;
+        background-color: #F1F1F1;
         /* Change to desired hover background color */
     }
 

@@ -8,8 +8,19 @@
 <body>
     <?php require_once('function/navbar.php'); ?>
 
+    <br><br>
     <?php require_once('function/contactcard.php'); ?>
 
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
     <footer>
         <?php require_once('function/footer.php'); ?>
     </footer>

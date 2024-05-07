@@ -2,7 +2,7 @@
 $host = "localhost";
 $username = "root";
 $pass = "";
-$db = "wanawat_project";
+$db = "wanawat_tracking";
 $conn = new mysqli($host,$username,$pass,$db);
 $conn->set_charset("utf8");
 date_default_timezone_set('Asia/bangkok');

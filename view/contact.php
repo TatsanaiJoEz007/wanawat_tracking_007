@@ -7,6 +7,8 @@
 
 <body>
     <?php require_once('function/navindex.php'); ?>
+    
+    <br><br>
 
     <?php require_once('function/contactcard.php'); ?>
     <br>
