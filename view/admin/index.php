@@ -1,4 +1,4 @@
-<?php require_once('function/check_auth.php');  ?>
+<?php require_once('function/check_auth.php');  ?>    
 
 
 <!DOCTYPE html>

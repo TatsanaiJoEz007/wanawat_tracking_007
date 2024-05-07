@@ -40,7 +40,7 @@ if (isset($_POST['login'])) {
             echo 'close';
         }
     } else {
-        echo 'fail';
+        echo 'failuser';
     }
     $stmt->close();
 }
