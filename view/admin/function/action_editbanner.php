@@ -1,6 +1,6 @@
 <?php
 // config.php file should contain the database connection settings
-require_once('../config/connect.php');
+require_once('../../config/connect.php');
 
 // Set the content type to JSON
 header('Content-Type: application/json');

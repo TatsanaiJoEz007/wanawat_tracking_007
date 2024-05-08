@@ -21,6 +21,7 @@
     .form-link {
         color: #F0592E; /* Custom orange color for links */
     }
+
 </style>
 
 </head>
@@ -40,11 +41,11 @@ require_once('function/navbar.php');
                     <h4 class="card-title text-center mb-4"><?php echo $lang_register?></h4>
                     <form action="#" id="register" method="post">
                         <div class="mb-3">
-                            <label for="register-email" class="form-label"><?php echo $lang_fristname?></label>
-                            <input type="text" class="form-control" id="register-name" name="register-firstname" require placeholder="<?php echo $lang_fristname?>">
+                            <label for="register-firstname" class="form-label"><?php echo $lang_fristname?></label>
+                            <input type="text" class="form-control" id="register-firstname" name="register-firstname" require placeholder="<?php echo $lang_fristname?>">
                         </div>
                         <div class="mb-3">
-                            <label for="register-email" class="form-label"><?php echo $lang_lastname?></label>
+                            <label for="register-lastname" class="form-label"><?php echo $lang_lastname?></label>
                             <input type="text" class="form-control" id="register-lastname" name="register-lastname" require placeholder="<?php echo $lang_lastname?>">
                         </div>
                         <div class="mb-3">
@@ -56,7 +57,7 @@ require_once('function/navbar.php');
                             <input type="password" class="form-control" id="register-password" name="register-password" required placeholder="<?php echo $lang_password?>">
                         </div>
                         <div class="mb-3">
-                            <label for="register-password" class="form-label"><?php echo $lang_confirmPassword?></label>
+                            <label for="register-c-password" class="form-label"><?php echo $lang_confirmPassword?></label>
                             <input type="password" class="form-control" id="register-c-password" name="register-c-password" required placeholder="<?php echo $lang_confirmPassword?>">
                         </div>
                         <div class="mb-3">
@@ -105,7 +106,7 @@ require_once('function/navbar.php');
         </div>
     </div>
 </div>
-<?php require_once('function/function_register.php'); ?>
+<?php require_once('function/function_register2.php'); ?>
 <script src="https://fastly.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="../view/assets/js/script.js"></script>
@@ -115,3 +116,4 @@ require_once('function/navbar.php');
 
 <?php
 mysqli_close($conn);
+?>
