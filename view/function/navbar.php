@@ -1,7 +1,7 @@
 <?php require_once('th_eng.php'); ?>
 <head>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-beta1/css/bootstrap.min.css">
     <style>
+        
         .navbar.navbar-expand-lg.navbar-light .navbar-nav .nav-link {
             color: white !important;    
         }
@@ -15,6 +15,7 @@
             margin-left: 10px;
             cursor: pointer;
         }
+        
     </style>
 </head>
 <body>

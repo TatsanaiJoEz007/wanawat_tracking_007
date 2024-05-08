@@ -82,35 +82,6 @@
                             </div>
                         </div>
 
-                             <!-- Modal Edit-->
-                             <div class="modal fade" id="exampleModalEdit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel">แก้ไข Banner</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                    <form id="edit_banner" method="post" enctype="multipart/form-data">
-                                        <div class="mb-3">
-                                            <label for="edit_user_firstname" class="form-label">ชื่อ</label>
-                                            <input type="text" class="form-control" id="edit_user_firstname" name="user_firstname" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="edit_user_img" class="form-label">รูปภาพ</label>
-                                            <input type="file" class="form-control" id="edit_user_img" name="user_img" required>
-                                            <img id="edit_img_preview" src="#" alt="Banner Image Preview" style="max-width: 100%; max-height: 200px; margin-top: 10px; display: none;">
-                                        </div>
-                                    </form>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
-                                        <button type="button" class="btn btn-primary" onclick="submitEditBannerForm()">บันทึกข้อมูล</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                         <!-- Table of Banners -->
                         <div class="table-responsive">
                             <table class="table table-striped" id="Tableall">
@@ -134,9 +105,9 @@
                                         <td class="align-middle"><?php echo $row['banner_name']; ?></td>
                                         <td class="align-middle"><img src="assets/<?php echo $row['banner_img']; ?>" alt="Banner Image" style="object-fit: cover;" width="100%" height="140" ></td>
                                         <td class="align-middle">
-                                            <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModalEdit" onclick="editBanner('<?php echo $row['banner_name']; ?>', '<?php echo $row['banner_img']; ?>')">Edit</button>
+                                            
 
-                                            <button type="button" class="btn btn-sm btn-danger" onclick="editBanner('<?php echo $row['banner_id']; ?>')" >Delete</button>
+                                            <button type="button" class="btn btn-sm btn-danger" onclick="delBanner('<?php echo $row['banner_id']; ?>')" >Delete</button>
                                         </td>
                                     </tr>
                                     <?php endwhile; ?>
@@ -181,27 +152,40 @@
     });
 }
 
-
-    function editBanner(name, img) {
-        document.getElementById('edit_user_firstname').value = name;
-        document.getElementById('edit_img_preview').src = 'assets/' + img;
-        document.getElementById('edit_img_preview').style.display = 'block';
-        document.getElementById('exampleModalLabel').innerText = 'แก้ไข Banner';
-    }
-
-
-    function delBanner(id){
+function delBanner(id){
     let option = {
-        url:'function/action_delbanner.php',
-        type:'post',
-        data:{
-            id:id,
-            delBanner:1
+        url: 'function/action_delbanner.php',
+        type: 'post',
+        data: {
+            id: id,
+            delBanner: 1
         },
-        success:function(res){
-            alertsuccess('ลบแบนเนอร์สำเร็จ')
+        success: function(res) {
+            // Display success message using Swal.fire
+            Swal.fire({
+                title: 'Success!',
+                text: 'ลบแบนเนอร์สำเร็จ',
+                icon: 'success',
+                confirmButtonText: 'ตกลง'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    location.reload(); // Reload the page after successful deletion
+                }
+            });
+        },
+        error: function(xhr, status, error) {
+            // Display error message using Swal.fire
+            Swal.fire({
+                title: 'Error!',
+                text: 'เกิดข้อผิดพลาดในการลบแบนเนอร์',
+                icon: 'error',
+                confirmButtonText: 'ตกลง'
+            });
+            console.error(xhr.responseText); // Log the error response for debugging
         }
-    }
+    };
+
+    // Show confirmation dialog before proceeding with the deletion
     Swal.fire({
         title: 'ต้องการลบข้อมูลใช่ไหม?',
         text: "",
@@ -213,12 +197,15 @@
         cancelButtonText: 'ยกเลิก',
     }).then((result) => {
         if (result.isConfirmed) {
-            $.ajax(option)
+            // Proceed with AJAX request to delete the banner
+            $.ajax(option);
         }
-    })
+    });
 }
 
+
     function handleResponse(data, action) {
+        console.log(data);
         if (data.success) {
             Swal.fire({
                 title: 'Success!',
@@ -249,8 +236,6 @@
             confirmButtonText: 'ตกลง'
         });
     }
-    
-
 
 </script>
 

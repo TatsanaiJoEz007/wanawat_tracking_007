@@ -10,7 +10,8 @@
 <script src="https://fastly.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
     body {
-        font-family: 'Kanit', sans-serif;
+        font-family: 'Kanit', sans-serif !important;
+        font-weight: bold !important;
     }
 </style>
 </head>
