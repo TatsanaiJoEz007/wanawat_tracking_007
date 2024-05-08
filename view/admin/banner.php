@@ -40,7 +40,7 @@
 
 </head>
 <body>
-    <?php require_once('function/sidebar.php'); ?>
+    <?php require_once('function/sidebar3.php'); ?>
 
     <h1 class="app-page-title">Banner</h1>
     <hr class="mb-4">
@@ -236,6 +236,8 @@ function delBanner(id){
             confirmButtonText: 'ตกลง'
         });
     }
+
+
 
 </script>
 

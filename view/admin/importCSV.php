@@ -11,11 +11,6 @@
   body {
     font-family: 'Kanit', sans-serif;
     background-color: #f4f4f4;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
 }
 
 .container {
@@ -98,9 +93,25 @@ h1 {
     color: #0056b3;
 }
 
+@media screen and (max-width: 768px) {
+  /* Styles for screens smaller than 768px wide */
+  .container {
+    width: 90%;
+  }
+  .file-upload-label {
+    font-size: 12px;
+  }
+}
+
+
+
+
+
+
+
 </style>
 
-<?php require_once('function/sidebar.php');  ?>
+<?php require_once('function/sidebar3.php');  ?>
 <body>
     
 

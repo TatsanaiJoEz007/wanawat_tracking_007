@@ -12,12 +12,12 @@
 
 </head>
 <body>
-    <?php require_once('function/sidebar.php'); ?>
-    <br><br><br>
+    <?php require_once('function/sidebar3.php'); ?>
+    
     <?php require_once('function/box.php'); ?>
-    <br>
+   
     <?php require_once('function/graph.php'); ?>
-    <br><br>
+    
 </body>
 
 </html>

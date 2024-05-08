@@ -12,6 +12,6 @@
     <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
 </head>
 <body>
-<?php require_once('function/sidebar.php');  ?>
+<?php require_once('function/sidebar3.php');  ?>
 </body>
 </html>

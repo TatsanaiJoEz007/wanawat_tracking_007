@@ -2,7 +2,7 @@
         /* Add your custom styles here */
         body {
             padding-top: 20px;
-            background-color: #f4f6f9;
+          
         }
         .small-box {
             margin-bottom: 20px;

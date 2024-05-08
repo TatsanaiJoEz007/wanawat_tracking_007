@@ -1,3 +1,4 @@
+<?php require_once ('../config/connect.php'); ?>
 <!DOCTYPE html>
 <html lang="th">
 
@@ -9,6 +10,7 @@
     <!-- เรียกใช้ Bootstrap CSS จาก CDN -->
     <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <style>
         .container {
             max-width: 800px;
@@ -77,9 +79,11 @@
             padding: 5px;
             width: 100%;
             min-height: 100px;
-            resize: vertical; /* Allow vertical resizing */
+            resize: vertical;
+            /* Allow vertical resizing */
             border-radius: 10px;
-            transition: none; /* Remove transition */
+            transition: none;
+            /* Remove transition */
         }
 
         .submit-btn {
@@ -89,53 +93,76 @@
 </head>
 
 <body>
-    <?php require_once('function/sidebar.php'); ?>
+    <?php require_once ('function/sidebar3.php'); ?>
     <div class="container">
-        <br>
-        <h1>คำถามที่พบบ่อย</h1>
-        <div class="accordion-container">
-            <div class="accordion">
-                หากสินค้าขึ้นสถานะว่ากำลังนำส่งหมายถึงอะไร?
-                <i class="bi bi-pencil edit-icon"></i>
-                <i class="bi bi-caret-down"></i>
-            </div>
-            <div class="panel">
-                <div class="panel-content">
-                    <div class="box-widget">
-                        <textarea class="editable">&nbsp;&nbsp;&nbsp; สถานะ "กำลังนำส่งนั้น" หมายถึง ขณะนี้สินค้ากำลังไปส่งให้ถึงมือคุณลูกค้าตามที่อยู่ที่ลูกค้าระบุไว้ และจะถึงภายในวันที่ขึ้นสถานะ</textarea>
-                        <button class="btn btn-primary submit-btn">Submit Edit</button>
-                    </div>
-                </div>
-            </div>
+        <!-- Button to trigger modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            เพิ่มคำถามที่พบบ่อย
+        </button>
 
-            <div class="accordion">
-                หากสินค้าไม่ขึ้นสถานะหลังจากกดสั่งซื้อ หมายถึงอะไร?
-                <i class="bi bi-pencil edit-icon"></i>
-                <i class="bi bi-caret-down"></i>
-            </div>
-            <div class="panel">
-                <div class="panel-content">
-                    <div class="box-widget">
-                        <textarea class="editable">บลาๆๆๆๆ</textarea>
-                        <button class="btn btn-primary submit-btn">Submit Edit</button>
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">เพิ่มข้อมูล</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                </div>
-            </div>
+                    <div class="modal-body">
 
-            <div class="accordion">
-                เลข Tracking นำมาจากไหน?
-                <i class="bi bi-pencil edit-icon"></i>
-                <i class="bi bi-caret-down"></i>
-            </div>
-            <div class="panel">
-                <div class="panel-content">
-                    <div class="box-widget">
-                        <textarea class="editable">บลาๆๆๆ</textarea>
-                        <button class="btn btn-primary submit-btn">Submit Edit</button>
+                        <form action="function/addfreq.php" id="add" method="post">
+                            <div class="mb-3">
+                                <label for="user_firstname" class="form-label">หัวข้อ</label>
+                                <input type="text" class="form-control" id="freq_header" name="freq_header" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="user_lastname" class="form-label">เนื้อหา</label>
+                                <input type="text" class="form-control" id="freq_content" name="freq_content" required>
+                            </div>
+                        </form>
+
+
+
                     </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+                        <button type="submit" form="add" class="btn btn-primary">บันทึกข้อมูล</button>
+                    </div>
+
                 </div>
             </div>
-            <!-- Add more questions here -->
+        </div>
+
+        <!-- Table of Users -->
+        <div class="table-responsive">
+            <table class="table table-striped" id="Tableall">
+                <thead>
+                    <tr>
+                        <th scope="col" style="text-align: center;">#</th>
+                        <th scope="col" style="text-align: center;">หัวข้อคำถาม</th>
+                        <th scope="col" style="text-align: center;">คำตอบ</th>
+                        <th scope="col" style="text-align: center;">เมนู</th>
+                    </tr>
+                </thead>
+                <tbody class="text-center">
+                    <?php
+                    $i = 1;
+                    $sql = "SELECT * FROM tb_freq";
+                    $query = $conn->query($sql);
+                    foreach ($query as $row):
+                        ?>
+                        <tr>
+                            <td><?php echo $i++; ?></td>
+                            <td class="align-middle"><?php echo $row['freq_header'] ?></td>
+                            <td class="align-middle"><?php echo $row['freq_content'] ?></td>
+                            <td class="align-middle">
+                                <a href=""  class="btn btn-sm btn-warning">Edit</a>
+                                <a href="" onclick="delFreq('<?php echo $row['freq_id']; ?>')" class="btn btn-sm btn-danger">Delete</a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -155,7 +182,62 @@
                 }
             });
         }
+
+        function delFreq(id) {
+            let option = {
+                url: 'function/delfreq.php',
+                type: 'post',
+                data: {
+                    id: id,
+                    delBanner: 1
+                },
+                success: function (res) {
+                    // Display success message using Swal.fire
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'ลบคำถามสำเร็จ',
+                        icon: 'success',
+                        confirmButtonText: 'ตกลง'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            location.reload(); // Reload the page after successful deletion
+                        }
+                    });
+                },
+                error: function (xhr, status, error) {
+                    // Display error message using Swal.fire
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'เกิดข้อผิดพลาดในการลบคำถาม',
+                        icon: 'error',
+                        confirmButtonText: 'ตกลง'
+                    });
+                    console.error(xhr.responseText); // Log the error response for debugging
+                }
+            };
+
+            // Show confirmation dialog before proceeding with the deletion
+            Swal.fire({
+                title: 'ต้องการลบข้อมูลใช่ไหม?',
+                text: "",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'ตกลง',
+                cancelButtonText: 'ยกเลิก',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Proceed with AJAX request to delete the banner
+                    $.ajax(option);
+                }
+            });
+        }
+
+       
     </script>
+    <script src="function/func_addfreq.php"></script>
+    <script src="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

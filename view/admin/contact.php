@@ -31,7 +31,7 @@
     </style>
 </head>
 <body>
-    <?php require_once('function/sidebar.php'); ?>
+    <?php require_once('function/sidebar3.php'); ?>
     
     <div class="container">
         <br>

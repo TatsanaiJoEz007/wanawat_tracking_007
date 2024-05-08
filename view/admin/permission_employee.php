@@ -34,15 +34,16 @@
         width: 100vw !important;
         height: 100vh !important;
     }
+    
 </style>
 
 
 
 </head>
 <body>
-    <?php require_once('function/sidebar.php'); ?>
+    <?php require_once('function/sidebar3.php'); ?>
 
-    <h1 class="app-page-title">ตารางข้อมูลผู้ใช้งาน</h1>
+    <h1 class="app-page-title">ตารางข้อมูลผู้ใช้งาน - Employee</h1>
     <hr class="mb-4">
     <div class="container">
         <div class="row g-4 settings-section">
@@ -51,7 +52,7 @@
                     <div class="app-card-body">
                         <!-- Button to trigger modal -->
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            เพิ่มผู้ดูแลระบบ
+                            เพิ่มพนักในระบบ
                         </button>
 
                         <!-- Modal -->
@@ -87,7 +88,7 @@
                                             </div>
                                             <div class="mb-3">
                                                 <label for="status" class="form-label">สถานะ</label>
-                                                <select class="form-select" id="status" name="status" required>
+                                                <select class="form-select" id="user_status" name="user_status" required>
                                                     <option value="1">อยู่ในระบบ</option>
                                                     <option value="0">ไม่อยู่ในระบบ</option>
                                                 </select>
@@ -125,7 +126,7 @@
                                 <tbody class="text-center">
                                     <?php
                                     $i = 1;
-                                    $sql = "SELECT * FROM tb_user WHERE user_type = 999 ";
+                                    $sql = "SELECT * FROM tb_user WHERE user_type = 1 ";
                                     $query = $conn->query($sql);
                                     foreach($query as $row):
                                     ?>
@@ -136,7 +137,7 @@
                                         <td class="align-middle"><?php echo $row['user_lastname']?></td>
                                         <td class="align-middle"><?php echo $row['user_email']?></td>
                                         <td class="align-middle"><?php echo md5($row['user_pass']); ?></td>
-                                        <td class="align-middle"><?php echo ($row['status'] == 1) ? "อยู่ในระบบ" : "ไม่อยู่ในระบบ"; ?></td>
+                                        <td class="align-middle"><?php echo ($row['user_status'] == 1) ? "อยู่ในระบบ" : "ไม่อยู่ในระบบ"; ?></td>
                                         <td class="align-middle">
                                             <a href="#" class="btn btn-sm btn-warning">Edit</a>
                                             <a href="#" class="btn btn-sm btn-secondary">Reset Password</a>
