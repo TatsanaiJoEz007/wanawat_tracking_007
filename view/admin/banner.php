@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
     <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="js\jquery-3..1.min.js"></script>
     <style>
     /* ปรับแต่ง modal ให้อยู่ตรงกลางจอ */
     .modal-dialog {
@@ -123,6 +124,7 @@
                                 </thead>
                                 <tbody class="text-center">
                                     <?php
+                                    include('../config/connect.php');
                                     $sql = "SELECT * FROM tb_banner";
                                     $query = $conn->query($sql);
                                     while ($row = $query->fetch_assoc()) :
@@ -148,7 +150,7 @@
     </div>
     <script src="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    function submitBannerForm() {
+  function submitBannerForm() {
         var formData = new FormData(document.getElementById('upload_banner'));
         fetch('function/action_uploadbanner.php', {
             method: 'POST',
@@ -251,6 +253,7 @@
 
 
 </script>
+
 
 </body>
 </html>
