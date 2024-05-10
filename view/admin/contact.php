@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <title>Dashboard</title>
     <meta charset="utf-8">
@@ -20,7 +21,8 @@
             padding: 20px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            position: relative; /* Needed for positioning button */
+            position: relative;
+            /* Needed for positioning button */
         }
 
         .send-email-btn {
@@ -30,13 +32,14 @@
         }
     </style>
 </head>
+
 <body>
-    <?php require_once('function/sidebar3.php'); ?>
-    
+    <?php require_once ('function/sidebar3.php'); ?>
+
     <div class="container">
         <br>
         <h2>คำถาม และปัญหาในการใช้งาน</h2>
-        
+
         <!-- Display bug reports -->
         <div>
             <?php
@@ -60,4 +63,5 @@
         </div>
     </div>
 </body>
+
 </html>

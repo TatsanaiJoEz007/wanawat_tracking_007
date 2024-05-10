@@ -3,7 +3,7 @@ require_once('../../config/connect.php');
 
 header('Content-Type: application/json');
 
-// Check if form is submitted
+// Check if form data is received through POST method
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Retrieve form data
     $freq_header = $_POST['freq_header'];
@@ -11,24 +11,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Check if form fields are not empty
     if (!empty($freq_header) && !empty($freq_content)) {
-        $sql = "INSERT INTO tb_freq (freq_header, freq_content, freq_create_at, freq_status) VALUES (?, ?, CURRENT_TIMESTAMP(), '1')";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ss", $freq_header, $freq_content); // Fixed binding parameters
+        $stmt = $conn->prepare("INSERT INTO tb_freq (freq_header, freq_content, freq_create_at, freq_status) VALUES (?, ?, CURRENT_TIMESTAMP(), '1')");
+        $stmt->bind_param("ss", $freq_header, $freq_content);
+        $stmt->execute();
 
-        // Execute the statement
-        if ($stmt->execute()) {
-            $response = ['success' => true, 'message' => 'Data inserted successfully.'];
+        // Check if data is inserted successfully
+        if ($stmt->affected_rows > 0) {
+            echo json_encode(['success' => true]);
         } else {
-            $response = ['success' => false, 'message' => 'Failed to insert data into database'];
+            echo json_encode(['success' => false, 'message' => 'Failed to save data to the database.']);
         }
+
         $stmt->close();
     } else {
-        $response = ['success' => false, 'message' => 'Form fields cannot be empty'];
+        echo json_encode(['success' => false, 'message' => 'Form data is incomplete.']);
     }
-    echo json_encode($response);
 } else {
-    $response = ['success' => false, 'message' => 'Invalid request'];
-    echo json_encode($response);
+    echo json_encode(['success' => false, 'message' => 'Invalid request method.']);
 }
 
 $conn->close();

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <title>Dashboard</title>
     <meta charset="utf-8">
@@ -11,13 +12,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 </head>
+
 <body>
-    <?php require_once('function/sidebar3.php'); ?>
-    
-    <?php require_once('function/box.php'); ?>
-   
-    <?php require_once('function/graph.php'); ?>
-    
+    <?php require_once ('function/sidebar3.php'); ?>
+
+    <?php require_once ('function/box.php'); ?>
+
+    <?php require_once ('function/graph.php'); ?>
+
 </body>
 
 </html>

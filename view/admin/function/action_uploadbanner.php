@@ -14,7 +14,8 @@ if (move_uploaded_file($_FILES['user_img']['tmp_name'], $target_file)) {
     $stmt = $conn->prepare("INSERT INTO tb_banner (banner_name, banner_img) VALUES (?, ?)");
     $stmt->bind_param("ss", $bannerName, $target_file);
     $stmt->execute();
-    if ($stmt->affected_rows > 0) {
+    if ($stmt->affected_rows > 0) 
+    {
         echo json_encode(['success' => true]);
     } else {
         echo json_encode(['success' => false, 'message' => 'ไม่สามารถบันทึกข้อมูลลงฐานข้อมูลได้']);

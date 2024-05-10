@@ -6,14 +6,16 @@
     <title>Manage - Question</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
-
     <!-- เรียกใช้ Bootstrap CSS จาก CDN -->
     <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
     <style>
         .container {
-            max-width: 800px;
+            max-width: 1300px;
             margin: 0 auto;
             padding: 0 15px;
         }
@@ -89,6 +91,19 @@
         .submit-btn {
             margin-top: 10px;
         }
+
+        .table-scrollable {
+            max-height: 800px;
+            /* ปรับความสูงตามที่ต้องการ */
+            overflow-y: scroll;
+        }
+
+        /* หากต้องการให้ตารางเลื่อนตามความกว้างของหน้าจอ */
+        @media (max-width: 100px) {
+            .table-scrollable {
+                overflow-x: auto;
+            }
+        }
     </style>
 </head>
 
@@ -98,7 +113,7 @@
         <!-- Button to trigger modal -->
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
             เพิ่มคำถามที่พบบ่อย
-        </button>
+        </button> <br><br>
 
         <!-- Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -120,13 +135,10 @@
                                 <input type="text" class="form-control" id="freq_content" name="freq_content" required>
                             </div>
                         </form>
-
-
-
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
-                        <button type="submit" form="add" class="btn btn-primary">บันทึกข้อมูล</button>
+                        <button type="button" class="btn btn-primary" onclick="submitFreqForm()">บันทึกข้อมูล</button>
                     </div>
 
                 </div>
@@ -134,7 +146,7 @@
         </div>
 
         <!-- Table of Users -->
-        <div class="table-responsive">
+        <div class="table-responsive table-scrollable">
             <table class="table table-striped" id="Tableall">
                 <thead>
                     <tr>
@@ -156,8 +168,9 @@
                             <td class="align-middle"><?php echo $row['freq_header'] ?></td>
                             <td class="align-middle"><?php echo $row['freq_content'] ?></td>
                             <td class="align-middle">
-                                <a href=""  class="btn btn-sm btn-warning">Edit</a>
-                                <a href="" onclick="delFreq('<?php echo $row['freq_id']; ?>')" class="btn btn-sm btn-danger">Delete</a>
+                                <a href="" class="btn btn-sm btn-warning">Edit</a>
+                                <a href="" onclick="delFreq('<?php echo $row['freq_id']; ?>')"
+                                    class="btn btn-sm btn-danger">Delete</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -182,62 +195,54 @@
                 }
             });
         }
-
-        function delFreq(id) {
-            let option = {
-                url: 'function/delfreq.php',
-                type: 'post',
-                data: {
-                    id: id,
-                    delBanner: 1
-                },
-                success: function (res) {
-                    // Display success message using Swal.fire
-                    Swal.fire({
-                        title: 'Success!',
-                        text: 'ลบคำถามสำเร็จ',
-                        icon: 'success',
-                        confirmButtonText: 'ตกลง'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            location.reload(); // Reload the page after successful deletion
-                        }
-                    });
-                },
-                error: function (xhr, status, error) {
-                    // Display error message using Swal.fire
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'เกิดข้อผิดพลาดในการลบคำถาม',
-                        icon: 'error',
-                        confirmButtonText: 'ตกลง'
-                    });
-                    console.error(xhr.responseText); // Log the error response for debugging
-                }
-            };
-
-            // Show confirmation dialog before proceeding with the deletion
-            Swal.fire({
-                title: 'ต้องการลบข้อมูลใช่ไหม?',
-                text: "",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'ตกลง',
-                cancelButtonText: 'ยกเลิก',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Proceed with AJAX request to delete the banner
-                    $.ajax(option);
-                }
-            });
+    </script>
+    <script>
+        function submitFreqForm() {
+            var formData = new FormData(document.getElementById('add')); // Corrected form ID
+            fetch('function/addfreq.php', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    handleResponse(data, 'เพิ่ม');
+                })
+                .catch(handleError);
         }
 
-       
+        function handleResponse(data, action) {
+            console.log(data);
+            if (data.success) {
+                Swal.fire({
+                    title: 'Success!',
+                    text: `FAQ ถูก${action}เรียบร้อยแล้ว`,
+                    icon: 'success',
+                    confirmButtonText: 'ตกลง'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        location.reload();
+                    }
+                });
+            } else {
+                Swal.fire({
+                    title: 'Error!',
+                    text: `เกิดข้อผิดพลาดในการ${action} FAQ`,
+                    icon: 'error',
+                    confirmButtonText: 'ตกลง'
+                });
+            }
+        }
+
+        function handleError(error) {
+            console.error('Error:', error);
+            Swal.fire({
+                title: 'Error!',
+                text: 'เกิดข้อผิดพลาดในการสื่อสารกับเซิร์ฟเวอร์',
+                icon: 'error',
+                confirmButtonText: 'ตกลง'
+            });
+        }
     </script>
-    <script src="function/func_addfreq.php"></script>
-    <script src="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

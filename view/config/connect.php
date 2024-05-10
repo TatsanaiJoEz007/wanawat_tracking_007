@@ -1,7 +1,7 @@
 <?php 
 $host = "localhost";
 $username = "root";
-$pass = "123";
+$pass = "";
 $db = "wanawat_tracking";
 $conn = new mysqli($host,$username,$pass,$db);
 $conn->set_charset("utf8");
