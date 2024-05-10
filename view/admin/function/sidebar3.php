@@ -388,7 +388,7 @@
           <li><a class="link_name" href="#">Manage Web</a></li>
           <li><a href="../admin/banner">Banner</a></li>
           <li><a href="../admin/contact.php">Contact</a></li>
-          <li><a href="../admin/question.php">Question</a></li>
+          <li><a href="../admin/question2.php">Question</a></li>
         </ul>
       </li>
       <li>

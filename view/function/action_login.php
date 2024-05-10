@@ -1,47 +1,101 @@
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <?php
-session_start();
+header('Content-Type: application/json');
 require_once('../config/connect.php');
 
-if (isset($_POST['login'])) {
-    $email = $_POST['email'];
-    $pass = md5($_POST['password']);
+if (!isset($_SESSION)) {
+    session_start(); //เช็ค Event Session_start จาก config/connect.php
+}
 
-    // Using prepared statements to prevent SQL injection
-    $stmt = $conn->prepare("SELECT * FROM tb_user WHERE user_username = ? AND user_pass = ?");
-    $stmt->bind_param("ss", $email, $pass);
-    $stmt->execute();
-    $result = $stmt->get_result();
 
-    if ($result->num_rows == 1) {
-        $user = $result->fetch_assoc();
-        if ($user['status'] != 0) {
-            $_SESSION['login'] = true;
-            if (isset($user['User_ID'])) {
-                $_SESSION['user_id'] = $user['User_ID'];
-            }
-            if (isset($user['user_img'])) {
-                $_SESSION['user_img'] = $user['user_img'];
-            }
-            if (isset($user['user_username'])) {
-                $_SESSION['user_username'] = $user['user_username'];
-            }
-            if (isset($user['created_at'])) {
-                $_SESSION['user_create'] = $user['created_at'];
-            }
-            if (isset($user['user_type'])) {
-                $_SESSION['user_type'] = $user['user_type'];
-            }
-            if ($user['user_type'] == 999) {
-                echo 'admin'; // This response will be handled in JavaScript
+if (isset($_POST['login']) ) {
+    $user_email = ($_POST['user_email']);
+    $user_pass = md5($_POST['user_pass']);
+    $check = "SELECT * FROM tb_user WHERE user_email = '$user_email'";
+    $check_user = $conn->query($check); 
+
+    if ($check_user->num_rows >= 1) { 
+        $check_mailpass = "SELECT * FROM tb_user WHERE user_email = '$user_email' AND user_pass = '$user_pass'";
+        $query_pass = $conn->query($check_mailpass);
+
+        if($query_pass->num_rows >=1) {  
+            $user = $query_pass->fetch_array(); 
+
+            if($user['user_status']  != 0){  //เช็คสถานะ tb_user
+                if($user['user_type'] == 999 ){ //เช็คสถานะ admin
+                   
+                    echo 'admin' ; 
+                    $_SESSION['login'] = true;
+                    $_SESSION['user_type'] = 'admin';
+                    $_SESSION['user_id'] = $user['user_id'];
+                    $_SESSION['user_firstname'] = $user['user_firstname'];
+                    $_SESSION['user_lastname'] = $user['user_lastname'];
+                    $_SESSION['user_email'] = $user['user_email'];
+                    $_SESSION['user_pass'] = $user['user_pass'];
+                    $_SESSION['user_img'] = $user['user_img'];
+                    $_SESSION['user_address'] = $user['user_address'];
+                    $_SESSION['user_address'] = $user['user_address'];
+                    $_SESSION['user_tel'] = $user['user_tel'];
+                    $_SESSION['user_create_at'] = $user['user_create_at'];
+
+                    
+                }
+                if($user['user_type'] == 0 ){ //เช็คสถานะ user
+                   
+                    echo 'user' ;  
+                    $_SESSION['login'] = true;
+                    $_SESSION['user_type'] = 'user';
+                    $_SESSION['user_id'] = $user['user_id'];
+                    $_SESSION['user_firstname'] = $user['user_firstname'];
+                    $_SESSION['user_lastname'] = $user['user_lastname'];
+                    $_SESSION['user_email'] = $user['user_email'];
+                    $_SESSION['user_pass'] = $user['user_pass'];
+                    $_SESSION['user_img'] = $user['user_img'];
+                    $_SESSION['user_address'] = $user['user_address'];
+                    $_SESSION['user_address'] = $user['user_address'];
+                    $_SESSION['user_tel'] = $user['user_tel'];
+                    $_SESSION['user_create_at'] = $user['user_create_at'];
+                }
+                if($user['user_type'] == 1 ){ //เช็คสถานะ employee
+                   
+                    echo 'employee' ;  
+                    $_SESSION['login'] = true;
+                    $_SESSION['user_type'] = 'employee';
+                    $_SESSION['user_id'] = $user['user_id'];
+                    $_SESSION['user_firstname'] = $user['user_firstname'];
+                    $_SESSION['user_lastname'] = $user['user_lastname'];
+                    $_SESSION['user_email'] = $user['user_email'];
+                    $_SESSION['user_pass'] = $user['user_pass'];
+                    $_SESSION['user_img'] = $user['user_img'];
+                    $_SESSION['user_address'] = $user['user_address'];
+                    $_SESSION['user_address'] = $user['user_address'];
+                    $_SESSION['user_tel'] = $user['user_tel'];
+                    $_SESSION['user_create_at'] = $user['user_create_at'];
+                }
+                if($user['user_type'] == 2 ){
+                    
+                    echo 'clerk' ;  
+                    $_SESSION['login'] = true;
+                    $_SESSION['user_type'] = 'clerk';
+                    $_SESSION['user_id'] = $user['user_id'];
+                    $_SESSION['user_firstname'] = $user['user_firstname'];
+                    $_SESSION['user_lastname'] = $user['user_lastname'];
+                    $_SESSION['user_email'] = $user['user_email'];
+                    $_SESSION['user_pass'] = $user['user_pass'];
+                    $_SESSION['user_img'] = $user['user_img'];
+                    $_SESSION['user_address'] = $user['user_address'];
+                    $_SESSION['user_address'] = $user['user_address'];
+                    $_SESSION['user_tel'] = $user['user_tel'];
+                    $_SESSION['user_create_at'] = $user['user_create_at'];
+                }
             } else {
-                echo 'user';
+                echo 'close' ;
             }
         } else {
-            echo 'close';
+            echo 'failpass' ;
         }
     } else {
-        echo 'failuser';
+        echo 'failuser' ;
     }
-    $stmt->close();
 }
-?>

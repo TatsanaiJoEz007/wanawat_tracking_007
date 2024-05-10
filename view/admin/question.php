@@ -12,7 +12,7 @@
     <script src="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.7.2/bootstrap-icons.min.js"></script>
     <style>
         .container {
             max-width: 1300px;
@@ -111,12 +111,11 @@
     <?php require_once ('function/sidebar3.php'); ?>
     <div class="container">
         <!-- Button to trigger modal -->
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addnewModal">
             เพิ่มคำถามที่พบบ่อย
         </button> <br><br>
-
-        <!-- Modal -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <!-- Modal for add new -->
+        <div class="modal fade" id="addnewModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -125,7 +124,7 @@
                     </div>
                     <div class="modal-body">
 
-                        <form action="function/addfreq.php" id="add" method="post">
+                        <form action="" id="add" method="post">
                             <div class="mb-3">
                                 <label for="user_firstname" class="form-label">หัวข้อ</label>
                                 <input type="text" class="form-control" id="freq_header" name="freq_header" required>
@@ -168,7 +167,8 @@
                             <td class="align-middle"><?php echo $row['freq_header'] ?></td>
                             <td class="align-middle"><?php echo $row['freq_content'] ?></td>
                             <td class="align-middle">
-                                <a href="" class="btn btn-sm btn-warning">Edit</a>
+                                <a href="" onclick="" id="editModal" class="btn btn-sm btn-warning editModal"
+                                    data-id="<?php echo $row['freq_id'] ?>">Edit</a>
                                 <a href="" onclick="delFreq('<?php echo $row['freq_id']; ?>')"
                                     class="btn btn-sm btn-danger">Delete</a>
                             </td>
@@ -178,8 +178,34 @@
             </table>
         </div>
     </div>
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">แก้ไขข้อมูล</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm">
+                        <input type="hidden" id="edit_freq_id" name="freq_id">
+                        <div class="mb-3">
+                            <label for="edit_freq_header" class="form-label">หัวข้อ</label>
+                            <input type="text" class="form-control" id="edit_freq_header" name="freq_header" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_freq_content" class="form-label">เนื้อหา</label>
+                            <input type="text" class="form-control" id="edit_freq_content" name="freq_content" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+                    <button type="button" class="btn btn-primary" onclick="submitEditForm()">บันทึกข้อมูล</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.7.2/bootstrap-icons.min.js"></script>
     <script>
         var acc = document.getElementsByClassName("accordion");
         var i;
@@ -195,8 +221,58 @@
                 }
             });
         }
+
+        $(document).ready(function () {
+            $(".editModal").click(function () {
+                var freq_id = $(this).data('id');
+                $.ajax({
+                    url: 'function/getfreq.php', // Replace with your PHP script to fetch data
+                    type: 'post',
+                    data: { freq_id: freq_id },
+                    dataType: 'json',
+                    success: function (response) {
+                        // Populate the form fields with existing data
+                        $('#edit_freq_id').val(response.freq_id);
+                        $('#edit_freq_header').val(response.freq_header);
+                        $('#edit_freq_content').val(response.freq_content);
+                        $('#editModal').modal('show');
+                    }
+                });
+            });
+        });
     </script>
     <script>
+        function editFreq(id) {
+            var freq_header = document.getElementById('freq_header').value;
+            var freq_content = document.getElementById('freq_content').value;
+            var formData = new FormData();
+            formData.append('freq_header', freq_header);
+            formData.append('freq_content', freq_content);
+            formData.append('freq_id', id);
+            fetch('function/editfreq.php', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    handleResponse(data, 'แก้ไข');
+                })
+                .catch(handleError);
+        }
+
+        function submitEditForm() {
+            var formData = new FormData(document.getElementById('editForm'));
+            fetch('function/editFreq.php', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    handleResponse(data, 'แก้ไข');
+                })
+                .catch(handleError);
+        }
+
         function submitFreqForm() {
             var formData = new FormData(document.getElementById('add')); // Corrected form ID
             fetch('function/addfreq.php', {
@@ -209,6 +285,15 @@
                 })
                 .catch(handleError);
         }
+
+       
+ 
+
+
+
+
+
+
 
         function handleResponse(data, action) {
             console.log(data);
