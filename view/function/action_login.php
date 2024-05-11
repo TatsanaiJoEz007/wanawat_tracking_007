@@ -1,7 +1,10 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
 <?php
 header('Content-Type: application/json');
+
 require_once('../config/connect.php');
 
 if (!isset($_SESSION)) {
@@ -39,8 +42,14 @@ if (isset($_POST['login']) ) {
                     $_SESSION['user_tel'] = $user['user_tel'];
                     $_SESSION['user_create_at'] = $user['user_create_at'];
 
-                    
+                  
+                
+                        
+                           
                 }
+
+
+
                 if($user['user_type'] == 0 ){ //เช็คสถานะ user
                    
                     echo 'user' ;  

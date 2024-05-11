@@ -1,3 +1,5 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <style>
     .container {
         max-width: 1200px;
@@ -134,7 +136,7 @@
                     <i class="bi bi-browser-safari"></i>
                 </div>
                 <div class="contact-info">
-                    <span class="contact-label"><?php echo $lang_website?></span>
+                    <span class="contact-label"><?php echo $lang_website ?></span>
                     <span class="contact-link">https://wehome.co.th/</span>
                 </div>
             </div>
@@ -144,27 +146,32 @@
                     <i class="bi bi-phone"></i>
                 </div>
                 <div class="contact-info">
-                    <span class="contact-label"><?php echo $lang_call?></span>
+                    <span class="contact-label"><?php echo $lang_call ?></span>
                     <span class="contact-link">+6674324697</span>
                 </div>
             </div>
             <!-- Bug Report Form -->
-            <div class="contact-card form-widget"> <!-- Add form-widget class to make the widget box bigger -->
-                <form id="bug-report-form" action="your_server_script.php" method="post">
+            <div class="contact-card form-widget">
+                <form id="bug-report-form" method="post">
                     <div class="contact-info">
-                        <span class="contact-label"><?php echo $lang_askquestion?></span>
-                        <input type="text" name="name" placeholder="<?php echo $lang_yourname?>" required>
-                        <input type="email" name="email" placeholder="<?php echo  $lang_youremail?>" required>
-                        <textarea name="description" placeholder="<?php echo  $lang_description?>" required></textarea>
-                        <button type="submit" id="submit-button"><?php echo $lang_submit?></button>
+                        <span class="contact-label"><?php echo $lang_askquestion ?></span>
+                        <input type="text" name="name" placeholder="<?php echo $lang_yourname ?>" required>
+                        <input type="email" name="email" placeholder="<?php echo $lang_youremail ?>" required>
+                        <textarea name="description" placeholder="<?php echo $lang_description ?>" required></textarea>
+                        <button type="submit" id="submit-button"><?php echo $lang_submit ?></button>
                     </div>
                 </form>
             </div>
 
 
+
+
             <!-- Google Maps Card -->
             <div class="contact-card">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2063.5866429814596!2d100.55404425108453!3d7.1203017333774605!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x304d2dbfc1128073%3A0x37eed52fc2690e21!2z4Lin4Li14LmC4Liu4LihIOC4muC4tOC4p-C5gOC4lOC4reC4o-C5jCDguKrguLLguILguLLguKrguIfguILguKXguLIgKOC4muC4iOC4gS7guKfguJnguLLguKfguLHguJLguJnguYzguKfguLHguKrguJTguLgp!5e0!3m2!1sth!2sth!4v1714657276800!5m2!1sth!2sth" width="100%" height="250" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2063.5866429814596!2d100.55404425108453!3d7.1203017333774605!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x304d2dbfc1128073%3A0x37eed52fc2690e21!2z4Lin4Li14LmC4Liu4LihIOC4muC4tOC4p-C5gOC4lOC4reC4o-C5jCDguKrguLLguILguLLguKrguIfguILguKXguLIgKOC4muC4iOC4gS7guKfguJnguLLguKfguLHguJLguJnguYzguKfguLHguKrguJTguLgp!5e0!3m2!1sth!2sth!4v1714657276800!5m2!1sth!2sth"
+                    width="100%" height="250" style="border:0;" allowfullscreen="" loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
         </div>
     </div>
@@ -175,7 +182,7 @@
 
 <script>
     // Function to handle form submission with SweetAlert confirmation
-    document.getElementById("bug-report-form").addEventListener("submit", function(event) {
+    document.getElementById("bug-report-form").addEventListener("submit", function (event) {
         event.preventDefault(); // Prevent default form submission
 
         Swal.fire({
@@ -209,4 +216,51 @@
         });
         return false; // Prevent default action of link click
     }
+
+$(document).ready(function() {
+    $('#bug-report-form').submit(function(event) {
+        // Prevent default form submission
+        console.log("Form submitted");
+        event.preventDefault();
+        
+        // Serialize form data
+        var formData = $(this).serialize();
+        console.log(formData);
+        // Submit form data via AJAX
+        $.ajax({
+            type: 'POST',
+            url: 'function/action_contact.php', // Change the URL to your PHP script
+            data: formData,
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    console.log(response.message);
+                    // Display success message
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: response.message
+                    });
+                } else {
+                    console.log(response.message);
+                    // Display error message
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.message
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                console.log(xhr.responseText);
+                // Display error message
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while submitting the form: ' + error
+                });
+            }
+        });
+    });
+});
 </script>

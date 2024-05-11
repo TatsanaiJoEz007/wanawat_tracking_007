@@ -107,6 +107,7 @@ ul li .active .uil{
     display: flex;
 }
 
+
 /* Responsive Css  */
 
 @media (max-width: 980px) {
@@ -139,9 +140,7 @@ ul li .active .uil{
     .head .head_1{
         font-size: 24px;
     }
-    .head .head_2{
-        font-size: 16px;
-    }
+   
 }
 </style>
 
@@ -151,8 +150,8 @@ ul li .active .uil{
     <div class="main">
 
         <div class="head">
-            <p class="head_1">Animated Step <span>Progress Bar</span></p>
-            <p class="head_2">Using Html, Css & JavaScript</p>
+            <p class="head_1">สถานะการจัดส่ง</p>
+            
         </div>
 
         <ul>
@@ -243,6 +242,7 @@ five.onclick = function() {
     four.classList.add("active");
     five.classList.add("active");
 }
+
 
     </script>
 </body>
