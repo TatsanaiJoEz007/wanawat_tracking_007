@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="th">
 
@@ -10,6 +9,8 @@
     <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- SweetAlert2 CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* Custom CSS for styling */
         /* You can add your own styles here */
@@ -35,9 +36,10 @@
         }
     </style>
 </head>
+
 <body>
     <?php require_once ('function/sidebar3.php'); ?>
-  
+
     <div class="container">
         <br>
         <h2>คำถาม และปัญหาในการใช้งาน</h2>
@@ -58,9 +60,8 @@
                 while ($row = $result->fetch_assoc()) {
                     echo '<div class="bug-report">';
                     echo '<h3>' . $row["question_sender_name"] . '</h3>';
-                    echo '<form method="post" action="function/send_mail.php">'; // Form for sending email, updated action
-                    echo '<input type="hidden" name="question_id" value="' . $row["question_id"] . '">'; // Hidden input field to hold the question ID
-                    echo '<button type="submit" class="btn btn-primary send-email-btn" name="send_email">Send Email</button>'; // Submit button
+                    echo '<form id="sendEmailForm_' . $row["question_id"] . '" method="post" action="mailto:' . $row["question_sender_email"] . '">'; // Form for sending email
+                    echo '<button type="button" class="btn btn-primary send-email-btn" onclick="sendEmail(' . $row["question_id"] . ')">Send Email</button>'; // Submit button
                     echo '</form>';
                     echo '<p><strong>รายละเอียด:</strong> ' . $row["question_content"] . '</p>';
                     echo '</div>';
@@ -69,12 +70,85 @@
                 echo "<p>No unanswered bug reports found.</p>";
             }
 
-            // Close database connection
-            $conn->close();
             ?>
         </div>
+        <!-- Display History bug reports -->
+        <div>
+            <hr>
+            <br>
+            <h2>ประวัติคำถาม</h2>
+            <?php
+            // Include database connection file
+            require_once ('../config/connect.php');
 
+            // Fetch bug reports from database
+            $sql = "SELECT * FROM tb_question WHERE question_status = 0"; // Only select unanswered questions
+            $result = $conn->query($sql);
+
+            // Check if there are any unanswered bug reports
+            if ($result->num_rows > 0) {
+                // Output each unanswered bug report
+                while ($row = $result->fetch_assoc()) {
+                    echo '<div class="bug-report">';
+                    echo '<h3>' . $row["question_sender_name"] . '</h3>';
+                    echo '<form method="post" action="mailto:' . $row["question_sender_email"] . '">'; // Form for sending email
+                    echo '</form>';
+                    echo '<p><strong>รายละเอียด:</strong> ' . $row["question_content"] . '</p>';
+                    echo '</div>';
+                }
+            } else {
+                echo "<p>No unanswered bug reports found.</p>";
+            }
+
+            ?>
+        </div>
     </div>
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script>
+        function sendEmail(question_id) {
+            // Display SweetAlert confirmation dialog
+            Swal.fire({
+                title: 'คุณแน่ใจหรือไม่?',
+                text: "ต้องการส่งอีเมลล์ให้ผู้ใช้งานหรือไม่ ถ้าหากกดส่งแล้ว จะไม่สามารถส่งอีกครั้งได้",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If user confirms, submit the form to send the email
+                    $('#sendEmailForm_' + question_id).submit();
+                    // Make AJAX request to update question_status
+                    $.ajax({
+                        type: "POST",
+                        url: "function/update_questionstatus.php", // Update with the actual PHP script path
+                        data: { question_id: question_id },
+                        success: function (response) {
+                            if (response === "success") {
+                                // If update successful, remove the bug report from the page
+                                $('#sendEmailForm_' + question_id).closest('.bug-report').remove();
+                                location.reload();
+                            } else {
+                                // Handle error
+                                alert("Failed to update status.");
+                            }
+                        },
+                        error: function () {
+                            // Handle error
+                            alert("Error occurred while updating status.");
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+
+
 </body>
 
 </html>
