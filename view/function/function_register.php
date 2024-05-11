@@ -2,6 +2,7 @@
 <script src="https://fastly.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script> 
+
    $('#register').submit((e) => {
         e.preventDefault()
         let pass = $('#register-password').val()

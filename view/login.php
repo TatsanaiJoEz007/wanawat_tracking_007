@@ -29,7 +29,7 @@
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title text-center mb-4"><?php echo $lang_login ?></h4>
-                    <form action="#" method="post" id="login">
+                    <form id="login" method="post">
                         <div class="mb-3">
                             <label for="signin-email" class="form-label"><?php echo $lang_email ?></label>
                             <input type="email" class="form-control" id="signin-email" name="signin-email" required placeholder="Enter email">
@@ -39,13 +39,13 @@
                             <input type="password" class="form-control" id="signin-password" name="signin-password" required placeholder="Password">
                         </div>
                         <div class="d-grid gap-2">
-                            <button type="submit" name="login" class="btn btn-custom"><?php echo $lang_login ?></button>
+                            <button type="submit" class="btn btn-custom" name="login"><?php echo $lang_login ?></button>
                         </div>
                         <p class="mt-3">
                             <a href="#forgotPasswordModal" class="form-link" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal"><?php echo $lang_forgotpassword ?></a>
                         </p>
                         <p class="mb-0">
-                        <?php echo $lang_donthaveaccount ?> <a href="register.php" class="form-link"><?php echo $lang_signup ?></a>
+                            <?php echo $lang_donthaveaccount ?> <a href="register.php" class="form-link"><?php echo $lang_signup ?></a>
                         </p>
                     </form>
                 </div>
@@ -53,8 +53,75 @@
         </div>
     </div>
 </div>
-<script src="https://fastly.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<?php require_once('function/function_login.php'); ?>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+$(document).ready(function() {
+    $('#login').submit(function(e) {
+        e.preventDefault();
+
+        // รับค่าจากฟอร์ม
+        let user_email = $('#signin-email').val();
+        let user_pass = $('#signin-password').val();
+
+        // ส่งค่าผ่าน AJAX ไปยัง action_login.php
+        $.ajax({
+            url: 'function/action_login.php',
+            type: 'post',
+            data: {
+                user_email: user_email,
+                user_pass: user_pass,
+                login: 1
+            },
+            success: function(response) {
+                // ตรวจสอบค่าที่ส่งกลับจาก action_login.php
+                if (response === 'success') {
+                    // เข้าสู่ระบบสำเร็จ
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'success',
+                        title: 'เข้าสู่ระบบสำเร็จ!!',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    setTimeout(function() {
+                        window.location.href = "../index.php"; // // Redirect ไปยังหน้า index.php หรือหน้าที่ต้องการ
+                    }, 1500);
+                } else if (response === 'failuser') {
+                    // ไม่มีบัญชีนี้ในระบบ
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'error',
+                        title: 'ไม่มีบัญชีนี้ในระบบ!!',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    $('#signin-password').val('');
+                } else if (response === 'failpass') {
+                    // รหัสผ่านไม่ถูกต้อง
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'error',
+                        title: 'รหัสผ่านไม่ถูกต้อง!!',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    $('#signin-password').val('');
+                } else if (response === 'close') {
+                    // บัญชีนี้ถูกระงับการใช้งาน
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'error',
+                        title: 'บัญชีนี้ถูกระงับการใช้งาน',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+            }
+        });
+    });
+});
+</script>
 <!-- Forgot Password Modal -->
 <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
     <div class="modal-dialog">
