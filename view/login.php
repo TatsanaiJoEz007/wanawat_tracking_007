@@ -85,7 +85,7 @@ $(document).ready(function() {
                         timer: 1500
                     });
                     setTimeout(function() {
-                        window.location.href = "../index.php"; // // Redirect ไปยังหน้า index.php หรือหน้าที่ต้องการ
+                        window.location.href = "../view/mainpage.php"; // // Redirect ไปยังหน้า index.php หรือหน้าที่ต้องการ
                     }, 1500);
                 } else if (response === 'failuser') {
                     // ไม่มีบัญชีนี้ในระบบ
