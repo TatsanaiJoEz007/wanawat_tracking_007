@@ -1,58 +1,51 @@
 <?php
-require_once('../config/connect.php');
+header('Content-Type: application/json'); // Set header to indicate JSON response
+require_once('../config/connect.php'); // Include your database connection
 
-function registerUser($data)
-{
-    global $conn;
+$response = array(); // Initialize response array
 
-    // Extract data from JSON
-    $firstname = mysqli_real_escape_string($conn, $data['register-firstname']);
-    $lastname = mysqli_real_escape_string($conn, $data['register-lastname']);
-    $email = mysqli_real_escape_string($conn, $data['register-email']);
-    $password = mysqli_real_escape_string($conn, $data['register-password']);
-    $cpassword = mysqli_real_escape_string($conn, $data['register-c-password']);
-    $address = mysqli_real_escape_string($conn, $data['register-address']);
-    $province_id = mysqli_real_escape_string($conn, $data['province_id']);
-    $amphure_id = mysqli_real_escape_string($conn, $data['amphure_id']);
-    $district_id = mysqli_real_escape_string($conn, $data['district_id']);
-    $tel = mysqli_real_escape_string($conn, $data['register-tel']);
+if(isset($_POST['register'])) {
+    // Retrieve form data
+    $firstname = mysqli_real_escape_string($conn, $_POST['register-firstname']);
+    $lastname = mysqli_real_escape_string($conn, $_POST['register-lastname']);
+    $email = mysqli_real_escape_string($conn, $_POST['register-email']);
+    $password = mysqli_real_escape_string($conn, $_POST['register-password']);
+    $c_password = mysqli_real_escape_string($conn, $_POST['register-c-password']);
+    $address = mysqli_real_escape_string($conn, $_POST['register-address']);
+    $province_id = mysqli_real_escape_string($conn, $_POST['province_id']);
+    $amphure_id = mysqli_real_escape_string($conn, $_POST['amphure_id']);
+    $district_id = mysqli_real_escape_string($conn, $_POST['district_id']);
+    $tel = mysqli_real_escape_string($conn, $_POST['register-tel']);
+    $created_at = date('Y-m-d H:i:s'); // Current timestamp
 
-    // Check if password and confirmation password match
-    if ($password !== $cpassword) {
-        $response = array("success" => false, "message" => "Password and confirmation password do not match");
-        return json_encode($response);
-    }
-
-    // Hash the password before storing it in the database
-    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-
-    // Insert user data into the database
-    $sql = "INSERT INTO tb_user (user_firstname, user_lastname, user_email, user_pass, user_img , user_type , user_address, province_id, amphure_id, district_id, user_tel , user_create_at) 
-        VALUES ('$firstname', '$lastname', '$email', '$hashedPassword', '' , 0 , '$address', '$province_id', '$amphure_id', '$district_id', '$tel' , NOW())";
-
-    if (mysqli_query($conn, $sql)) {
-        $response = array("success" => true, "message" => "Registration successful");
+    // Check if passwords match
+    if($password != $c_password) {
+        $response['success'] = false;
+        $response['message'] = "Passwords do not match";
     } else {
-        $response = array("success" => false, "message" => "Error: " . mysqli_error($conn));
+        // Hash the password with MD5
+        $hashed_password = md5($password);
+
+        // Insert user data into database
+        $sql = "INSERT INTO tb_user (user_firstname, user_lastname, user_email, user_pass, user_address, province_id, amphure_id, district_id, user_tel, user_create_at, user_status)
+                VALUES ('$firstname', '$lastname', '$email', '$hashed_password', '$address', '$province_id', '$amphure_id', '$district_id', '$tel', '$created_at', 1)";
+
+        if(mysqli_query($conn, $sql)) {
+            $response['success'] = true;
+            $response['message'] = "Registration successful";
+        } else {
+            $response['success'] = false;
+            $response['message'] = "Error: " . $sql . "<br>" . mysqli_error($conn);
+        }
     }
-
-    // Convert response to JSON
-    return json_encode($response);
-}
-
-// Check if the request is POST and contains JSON data
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST) && !empty($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false) {
-    // Get JSON data from the request body
-    $jsonData = file_get_contents('php://input');
-
-    // Decode JSON data
-    $data = json_decode($jsonData, true);
-
-    // Call the register function and echo the JSON response
-    echo registerUser($data);
 } else {
-    // Invalid request
-    echo json_encode(array("success" => false, "message" => "Invalid request"));
+    $response['success'] = false;
+    $response['message'] = "No data received";
 }
 
+// Close the database connection
 mysqli_close($conn);
+
+// Return JSON response
+echo json_encode($response);
+?>

@@ -168,12 +168,19 @@ if (!isset($_SESSION['login'])) {
     </nav>
 
     <div class="container py-5">
-
-                            <?php 
-                            $sql = "SELECT * FROM tb_user WHERE user_id = '$_SESSION[user_id]'";
-                            $query = $conn->query($sql);
-                            $myprofile = $query->fetch_array();
-                            ?>
+    <?php 
+            $sql = "SELECT tb_user.*, 
+                    provinces.name_th AS province_name, 
+                    amphures.name_th AS amphure_name, 
+                    districts.name_th AS district_name ,
+                    districts.zip_code AS zipcode FROM tb_user
+                    LEFT JOIN provinces ON tb_user.province_id = provinces.id 
+                    LEFT JOIN amphures ON tb_user.amphure_id = amphures.id 
+                    LEFT JOIN districts ON tb_user.district_id = districts.id 
+                    WHERE user_id = '$_SESSION[user_id]'";
+            $query = $conn->query($sql);
+            $myprofile = $query->fetch_array();
+        ?>
     <div class="row">
       <div class="col-lg-4">
         <div class="card mb-4">
@@ -220,6 +227,7 @@ if (!isset($_SESSION['login'])) {
                 <p class="text-muted mb-0"><?php echo $myprofile['user_tel']?></p>
               </div>
             </div>
+
             <hr>
             <div class="row">
               <div class="col-sm-3">
@@ -229,6 +237,47 @@ if (!isset($_SESSION['login'])) {
                 <p class="text-muted mb-0"><?php echo $myprofile['user_address']?></p>
               </div>
             </div>
+
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0"><?php echo $lang_provinces?></p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0"><?php echo $myprofile['province_name']?></p>
+              </div>
+            </div>
+
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0"><?php echo $lang_amphures?></p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0"><?php echo $myprofile['amphure_name']?></p>
+              </div>
+            </div>
+            
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0"><?php echo $lang_districts?></p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0"><?php echo $myprofile['district_name']?></p>
+              </div>
+            </div>
+            
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0"><?php echo $lang_zipcode?></p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0"><?php echo $myprofile['zipcode']?></p>
+              </div>
+            </div>
+            <hr>
           </div>
         </div>
         
