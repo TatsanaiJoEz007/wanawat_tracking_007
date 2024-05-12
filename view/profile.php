@@ -167,62 +167,69 @@ if (!isset($_SESSION['login'])) {
         <?php require_once('function/navindex.php'); ?>
     </nav>
 
-    <div class="profile-container">
-        <div class="profile-picture">
-            <?php 
-                // Assuming $userProfilePicture contains the path to the user's profile picture
-                echo '<img src="' . $userProfilePicture . '" alt="User Profile Picture">';
-            ?>
-        </div>
-        <div class="profile-details">
+    <div class="container py-5">
 
-            <?php
-            $sql = "SELECT * FROM tb_user WHERE user_id = '$_SESSION[user_id]'";
-            $query = $conn->query($sql);
-            $myprofile = $query->fetch_array();
-            ?>
 
-            <h2>User's Name</h2>
-            <p><i class="fas fa-envelope"></i>Email: user@example.com</p>
-            <p><i class="fas fa-map-marker-alt"></i>Location: City, Country</p>
-            
-            <div class="profile-social-icons">
-                <a href="#"><i class="fab fa-facebook-f"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <!-- Add more social media icons as needed -->
+    <div class="row">
+      <div class="col-lg-4">
+        <div class="card mb-4">
+          <div class="card-body text-center">
+            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="avatar"
+              class="rounded-circle img-fluid" style="width: 150px;">
+            <h5 class="my-3">John Smith</h5>
+            <p class="text-muted mb-1">--</p>
+            <p class="text-muted mb-4">---</p>
+            <div class="d-flex justify-content-center mb-2">
+             
             </div>
+          </div>
         </div>
-         
-            <!-- Add more bill cards as needed -->
-
-            <!-- Modal -->
-            <div id="modal1" class="modal">
-                <div class="modal-content">
-                    <span class="close" onclick="closeModal('modal1')">&times;</span>
-                    <!-- Detailed information about the bill can be added here -->
-                </div>
+       
+      </div>
+      <div class="col-lg-8">
+        <div class="card mb-4">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Full Name</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">Johnatan Smith</p>
+              </div>
             </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Email</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">example@example.com</p>
+              </div>
+            </div>
+           
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Mobile</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">(098) 765-4321</p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Address</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">Bay Area, San Francisco, CA</p>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="parcel-bill-list">
-            <h3>Parcel Bills</h3>
-            <div class="bill-card" onclick="openModal('modal1')">
-                <table>
-                    <tr>
-                        <th>ID</th>
-                        <th>จำนวนของสินค้า</th>
-                        <th>สถานะ</th>
-                    </tr>
-                    <tr>
-                        <td>**</td>
-                        <td>**</td>
-                        <td>***</td>
-                    </tr>
-                    <!-- Add more rows for each bill -->
-                </table>
-            </div>
-   
+        
+      </div>
     </div>
+  </div>
  
     <footer>
         <?php require_once('function/footer.php'); ?>
