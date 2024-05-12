@@ -169,14 +169,18 @@ if (!isset($_SESSION['login'])) {
 
     <div class="container py-5">
 
-
+                            <?php 
+                            $sql = "SELECT * FROM tb_user WHERE user_id = '$_SESSION[user_id]'";
+                            $query = $conn->query($sql);
+                            $myprofile = $query->fetch_array();
+                            ?>
     <div class="row">
       <div class="col-lg-4">
         <div class="card mb-4">
           <div class="card-body text-center">
             <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="avatar"
               class="rounded-circle img-fluid" style="width: 150px;">
-            <h5 class="my-3">John Smith</h5>
+            <h5 class="my-3"><?php echo $myprofile['user_firstname']?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo $myprofile['user_lastname']?></h5>
             <p class="text-muted mb-1">--</p>
             <p class="text-muted mb-4">---</p>
             <div class="d-flex justify-content-center mb-2">
@@ -191,38 +195,38 @@ if (!isset($_SESSION['login'])) {
           <div class="card-body">
             <div class="row">
               <div class="col-sm-3">
-                <p class="mb-0">Full Name</p>
+                <p class="mb-0"><?php echo $lang_fullname?></p>
               </div>
               <div class="col-sm-9">
-                <p class="text-muted mb-0">Johnatan Smith</p>
+                <p class="text-muted mb-0"><?php echo $myprofile['user_firstname']?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo $myprofile['user_lastname']?></p>
               </div>
             </div>
             <hr>
             <div class="row">
               <div class="col-sm-3">
-                <p class="mb-0">Email</p>
+                <p class="mb-0"><?php echo $lang_email?></p>
               </div>
               <div class="col-sm-9">
-                <p class="text-muted mb-0">example@example.com</p>
+                <p class="text-muted mb-0"><?php echo $myprofile['user_email']?></p>
               </div>
             </div>
             
             <hr>
             <div class="row">
               <div class="col-sm-3">
-                <p class="mb-0">Mobile</p>
+                <p class="mb-0"><?php echo $lang_mobile?></p>
               </div>
               <div class="col-sm-9">
-                <p class="text-muted mb-0">(098) 765-4321</p>
+                <p class="text-muted mb-0"><?php echo $myprofile['user_tel']?></p>
               </div>
             </div>
             <hr>
             <div class="row">
               <div class="col-sm-3">
-                <p class="mb-0">Address</p>
+                <p class="mb-0"><?php echo $lang_address?></p>
               </div>
               <div class="col-sm-9">
-                <p class="text-muted mb-0">Bay Area, San Francisco, CA</p>
+                <p class="text-muted mb-0"><?php echo $myprofile['user_address']?></p>
               </div>
             </div>
           </div>

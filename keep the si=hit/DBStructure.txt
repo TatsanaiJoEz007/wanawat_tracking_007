@@ -1,0 +1,34 @@
+tb_user structure
+ีuser_id int(11) auto_increment primary key
+user_firstname varchar(255)
+user_lastname varchar(255)
+user_email varchar(255)
+user_pass varchar(255)
+user_img varchar(255)
+user_type int(50)
+user_address varchar(255)
+province_id int(5) FK from provinces
+amphure_id int(5) FK from amphures
+district_id varchar(6) FK from districts
+user_tel varchar(255)
+user_create_at timestamp
+user_status tinyint(4)
+
+
+--เอาข้อมูลจร้าา--
+SELECT
+    tb_user.user_id,
+    tb_user.user_firstname,
+    districts.zip_code AS zipcode,
+    districts.name_en AS district_name,
+    amphures.name_en AS amphure_name,
+    provinces.name_en AS province_name
+FROM
+    tb_user
+LEFT JOIN
+    districts ON tb_user.district_id = districts.id
+LEFT JOIN
+    amphures ON tb_user.amphure_id = amphures.id
+LEFT JOIN
+    provinces ON tb_user.province_id = provinces.id
+LIMIT 0, 25;

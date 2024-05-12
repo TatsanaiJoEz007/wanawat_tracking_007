@@ -162,6 +162,23 @@
     
      // end question Page
 
+     //profilepage
+     $fullname_translate = array('th' => 'ชื่อ-นามสกุล' , 'en' => 'Fullname');
+     $lang_fullname = $fullname_translate  [$lang];
+
+     $email_translate = array('th' => 'อีเมล์' , 'en' => 'Email');
+     $lang_email = $email_translate  [$lang];
+
+     $mobile_translate = array('th' => 'เบอร์โทรศัพท์' , 'en' => 'Mobile');
+     $lang_mobile = $mobile_translate  [$lang];
+
+     $address_translate = array('th' => 'ที่อยู่' , 'en' => 'Address');
+     $lang_address = $address_translate  [$lang];
+
+
+ 
+     //end profilepage
+
 
 
 ?>
