@@ -29,42 +29,63 @@ if (isset($_POST['login'])) {
             // ตรวจสอบสถานะของผู้ใช้งาน
             if ($user['user_status'] != 0) {
                 // เช็คสถานะและกำหนดค่า Session ตามประเภทผู้ใช้งาน
-                switch ($user['user_type']) {
-                    case 999: // สำหรับ admin
-                        $_SESSION['login'] = true;
-                        $_SESSION['user_type'] = 'admin';
-                        break;
-                    case 0: // สำหรับ user
-                        $_SESSION['login'] = true;
-                        $_SESSION['user_type'] = 'user';
-                        break;
-                    case 1: // สำหรับ employee
-                        $_SESSION['login'] = true;
-                        $_SESSION['user_type'] = 'employee';
-                        break;
-                    case 2: // สำหรับ clerk
-                        $_SESSION['login'] = true;
-                        $_SESSION['user_type'] = 'clerk';
-                        break;
-                    default:
-                        // หากไม่ตรงกับเงื่อนไขใด ๆ ให้กำหนดเป็น user โดยปริยาย
-                        $_SESSION['login'] = true;
-                        $_SESSION['user_type'] = 'user';
-                        break;
+                if ($user['user_type'] == 999) { // สำหรับ admin
+                    $_SESSION['login'] = true;
+                    $_SESSION['user_type'] = 'admin';
+                    $_SESSION['user_id'] = $user['user_id'];
+                    $_SESSION['user_firstname'] = $user['user_firstname'];
+                    $_SESSION['user_lastname'] = $user['user_lastname'];
+                    $_SESSION['user_email'] = $user['user_email'];
+                    $_SESSION['user_img'] = $user['user_img'];
+                    $_SESSION['user_address'] = $user['user_address'];
+                    $_SESSION['user_tel'] = $user['user_tel'];
+                    $_SESSION['user_create_at'] = $user['user_create_at'];
+
+                    echo json_encode('admin');    // ส่งค่ากลับเพื่อแสดงว่าเข้าสู่ระบบสำเร็จ
+
+                } elseif ($user['user_type'] == 0) { // สำหรับ user
+                    $_SESSION['login'] = true;
+                    $_SESSION['user_type'] = 'user';
+                    $_SESSION['user_id'] = $user['user_id'];
+                    $_SESSION['user_firstname'] = $user['user_firstname'];
+                    $_SESSION['user_lastname'] = $user['user_lastname'];
+                    $_SESSION['user_email'] = $user['user_email'];
+                    $_SESSION['user_img'] = $user['user_img'];
+                    $_SESSION['user_address'] = $user['user_address'];
+                    $_SESSION['user_tel'] = $user['user_tel'];
+                    $_SESSION['user_create_at'] = $user['user_create_at'];
+
+                    echo json_encode('user');    // ส่งค่ากลับเพื่อแสดงว่าเข้าสู่ระบบสำเร็จ
+
+                } elseif ($user['user_type'] == 1) { // สำหรับ employee
+                    $_SESSION['login'] = true;
+                    $_SESSION['user_type'] = 'employee';
+                    $_SESSION['user_id'] = $user['user_id'];
+                    $_SESSION['user_firstname'] = $user['user_firstname'];
+                    $_SESSION['user_lastname'] = $user['user_lastname'];
+                    $_SESSION['user_email'] = $user['user_email'];
+                    $_SESSION['user_img'] = $user['user_img'];
+                    $_SESSION['user_address'] = $user['user_address'];
+                    $_SESSION['user_tel'] = $user['user_tel'];
+                    $_SESSION['user_create_at'] = $user['user_create_at'];
+
+                    echo json_encode('employee');    // ส่งค่ากลับเพื่อแสดงว่าเข้าสู่ระบบสำเร็จ
+
+                } elseif ($user['user_type'] == 2) { // สำหรับ clerk
+                    $_SESSION['login'] = true;
+                    $_SESSION['user_type'] = 'clerk';
+                    $_SESSION['user_id'] = $user['user_id'];
+                    $_SESSION['user_firstname'] = $user['user_firstname'];
+                    $_SESSION['user_lastname'] = $user['user_lastname'];
+                    $_SESSION['user_email'] = $user['user_email'];
+                    $_SESSION['user_img'] = $user['user_img'];
+                    $_SESSION['user_address'] = $user['user_address'];
+                    $_SESSION['user_tel'] = $user['user_tel'];
+                    $_SESSION['user_create_at'] = $user['user_create_at'];
+
+                    echo json_encode('clerk');    // ส่งค่ากลับเพื่อแสดงว่าเข้าสู่ระบบสำเร็จ
+
                 }
-
-                // กำหนดค่า Session อื่น ๆ ตามต้องการ
-                $_SESSION['user_id'] = $user['user_id'];
-                $_SESSION['user_firstname'] = $user['user_firstname'];
-                $_SESSION['user_lastname'] = $user['user_lastname'];
-                $_SESSION['user_email'] = $user['user_email'];
-                $_SESSION['user_img'] = $user['user_img'];
-                $_SESSION['user_address'] = $user['user_address'];
-                $_SESSION['user_tel'] = $user['user_tel'];
-                $_SESSION['user_create_at'] = $user['user_create_at'];
-
-                // ส่งค่ากลับเพื่อแสดงว่าเข้าสู่ระบบสำเร็จ
-                echo json_encode('success');
             } else {
                 // สถานะบัญชีถูกระงับ
                 echo json_encode('close');

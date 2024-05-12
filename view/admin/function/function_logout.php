@@ -4,7 +4,7 @@
 <script>
         function logout() {
         let option = {
-            url: '../view/function/action_logout.php',
+            url: 'function/action_logout.php',
             type: 'post',
             data: {
                 logout: 1
@@ -18,7 +18,10 @@
                     timer: 1500
                 })
                 setTimeout(() => {
-                    location.href = '../view/index'
+                    debugger;
+
+                    console.log(res)
+                    location.href = '../index'
                 }, 900)
             }
         }

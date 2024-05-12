@@ -18,7 +18,7 @@
 </head>
 
 <body>
-    <?php require_once ('function/sidebar3.php'); ?>
+    <?php require_once ('function/sidebar.php'); ?>
     <?php require_once ('function/box.php'); ?>
     <?php require_once ('function/datepicker.php'); ?>
     <?php require_once ('function/graph.php'); ?>

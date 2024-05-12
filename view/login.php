@@ -55,6 +55,7 @@
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://fastly.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 $(document).ready(function() {
     $('#login').submit(function(e) {
@@ -75,7 +76,7 @@ $(document).ready(function() {
             },
             success: function(response) {
                 // ตรวจสอบค่าที่ส่งกลับจาก action_login.php
-                if (response === 'success') {
+                if (response === 'user') {
                     // เข้าสู่ระบบสำเร็จ
                     Swal.fire({
                         position: 'center',
@@ -85,9 +86,45 @@ $(document).ready(function() {
                         timer: 1500
                     });
                     setTimeout(function() {
-                        window.location.href = "../view/mainpage.php"; // // Redirect ไปยังหน้า index.php หรือหน้าที่ต้องการ
+                        window.location.href = "../view/mainpage"; // // Redirect ไปยังหน้า index.php หรือหน้าที่ต้องการ
                     }, 1500);
-                } else if (response === 'failuser') {
+                }else if (response === 'admin') {
+                    // เข้าสู่ระบบสำเร็จ
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'success',
+                        title: 'เข้าสู่ระบบสำเร็จ!!',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    setTimeout(function() {
+                        window.location.href = "../view/admin/index"; // // Redirect ไปยังหน้า index.php หรือหน้าที่ต้องการ
+                    }, 1500);
+                }else if (response === 'employee') {
+                    // เข้าสู่ระบบสำเร็จ
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'success',
+                        title: 'เข้าสู่ระบบสำเร็จ!!',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    setTimeout(function() {
+                        window.location.href = "../view/employee/index"; // // Redirect ไปยังหน้า index.php หรือหน้าที่ต้องการ
+                    }, 1500);
+                }else if (response === 'clerk') {
+                    // เข้าสู่ระบบสำเร็จ
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'success',
+                        title: 'เข้าสู่ระบบสำเร็จ!!',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    setTimeout(function() {
+                        window.location.href = "../view/clerk/index"; // // Redirect ไปยังหน้า index.php หรือหน้าที่ต้องการ
+                    }, 1500);
+                }else if (response === 'failuser') {
                     // ไม่มีบัญชีนี้ในระบบ
                     Swal.fire({
                         position: 'center',

@@ -9,6 +9,7 @@
   <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
+
 <style>
   /* Google Fonts Import Link */
   @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap');
@@ -388,7 +389,7 @@
           <li><a class="link_name" href="#">Manage Web</a></li>
           <li><a href="../admin/banner">Banner</a></li>
           <li><a href="../admin/contact.php">Contact</a></li>
-          <li><a href="../admin/question2.php">Question</a></li>
+          <li><a href="../admin/question.php">Question</a></li>
         </ul>
       </li>
       <li>
@@ -400,7 +401,8 @@
             <div class="profile_name">Jonh Doe</div>
             <div class="job">Web Desginer</div>
           </div>
-          <i class='bx bx-log-out'></i>
+          <?php require_once "../../view/function/function_logout.php" ?>
+          <button type="logout" class="btn btn-link" onclick="logout()"><i class='bx bx-log-out'> </i></button>
         </div>
       </li>
     </ul>

@@ -52,7 +52,7 @@
 </head>
 
 <body>
-    <?php require_once ('function/sidebar3.php'); ?>
+    <?php require_once ('function/sidebar.php'); ?>
 
     <h1 class="app-page-title">Banner</h1>
     <hr class="mb-4">

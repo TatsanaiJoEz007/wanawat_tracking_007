@@ -106,7 +106,7 @@
 </head>
 
 <body>
-    <?php require_once ('function/sidebar3.php'); ?>
+    <?php require_once ('function/sidebar.php'); ?>
     <h1>Admin FAQ Panel</h1>
 
     <!-- New FAQ Button -->

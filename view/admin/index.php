@@ -1,4 +1,11 @@
-<?php require_once('function/check_auth.php');  ?>    
+<?php 
+session_start();
+
+if ($_SESSION['user_type'] != 'admin') {
+    header('Location: ../index.php');
+}
+
+?>    
 
 
 <!DOCTYPE html>
@@ -12,7 +19,7 @@
 <body>
 
 
-<?php require_once('function/sidebar3.php');  ?>
+<?php require_once('function/sidebar.php');  ?>
 
 
 <script src="https://fastly.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

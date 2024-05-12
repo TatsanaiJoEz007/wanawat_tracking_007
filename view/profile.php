@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 require_once('config/connect.php');
 
@@ -16,7 +17,6 @@ if (!isset($_SESSION['login'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile</title>
-    <link rel="stylesheet" href="styles.css">
     <!-- Assuming 'function/head.php' includes necessary meta tags, stylesheets, etc. -->
     <?php require_once('function/head.php'); ?>
 
@@ -77,20 +77,24 @@ if (!isset($_SESSION['login'])) {
         }
 
         .profile-details p i {
-            margin-right: 5px;
+            margin-right: 350px;
         }
 
         .parcel-bill-list {
-            max-width: 300px; /* Adjust as needed */
+            max-width: 800px; /* Adjust as needed */
             padding: 20px;
             background-color: #e9ecef; /* Set light gray background */
             border-radius: 10px;
+            
+
         }
 
         .parcel-bill-list h3 {
             margin-top: 0;
             margin-bottom: 20px;
             color: #555;
+            
+           
         }
 
         .bill-card {
@@ -173,7 +177,7 @@ if (!isset($_SESSION['login'])) {
         <div class="profile-details">
 
             <?php
-            $sql = "SELECT * FROM tb_user WHERE User_ID = '$_SESSION[user_id]'";
+            $sql = "SELECT * FROM tb_user WHERE user_id = '$_SESSION[user_id]'";
             $query = $conn->query($sql);
             $myprofile = $query->fetch_array();
             ?>
@@ -181,7 +185,7 @@ if (!isset($_SESSION['login'])) {
             <h2>User's Name</h2>
             <p><i class="fas fa-envelope"></i>Email: user@example.com</p>
             <p><i class="fas fa-map-marker-alt"></i>Location: City, Country</p>
-            <p><i class="fas fa-info-circle"></i>About: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+            
             <div class="profile-social-icons">
                 <a href="#"><i class="fab fa-facebook-f"></i></a>
                 <a href="#"><i class="fab fa-twitter"></i></a>
@@ -189,23 +193,7 @@ if (!isset($_SESSION['login'])) {
                 <!-- Add more social media icons as needed -->
             </div>
         </div>
-        <div class="parcel-bill-list">
-            <h3>Parcel Bills</h3>
-            <div class="bill-card" onclick="openModal('modal1')">
-                <table>
-                    <tr>
-                        <th>Parcel ID</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                    </tr>
-                    <tr>
-                        <td>ABC123</td>
-                        <td>$50.00</td>
-                        <td>Paid</td>
-                    </tr>
-                    <!-- Add more rows for each bill -->
-                </table>
-            </div>
+         
             <!-- Add more bill cards as needed -->
 
             <!-- Modal -->
@@ -216,8 +204,26 @@ if (!isset($_SESSION['login'])) {
                 </div>
             </div>
         </div>
+        <div class="parcel-bill-list">
+            <h3>Parcel Bills</h3>
+            <div class="bill-card" onclick="openModal('modal1')">
+                <table>
+                    <tr>
+                        <th>ID</th>
+                        <th>จำนวนของสินค้า</th>
+                        <th>สถานะ</th>
+                    </tr>
+                    <tr>
+                        <td>**</td>
+                        <td>**</td>
+                        <td>***</td>
+                    </tr>
+                    <!-- Add more rows for each bill -->
+                </table>
+            </div>
+   
     </div>
-
+ 
     <footer>
         <?php require_once('function/footer.php'); ?>
     </footer>

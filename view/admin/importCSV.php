@@ -108,7 +108,7 @@
     }
 </style>
 
-<?php require_once ('function/sidebar3.php'); ?>
+<?php require_once ('function/sidebar.php'); ?>
 
 <body>
 
