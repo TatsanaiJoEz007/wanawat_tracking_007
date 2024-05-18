@@ -39,7 +39,7 @@ require_once('function/navbar.php');
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title text-center mb-4"><?php echo $lang_register?></h4>
-                    <form action="#" id="register" method="post">
+                    <form action="#" id="registerForm" method="post">
                         <div class="mb-3">
                             <label for="register-firstname" class="form-label"><?php echo $lang_fristname?></label>
                             <input type="text" class="form-control" id="register-firstname" name="register-firstname" require placeholder="<?php echo $lang_fristname?>">
@@ -106,7 +106,7 @@ require_once('function/navbar.php');
         </div>
     </div>
 </div>
-<?php require_once('function/function_register2.php'); ?>
+<?php require_once('function/function_register.php'); ?>
 <script src="https://fastly.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="../view/assets/js/script.js"></script>
