@@ -42,32 +42,32 @@ require_once('function/navbar.php');
                     <form action="#" id="registerForm" method="post">
                         <div class="mb-3">
                             <label for="register-firstname" class="form-label"><?php echo $lang_fristname?></label>
-                            <input type="text" class="form-control" id="register-firstname" name="register-firstname" require placeholder="<?php echo $lang_fristname?>">
+                            <input type="text" class="form-control" id="register-firstname" name="register-firstname" required placeholder="<?php echo $lang_fristname?>">
                         </div>
                         <div class="mb-3">
                             <label for="register-lastname" class="form-label"><?php echo $lang_lastname?></label>
-                            <input type="text" class="form-control" id="register-lastname" name="register-lastname" require placeholder="<?php echo $lang_lastname?>">
+                            <input type="text" class="form-control" id="register-lastname" name="register-lastname" required placeholder="<?php echo $lang_lastname?>">
                         </div>
                         <div class="mb-3">
                             <label for="register-email" class="form-label"><?php echo $lang_email?></label>
-                            <input type="email" class="form-control" id="register-email" name="register-email" require placeholder="<?php echo $lang_email?>">
+                            <input type="email" class="form-control" id="register-email" name="register-email" required placeholder="<?php echo $lang_email?>">
                         </div>
                         <div class="mb-3">
                             <label for="register-password" class="form-label"><?php echo $lang_password?></label>
-                            <input type="password" class="form-control" id="register-password" name="register-password" required placeholder="<?php echo $lang_password?>">
+                            <input type="password" class="form-control" id="register-password" name="register-password" requiredd placeholder="<?php echo $lang_password?>">
                         </div>
                         <div class="mb-3">
                             <label for="register-c-password" class="form-label"><?php echo $lang_confirmPassword?></label>
-                            <input type="password" class="form-control" id="register-c-password" name="register-c-password" required placeholder="<?php echo $lang_confirmPassword?>">
+                            <input type="password" class="form-control" id="register-c-password" name="register-c-password" requiredd placeholder="<?php echo $lang_confirmPassword?>">
                         </div>
                         <div class="mb-3">
                             <label for="register-address" class="form-label"><?php echo $lang_address?></label>
-                            <textarea type="text" class="form-control" id="register-address" name="register-address" required placeholder="<?php echo $lang_addressph?>"></textarea>
+                            <textarea type="text" class="form-control" id="register-address" name="register-address" requiredd placeholder="<?php echo $lang_addressph?>"></textarea>
                         </div>
 
                         <div class="mb-3">
                             <label for="register-country" class="form-label"><?php echo $lang_provinces?></label>
-                            <select class="form-select" id="province" name="province_id" required>
+                            <select class="form-select" id="province" name="province_id" requiredd>
                                 <option value="" disabled selected><?php echo $lang_provincesph?></option>
                                 <?php while($result = mysqli_fetch_assoc($query)): ?>
                                     <option value="<?=$result['id']?>"><?=$result['name_th']?></option>
@@ -77,7 +77,7 @@ require_once('function/navbar.php');
 
                         <div class="mb-3">
                             <label for="register-country" class="form-label"><?php echo $lang_amphures?></label>
-                            <select class="form-select" id="amphure" name="amphure_id" required>
+                            <select class="form-select" id="amphure" name="amphure_id" requiredd>
                                 <option value="" disabled selected><?php echo $lang_amphuresph?></option>
         
                             </select>
@@ -85,14 +85,14 @@ require_once('function/navbar.php');
 
                         <div class="mb-3">
                             <label for="register-country" class="form-label"><?php echo $lang_districts?></label>
-                            <select class="form-select" id="district" name="district_id" required>
+                            <select class="form-select" id="district" name="district_id" requiredd>
                                 <option value="" disabled selected><?php echo $lang_districtsph?></option>
                             </select>
                         </div>
                         
                         <div class="mb-3">
                             <label for="register-tel" class="form-label"><?php echo $lang_tel?></label>
-                            <input type="text" class="form-control" id="register-tel" name="register-tel" required placeholder="<?php echo $lang_telph?>">
+                            <input type="text" class="form-control" id="register-tel" name="register-tel" requiredd placeholder="<?php echo $lang_telph?>">
                         </div>
                         <div class="d-grid gap-2">
                             <button type="submit" name="register" class="btn btn-custom"><?php echo $lang_register?></button>
