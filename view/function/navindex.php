@@ -1,8 +1,39 @@
 <?php require_once('th_eng.php'); ?>
 
 <style>
-.navbar.navbar-expand-lg.navbar-light .navbar-nav .nav-link {
-    color: white !important;
+ .navbar.navbar-expand-lg.navbar-light .navbar-nav .nav-link {
+      color: white !important;
+    }
+
+    /* Style for language switcher icons */
+    .language-switcher {
+      display: flex;
+      align-items: center;
+    }
+
+    .language-switcher img {
+      width: 30px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+
+    /* New style for fixed navbar */
+    .navbar.fixed-top {
+      background-color: #f9a825; /* Change background color for fixed state */
+      transition: background 0.3s ease-in-out;
+    }
+
+    .navbar-brand img {
+  position: absolute; /* Position the logo absolutely */
+  left: 7%; /* Center the logo horizontally */
+  transform: translate(-50%, 0); /* Center the logo vertically */
+  width: 120px; /* Adjust the logo width as needed */
+  height: auto; /* Maintain aspect ratio */
+  top: -10px; /* Position the logo above the navbar */
+}
+
+.navbar-nav {
+  margin-left: 120px; /* Make space for the logo */
 }
 .profile-image {
     width: 50px; /* Adjust size as needed */
@@ -117,5 +148,18 @@
 
 
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-beta1/js/bootstrap.min.js"></script>
+    <script>
+  // Add JavaScript to handle navbar scrolling
+  window.addEventListener('scroll', function() {
+    const navbar = document.getElementById('navbar');
+    const scrollY = window.scrollY;
+
+    if (scrollY > 0) {
+      navbar.classList.add('fixed-top');
+    } else {
+      navbar.classList.remove('fixed-top');
+    }
+  });
+</script>
     <?php require_once('function/function_logout.php'); ?>
 </body>

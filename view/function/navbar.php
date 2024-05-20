@@ -89,10 +89,13 @@
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <?php echo $lang_login ?>  / <?php echo $lang_register ?>
           </a>
+         
           <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
             <li><a class="dropdown-item" href="../view/login"><?php echo $lang_login ?> </a></li>
             <li><a class="dropdown-item" href="../view/register"><?php echo $lang_register ?></a></li>
           </ul>
+     
+          
         </li>
       </ul>
     </div>
