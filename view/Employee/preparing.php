@@ -8,6 +8,7 @@
     <link rel="icon" type="image/x-icon"
         href="https://wehome.co.th/wp-content/uploads/2023/01/logo-WeHome-BUILDER-788x624.png">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap" rel="stylesheet">
+    
 </head>
 <style>
     h1 {
