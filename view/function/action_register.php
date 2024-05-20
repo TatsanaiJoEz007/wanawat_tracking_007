@@ -1,51 +1,78 @@
 <?php
-header('Content-Type: application/json'); // Set header to indicate JSON response
-require_once('../config/connect.php'); // Include your database connection
+header('Content-Type: application/json');
+require_once('../config/connect.php');
 
-$response = array(); // Initialize response array
+$response = [];
 
-if(isset($_POST['register'])) {
-    // Retrieve form data
-    $firstname = mysqli_real_escape_string($conn, $_POST['register-firstname']);
-    $lastname = mysqli_real_escape_string($conn, $_POST['register-lastname']);
-    $email = mysqli_real_escape_string($conn, $_POST['register-email']);
-    $password = mysqli_real_escape_string($conn, $_POST['register-password']);
-    $c_password = mysqli_real_escape_string($conn, $_POST['register-c-password']);
-    $address = mysqli_real_escape_string($conn, $_POST['register-address']);
-    $province_id = mysqli_real_escape_string($conn, $_POST['province_id']);
-    $amphure_id = mysqli_real_escape_string($conn, $_POST['amphure_id']);
-    $district_id = mysqli_real_escape_string($conn, $_POST['district_id']);
-    $tel = mysqli_real_escape_string($conn, $_POST['register-tel']);
-    $created_at = date('Y-m-d H:i:s'); // Current timestamp
+// Retrieve the input from the request body
+$input = json_decode(file_get_contents('php://input'), true);
+error_log('Received input: ' . print_r($input, true));
 
-    // Check if passwords match
-    if($password != $c_password) {
-        $response['success'] = false;
-        $response['message'] = "Passwords do not match";
-    } else {
-        // Hash the password with MD5
-        $hashed_password = md5($password);
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (
+        isset($input['register-firstname'], 
+              $input['register-lastname'], 
+              $input['register-email'], 
+              $input['register-password'], 
+              $input['register-c-password'], 
+              $input['register-address'], 
+              $input['province_id'], 
+              $input['amphure_id'], 
+              $input['district_id'], 
+              $input['register-tel'])
+    ) {
+        error_log('All required fields are present.');
+        
+        $firstname = $input['register-firstname'];
+        $lastname = $input['register-lastname'];
+        $email = $input['register-email'];
+        $password = $input['register-password'];
+        $confirm_password = $input['register-c-password'];
+        $address = $input['register-address'];
+        $province_id = $input['province_id'];
+        $amphure_id = $input['amphure_id'];
+        $district_id = $input['district_id'];
+        $tel = $input['register-tel'];
+        $user_img = ''; // Default value for user_img
+        $user_type = 0; // Default value for user_type
+        $user_create_at = date('Y-m-d H:i:s'); // Default value for user_create_at
+        $user_status = 1; // Default value for user_status
 
-        // Insert user data into database
-        $sql = "INSERT INTO tb_user (user_firstname, user_lastname, user_email, user_pass, user_address, province_id, amphure_id, district_id, user_tel, user_create_at, user_status)
-                VALUES ('$firstname', '$lastname', '$email', '$hashed_password', '$address', '$province_id', '$amphure_id', '$district_id', '$tel', '$created_at', 1)";
-
-        if(mysqli_query($conn, $sql)) {
-            $response['success'] = true;
-            $response['message'] = "Registration successful";
-        } else {
+        // Validate and process form data
+        if ($password !== $confirm_password) {
             $response['success'] = false;
-            $response['message'] = "Error: " . $sql . "<br>" . mysqli_error($conn);
+            $response['message'] = 'Passwords do not match.';
+        } else {
+            error_log('Passwords match. Inserting user into database...');
+            $hashed_password = md5($password); // Use MD5 to hash the password
+            $stmt = $conn->prepare("INSERT INTO tb_user (user_firstname, user_lastname, user_email, user_pass, user_img, user_type, user_address, province_id, amphure_id, district_id, user_tel, user_create_at , user_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ?)");
+
+            // Check if the statement was prepared successfully
+            if ($stmt === false) {
+                $response['success'] = false;
+                $response['message'] = 'Prepare failed: ' . $conn->error;
+            } else {
+                $stmt->bind_param("sssssiisssiss", $firstname, $lastname, $email, $hashed_password, $address, $province_id, $amphure_id, $district_id, $tel, $user_img, $user_type, $user_create_at , $user_status);
+
+                if ($stmt->execute()) {
+                    $response['success'] = true;
+                    $response['message'] = 'Registration successful.';
+                } else {
+                    $response['success'] = false;
+                    $response['message'] = 'Error: ' . $stmt->error;
+                }
+                $stmt->close();
+            }
         }
+    } else {
+        $response['success'] = false;
+        $response['message'] = 'Required fields are missing.';
     }
 } else {
     $response['success'] = false;
-    $response['message'] = "No data received";
+    $response['message'] = 'Invalid request method.';
 }
 
-// Close the database connection
-mysqli_close($conn);
-
-// Return JSON response
 echo json_encode($response);
+$conn->close();
 ?>
