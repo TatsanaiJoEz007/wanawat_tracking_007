@@ -64,7 +64,7 @@ require_once('function/navbar.php');
                             <label for="register-address" class="form-label"><?php echo $lang_address?></label>
                             <textarea type="text" class="form-control" id="register-address" name="register-address" requiredd placeholder="<?php echo $lang_addressph?>"></textarea>
                         </div>
-
+                        
                         <div class="mb-3">
                             <label for="register-country" class="form-label"><?php echo $lang_provinces?></label>
                             <select class="form-select" id="province" name="province_id" requiredd>
@@ -74,7 +74,7 @@ require_once('function/navbar.php');
                                 <?php endwhile; ?>
                             </select>
                         </div>
-
+                        
                         <div class="mb-3">
                             <label for="register-country" class="form-label"><?php echo $lang_amphures?></label>
                             <select class="form-select" id="amphure" name="amphure_id" requiredd>
@@ -94,6 +94,7 @@ require_once('function/navbar.php');
                             <label for="register-tel" class="form-label"><?php echo $lang_tel?></label>
                             <input type="text" class="form-control" id="register-tel" name="register-tel" requiredd placeholder="<?php echo $lang_telph?>">
                         </div>
+                        
                         <div class="d-grid gap-2">
                             <button type="submit" name="register" class="btn btn-custom"><?php echo $lang_register?></button>
                         </div>
@@ -101,6 +102,7 @@ require_once('function/navbar.php');
                         <?php echo $lang_haveaccount?> <a href="login.php" class="form-link"><?php echo  $lang_login?></a>
                         </p>
                     </form>
+                  
                 </div>
             </div>
         </div>
