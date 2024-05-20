@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee-Preparing</title>
+    <title>Employee-History</title>
     <link rel="icon" type="image/x-icon"
         href="https://wehome.co.th/wp-content/uploads/2023/01/logo-WeHome-BUILDER-788x624.png">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap" rel="stylesheet">
@@ -87,7 +87,7 @@
 <body>
     <?php require_once ('function/sidebar_employee.php'); ?>
     <div class="container">
-        <h1>Preparing</h1>
+        <h1>History</h1>
         <br>
         <table class="table">
             <thead>
