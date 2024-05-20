@@ -6,6 +6,14 @@ require_once('../view/config/connect.php');
 <link rel="stylesheet" type="text/css" href="../view/assets/css/style.css">
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap" rel="stylesheet">
 <style>
+.carousel-inner img {
+    width: 100%;
+    height: 500px;
+    object-fit: cover;
+}
+
+
+
 @media (max-width: 768px) {
     .carousel-inner img {
         width: 1000px;
@@ -23,7 +31,7 @@ require_once('../view/config/connect.php');
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
                 echo '<div class="carousel-item ' . $active . '">';
-                echo '<img src="admin' . $row['banner_img'] . '" class="d-block w-100" alt="Banner" style="object-fit: cover;" width="1000" height="500">';
+                echo '<img src="admin' . $row['banner_img'] . '" class="d-block w-100" alt="Banner" style="object-fit: cover;" width="1000" height="700">';
                 echo '</div>';
                 $active = ''; // ล้างค่าตัวแปร active หลังจากไอเทมแรก
             }

@@ -1,16 +1,15 @@
-<?php 
-
+<?php
 session_start();
-require_once('../config/connect.php');
-
+require_once ('../config/connect.php');
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 
 <head>
     <meta charset="UTF-8">
-    <title> Drop Down Sidebar Menu | CodingLab </title>
+    <title>Sidebar Stuff</title>
     <!-- Boxiocns CDN Link -->
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -356,7 +355,7 @@ require_once('../config/connect.php');
                     <i class="bx bx-send nav_icon"></i>
                     <span class="link_name">Sending Bill</span>
                 </a>
-                
+
             </li>
 
             <li>
@@ -399,11 +398,13 @@ require_once('../config/connect.php');
                 </ul>
             </li>
 
-            <?php 
-                $sql = "SELECT * FROM tb_user WHERE user_id = '$_SESSION[user_id]'";
-                $query = $conn->query($sql);
-                $myprofile = $query->fetch_array();
+            <?php
+            $sql = "SELECT * FROM tb_user WHERE user_id = '$_SESSION[user_id]'";
+            $query = $conn->query($sql);
+            $myprofile = $query->fetch_array();
             ?>
+
+
 
             <li>
                 <div class="profile-details">
@@ -412,12 +413,13 @@ require_once('../config/connect.php');
                     </div>
                     <div class="name-job">
                         <div class="profile_name">
-                            <?php echo $myprofile['user_firstname']?>
+                            <?php echo $myprofile['user_firstname'] ?>
                         </div>
                         <div class="job">คนเก็บขี้ปืน</div>
                     </div>
-                    
-                    <button type="logout" style="background-color:#F0592E;" onclick="logout()"><i class='bx bx-log-out'></i></button>
+
+                    <button type="logout" style="background-color:#F0592E;" onclick="logout()"><i
+                            class='bx bx-log-out'></i></button>
                 </div>
             </li>
         </ul>
@@ -429,43 +431,43 @@ require_once('../config/connect.php');
         </div>
 
         <script>
-        function logout() {
-            let option = {
-                url: 'function/action_logout.php',
-                type: 'post',
-                data: {
-                    logout: 1
-                },
-                success: function(res) {
-                    Swal.fire({
-                        position: 'center',
-                        icon: 'success',
-                        title: 'ออกจากระบบสำเร็จ!!',
-                        showConfirmButton: false,
-                        timer: 1500
-                    })
-                    setTimeout(() => {
-                        location.href = '../index'
-                    }, 900)
+            function logout() {
+                let option = {
+                    url: 'function/action_logout.php',
+                    type: 'post',
+                    data: {
+                        logout: 1
+                    },
+                    success: function (res) {
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'success',
+                            title: 'ออกจากระบบสำเร็จ!!',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        setTimeout(() => {
+                            location.href = '../index'
+                        }, 900)
+                    }
                 }
+                $.ajax(option)
             }
-            $.ajax(option)
-        }
 
-        let arrow = document.querySelectorAll(".arrow");
-        for (var i = 0; i < arrow.length; i++) {
-            arrow[i].addEventListener("click", (e) => {
-                let arrowParent = e.target.parentElement.parentElement; // selecting main parent of arrow
-                arrowParent.classList.toggle("showMenu");
+            let arrow = document.querySelectorAll(".arrow");
+            for (var i = 0; i < arrow.length; i++) {
+                arrow[i].addEventListener("click", (e) => {
+                    let arrowParent = e.target.parentElement.parentElement; // selecting main parent of arrow
+                    arrowParent.classList.toggle("showMenu");
+                });
+            }
+
+            let sidebar = document.querySelector(".sidebar");
+            let sidebarBtn = document.querySelector(".bx-menu");
+            console.log(sidebarBtn);
+            sidebarBtn.addEventListener("click", () => {
+                sidebar.classList.toggle("close");
             });
-        }
-
-        let sidebar = document.querySelector(".sidebar");
-        let sidebarBtn = document.querySelector(".bx-menu");
-        console.log(sidebarBtn);
-        sidebarBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("close");
-        });
         </script>
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

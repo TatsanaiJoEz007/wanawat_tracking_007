@@ -401,8 +401,8 @@
             <div class="profile_name">Jonh Doe</div>
             <div class="job">Web Desginer</div>
           </div>
-          <?php require_once "../../view/function/function_logout.php" ?>
-          <button type="logout" class="btn btn-link" onclick="logout()"><i class='bx bx-log-out'> </i></button>
+          <?php require_once "../../view/admin/function/function_logout.php" ?>
+          <button type="logout" style="background-color:#F0592E;" onclick="logout()"><i class='bx bx-log-out'> </i></button>
         </div>
       </li>
     </ul>

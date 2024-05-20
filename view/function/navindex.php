@@ -1,165 +1,196 @@
-<?php require_once('th_eng.php'); ?>
+<?php require_once ('th_eng.php'); ?>
 
 <style>
- .navbar.navbar-expand-lg.navbar-light .navbar-nav .nav-link {
-      color: white !important;
+    .navbar.navbar-expand-lg.navbar-light .navbar-nav .nav-link {
+        color: white !important;
     }
 
     /* Style for language switcher icons */
     .language-switcher {
-      display: flex;
-      align-items: center;
+        display: flex;
+        align-items: center;
     }
 
     .language-switcher img {
-      width: 30px;
-      margin-left: 10px;
-      cursor: pointer;
+        width: 30px;
+        margin-left: 10px;
+        cursor: pointer;
     }
 
     /* New style for fixed navbar */
     .navbar.fixed-top {
-      background-color: #f9a825; /* Change background color for fixed state */
-      transition: background 0.3s ease-in-out;
+        background-color: #f9a825;
+        /* Change background color for fixed state */
+        transition: background 0.3s ease-in-out;
     }
 
     .navbar-brand img {
-  position: absolute; /* Position the logo absolutely */
-  left: 7%; /* Center the logo horizontally */
-  transform: translate(-50%, 0); /* Center the logo vertically */
-  width: 120px; /* Adjust the logo width as needed */
-  height: auto; /* Maintain aspect ratio */
-  top: -10px; /* Position the logo above the navbar */
-}
-
-.navbar-nav {
-  margin-left: 120px; /* Make space for the logo */
-}
-.profile-image {
-    width: 50px; /* Adjust size as needed */
-    height: 50px;
-    border-radius: 50%;
-    border: 2px solid white;
-    margin-top: 5px; /* Adjust margin as needed */
-}
-.navbar-right {
-    position: absolute;
-    right: 20px; /* Right padding when large screen */
-    top: 8px; /* Vertical alignment */
-    
-}
-
-/* Media query for devices with a max-width of 991px (where Bootstrap's navbar toggler is active) */
-@media (max-width: 991px) {
-    .navbar-right {
-        position: static; /* Change from absolute to static */
-        margin-top: 10px; /* Add top margin for mobile */
-        display: flex; /* Use flexbox */
-        justify-content: center; /* Center horizontally */
-        align-items: center; /* Center vertically */
+        position: absolute;
+        /* Position the logo absolutely */
+        left: 5%;
+        /* Center the logo horizontally */
+        transform: translate(-50%, 0);
+        /* Center the logo vertically */
+        width: 120px;
+        /* Adjust the logo width as needed */
+        height: auto;
+        /* Maintain aspect ratio */
+        top: -10px;
+        /* Position the logo above the navbar */
+        z-index: 9999;
     }
-    .navbar-toggler {
-        clear: both; /* Clear floats */
-        margin-top: 10px; /* Ensure space above the toggler */
-    }
-    .dropdown-menu {
-        position: absolute; /* Make dropdown expand within the nav */
-    }
-}
 
-/* For larger screens */
-@media (min-width: 992px) {
+    .navbar-nav {
+        margin-left: 120px;
+        /* Make space for the logo */
+    }
+
+    .profile-image {
+        width: 50px;
+        /* Adjust size as needed */
+        height: 50px;
+        border-radius: 50%;
+        border: 2px solid white;
+        margin-top: 5px;
+        /* Adjust margin as needed */
+    }
+
     .navbar-right {
         position: absolute;
         right: 20px;
+        /* Right padding when large screen */
         top: 8px;
+        /* Vertical alignment */
+
     }
-}
 
-/* Style for language switcher icons */
-.language-switcher {
-    display: flex;
-    align-items: center;
-    margin-right: 75px;
-    
-}
+    /* Media query for devices with a max-width of 991px (where Bootstrap's navbar toggler is active) */
+    @media (max-width: 991px) {
+        .navbar-right {
+            position: static;
+            /* Change from absolute to static */
+            margin-top: 10px;
+            /* Add top margin for mobile */
+            display: flex;
+            /* Use flexbox */
+            justify-content: center;
+            /* Center horizontally */
+            align-items: center;
+            /* Center vertically */
+        }
 
-.language-switcher img {
-    width: 30px;
-    cursor: pointer;
-}
+        .navbar-toggler {
+            clear: both;
+            /* Clear floats */
+            margin-top: 10px;
+            /* Ensure space above the toggler */
+        }
 
-.navbar-right .dropdown-menu {
-    position: absolute;
-    right: 0; /* ตั้งให้ dropdown ชิดขวา */
-    top: 100%; /* ตั้งให้ dropdown เริ่มต้นจากตำแหน่งด้านล่างของ toggle button */
-    transform: translateX(-50%); /* จัดตำแหน่งให้ dropdown ไม่ล้นขอบจอ */
-}
+        .dropdown-menu {
+            position: absolute;
+            /* Make dropdown expand within the nav */
+        }
+    }
 
+    /* For larger screens */
+    @media (min-width: 992px) {
+        .navbar-right {
+            position: absolute;
+            right: 20px;
+            top: 0px;
+        }
+    }
 
+    /* Style for language switcher icons */
+    .language-switcher {
+        display: flex;
+        align-items: center;
+        margin-right: 75px;
+
+    }
+
+    .language-switcher img {
+        width: 30px;
+        cursor: pointer;
+    }
+
+    .navbar-right .dropdown-menu {
+        position: absolute;
+        right: 0;
+        /* ตั้งให้ dropdown ชิดขวา */
+        top: 100%;
+        /* ตั้งให้ dropdown เริ่มต้นจากตำแหน่งด้านล่างของ toggle button */
+        transform: translateX(-50%);
+        /* จัดตำแหน่งให้ dropdown ไม่ล้นขอบจอ */
+    }
 </style>
 
 <body>
-<nav class="navbar navbar-expand-lg navbar-light bg-orange" style="position: relative;">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="../view/mainpage">
-            <img src="../view/assets/img/logo/logo.png" width="65" height="52" alt="Logo">
-        </a>
-   
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNavDropdown">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="../view/freqquestion"><?php echo $lang_question ?> </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="../view/contact"><?php echo $lang_contact ?></a>
-                </li>
-            </ul>
-            <!-- Language Switcher -->
-        <div class="language-switcher">
-        
-             
-        <a href="?lang=th"><img src="../view/assets/img/logo/thai.png" alt="<?php echo $lang_th_language ?>"></a>
+    <nav id="navbar" class="navbar navbar-expand-lg navbar-light bg-orange">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="../view/mainpage">
+                <img src="../view/assets/img/logo/logo.png" width="65" height="52" alt="Logo">
+            </a>
 
-        
-        <a href="?lang=en"><img src="../view/assets/img/logo/eng.png" alt="<?php echo $lang_en_language ?>"></a>
-
-        </div>
-
-
-            <div class="navbar-right">
-                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="../view/assets/img/logo/mascot.png" alt="Profile Image" class="profile-image">
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                    <li><a class="dropdown-item" href="../view/profile"> <?php echo $lang_profile ?> </a></li>
-                    <li>
-                        <button type="logout" class="btn btn-link" onclick="logout()">
-                        <a class="dropdown-item" href="#"> <?php echo $lang_logout ?> </a> </button>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+                aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page"
+                            href="../view/freqquestion"><?php echo $lang_question ?> </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../view/contact"><?php echo $lang_contact ?></a>
                     </li>
                 </ul>
+                <!-- Language Switcher -->
+                <div class="language-switcher">
+
+
+                    <a href="?lang=th"><img src="../view/assets/img/logo/thai.png"
+                            alt="<?php echo $lang_th_language ?>"></a>
+
+
+                    <a href="?lang=en"><img src="../view/assets/img/logo/eng.png"
+                            alt="<?php echo $lang_en_language ?>"></a>
+
+                </div>
+
+
+                <div class="navbar-right">
+                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        <img src="../view/assets/img/logo/mascot.png" alt="Profile Image" class="profile-image">
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <li><a class="dropdown-item" href="../view/profile"> <?php echo $lang_profile ?> </a></li>
+                        <li>
+                            <button type="logout" class="btn btn-link" onclick="logout()">
+                                <a class="dropdown-item" href="#"> <?php echo $lang_logout ?> </a> </button>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
 
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-beta1/js/bootstrap.min.js"></script>
     <script>
-  // Add JavaScript to handle navbar scrolling
-  window.addEventListener('scroll', function() {
-    const navbar = document.getElementById('navbar');
-    const scrollY = window.scrollY;
+        // Add JavaScript to handle navbar scrolling
+        window.addEventListener('scroll', function () {
+            const navbar = document.getElementById('navbar');
+            const scrollY = window.scrollY;
 
-    if (scrollY > 0) {
-      navbar.classList.add('fixed-top');
-    } else {
-      navbar.classList.remove('fixed-top');
-    }
-  });
-</script>
-    <?php require_once('function/function_logout.php'); ?>
+            if (scrollY > 0) {
+                navbar.classList.add('fixed-top');
+            } else {
+                navbar.classList.remove('fixed-top');
+            }
+        });
+    </script>
+    <?php require_once ('function/function_logout.php'); ?>
 </body>
