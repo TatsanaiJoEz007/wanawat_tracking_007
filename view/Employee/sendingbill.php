@@ -69,6 +69,9 @@
         }
     </style>
 </head>
+<style>
+</style>
+<?php require_once('function/sidebar_employee.php');  ?>
 <body>
     <?php require_once('function/sidebar_employee.php');  ?>
     <div class="container mt-5">

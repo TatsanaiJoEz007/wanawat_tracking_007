@@ -7,6 +7,7 @@
         ?>
     </head>
     <body>
+        <div>
         <?php
             require_once('function/navbar.php');
         ?>
