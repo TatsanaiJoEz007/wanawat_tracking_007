@@ -185,11 +185,11 @@ if (!isset($_SESSION['login'])) {
       <div class="col-lg-4">
         <div class="card mb-4">
           <div class="card-body text-center">
-            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="avatar"
+            <img src="../view/admin/assets/img/adminpic/admin.jpg" alt="avatar"
               class="rounded-circle img-fluid" style="width: 150px;">
             <h5 class="my-3"><?php echo $myprofile['user_firstname']?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo $myprofile['user_lastname']?></h5>
-            <p class="text-muted mb-1">--</p>
-            <p class="text-muted mb-4">---</p>
+            <p class="text-muted mb-1"><?php echo $myprofile['user_email']?></p>
+            <hr>
             <div class="d-flex justify-content-center mb-2">
              
             </div>
@@ -284,7 +284,10 @@ if (!isset($_SESSION['login'])) {
       </div>
     </div>
   </div>
- 
+        <br>
+        <br>
+        <br>
+        <br> 
     <footer>
         <?php require_once('function/footer.php'); ?>
     </footer>
@@ -292,15 +295,17 @@ if (!isset($_SESSION['login'])) {
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
     <script src="https://fastly.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script>
-        function openModal(modalId) {
-            document.getElementById(modalId).style.display = "block";
-        }
+<script>
+    function openModal(modalId) {
+        document.getElementById(modalId).style.display = "block";
+    }
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = "none";
-        }
-    </script>
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = "none";
+    }
+
+</script>
+
 </body>
 
 </html>

@@ -1,347 +1,443 @@
-<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
-<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
+<!DOCTYPE html>
+<!-- Designined by CodingLab | www.youtube.com/codinglabyt -->
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <title> Drop Down Sidebar Menu | CodingLab </title>
+    <!-- Boxiocns CDN Link -->
+    <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
 <style>
-    @import url("https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap");
+    /* Google Fonts Import Link */
+    @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap');
 
-    :root {
-        --header-height: 3rem;
-        --nav-width: 68px;
-        --first-color: #F0592E;
-        --first-color-light: #AFA5D9;
-        --white-color: #F7F6FB;
-        --body-font: 'Kanit', sans-serif;
-        --normal-font-size: 1rem;
-        --z-fixed: 100
-    }
-
-    *,
-    ::before,
-    ::after {
-        box-sizing: border-box
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Kanit', sans-serif;
     }
 
     body {
-        position: relative;
-        margin: var(--header-height) 0 0 0;
-        padding: 0 1rem;
-        font-family: var(--body-font);
-        font-size: var(--normal-font-size);
-        transition: .5s
+        overflow: hidden;
     }
 
-    a {
-        text-decoration: none
-    }
-
-    .header {
-        width: 100%;
-        height: var(--header-height);
+    .sidebar {
         position: fixed;
         top: 0;
         left: 0;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 1rem;
-        background-color: var(--white-color);
-        z-index: var(--z-fixed);
-        transition: .5s
-    }
-
-    .header_toggle {
-        color: var(--first-color);
-        font-size: 1.5rem;
-        cursor: pointer
-    }
-
-    .header_img {
-        width: 35px;
-        height: 35px;
-        display: flex;
-        justify-content: center;
-        border-radius: 50%;
-        overflow: hidden
-    }
-
-    .header_img img {
-        width: 40px
-    }
-
-    .l-navbar {
-        position: fixed;
-        top: 0;
-        left: -30%;
-        width: var(--nav-width);
-        height: 100vh;
-        background-color: var(--first-color);
-        padding: .5rem 1rem 0 0;
-        transition: .5s;
-        z-index: var(--z-fixed)
-    }
-
-    .nav {
         height: 100%;
+        width: 260px;
+        background: #F0592E;
+        z-index: 100;
+        transition: all 0.5s ease;
+    }
+
+    .sidebar.close {
+        width: 78px;
+    }
+
+    .sidebar .logo-details {
+        height: 60px;
+        width: 100%;
         display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        overflow: hidden
-    }
-
-    .nav_logo,
-    .nav_link {
-        display: grid;
-        grid-template-columns: max-content max-content;
         align-items: center;
-        column-gap: 1rem;
-        padding: .5rem 0 .5rem 1.5rem
     }
 
-    .nav_logo {
-        margin-bottom: 2rem
+    .sidebar .logo-details i {
+        font-size: 30px;
+        color: #fff;
+        height: 50px;
+        min-width: 78px;
+        text-align: center;
+        line-height: 50px;
     }
 
-    .nav_logo-icon {
-        font-size: 1.25rem;
-        color: var(--white-color)
+    .sidebar .logo-details .logo_name {
+        font-size: 22px;
+        color: #fff;
+        font-weight: 600;
+        transition: 0.3s ease;
+        transition-delay: 0.1s;
     }
 
-    .nav_logo-name {
-        color: var(--white-color);
-        font-weight: 700
+    .sidebar.close .logo-details .logo_name {
+        transition-delay: 0s;
+        opacity: 0;
+        pointer-events: none;
     }
 
-    .heightza007 {
-        height: 50vh
+    .sidebar .nav-links {
+        height: 100%;
+        padding: 30px 0 150px 0;
+        overflow: auto;
     }
 
-    .nav_link {
+    .sidebar.close .nav-links {
+        overflow: visible;
+    }
+
+    .sidebar .nav-links::-webkit-scrollbar {
+        display: none;
+    }
+
+    .sidebar .nav-links li {
         position: relative;
-        color: var(--first-color-light);
-        margin-bottom: 1.5rem;
-        transition: .3s
+        list-style: none;
+        transition: all 0.4s ease;
     }
 
-    .nav_link:hover {
-        color: var(--white-color)
+    .sidebar .nav-links li:hover {
+        background: #F0592E;
     }
 
-    .nav_icon {
-        font-size: 1.25rem
+    .sidebar .nav-links li .iocn-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
 
-    .show {
-        left: 0
+    .sidebar.close .nav-links li .iocn-link {
+        display: block
     }
 
-    .body-pd {
-        padding-left: calc(var(--nav-width) + 1rem)
+    .sidebar .nav-links li i {
+        height: 50px;
+        min-width: 78px;
+        text-align: center;
+        line-height: 50px;
+        color: #fff;
+        font-size: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
     }
 
-    .active {
-        color: var(--white-color)
+    .sidebar .nav-links li.showMenu i.arrow {
+        transform: rotate(-180deg);
     }
 
-    .active::before {
-        content: '';
+    .sidebar.close .nav-links i.arrow {
+        display: none;
+    }
+
+    .sidebar .nav-links li a {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+    }
+
+    .sidebar .nav-links li a .link_name {
+        font-size: 18px;
+        font-weight: 400;
+        color: #fff;
+        transition: all 0.4s ease;
+    }
+
+    .sidebar.close .nav-links li a .link_name {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .sidebar .nav-links li .sub-menu {
+        padding: 6px 6px 14px 80px;
+        margin-top: -10px;
+        background: #F0592E;
+        display: none;
+    }
+
+    .sidebar .nav-links li.showMenu .sub-menu {
+        display: block;
+    }
+
+    .sidebar .nav-links li .sub-menu a {
+        color: #fff;
+        font-size: 15px;
+        padding: 5px 0;
+        white-space: nowrap;
+        opacity: 0.6;
+        transition: all 0.3s ease;
+    }
+
+    .sidebar .nav-links li .sub-menu a:hover {
+        opacity: 1;
+    }
+
+    .sidebar.close .nav-links li .sub-menu {
         position: absolute;
-        left: 0;
-        width: 2px;
-        height: 32px;
-        background-color: var(--white-color)
+        left: 100%;
+        top: -10px;
+        margin-top: 0;
+        padding: 10px 20px;
+        border-radius: 0 6px 6px 0;
+        opacity: 0;
+        display: block;
+        pointer-events: none;
+        transition: 0s;
     }
 
-   
+    .sidebar.close .nav-links li:hover .sub-menu {
+        top: 0;
+        opacity: 1;
+        pointer-events: auto;
+        transition: all 0.4s ease;
+    }
 
-    @media screen and (min-width: 768px) {
-        body {
-            margin: calc(var(--header-height) + 1rem) 0 0 0;
-            padding-left: calc(var(--nav-width) + 2rem)
+    .sidebar .nav-links li .sub-menu .link_name {
+        display: none;
+    }
+
+    .sidebar.close .nav-links li .sub-menu .link_name {
+        font-size: 18px;
+        opacity: 1;
+        display: block;
+    }
+
+    .sidebar .nav-links li .sub-menu.blank {
+        opacity: 1;
+        pointer-events: auto;
+        padding: 3px 20px 6px 16px;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .sidebar .nav-links li:hover .sub-menu.blank {
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .sidebar .profile-details {
+        position: fixed;
+        bottom: 0;
+        width: 260px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #F0592E;
+        padding: 12px 0;
+        transition: all 0.5s ease;
+    }
+
+    .sidebar.close .profile-details {
+        background: none;
+    }
+
+    .sidebar.close .profile-details {
+        width: 78px;
+    }
+
+    .sidebar .profile-details .profile-content {
+        display: flex;
+        align-items: center;
+    }
+
+    .sidebar .profile-details img {
+        height: 52px;
+        width: 52px;
+        object-fit: cover;
+        border-radius: 16px;
+        margin: 0 14px 0 12px;
+        background: #F0592E;
+        transition: all 0.5s ease;
+    }
+
+    .sidebar.close .profile-details img {
+        padding: 10px;
+    }
+
+    .sidebar .profile-details .profile_name,
+    .sidebar .profile-details .job {
+        color: #fff;
+        font-size: 18px;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .sidebar.close .profile-details i,
+    .sidebar.close .profile-details .profile_name,
+    .sidebar.close .profile-details .job {
+        display: none;
+    }
+
+    .sidebar .profile-details .job {
+        font-size: 12px;
+    }
+
+    .home-section {
+        position: relative;
+        background: #fff;
+        height: 100vh;
+        left: 260px;
+        width: calc(100% - 260px);
+        transition: all 0.5s ease;
+        padding: 12px;
+    }
+
+    .sidebar.close~.home-section {
+        left: 78px;
+        width: calc(100% - 78px);
+    }
+
+    .home-content {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .home-section .home-content .bx-menu,
+    .home-section .home-content .text {
+        color: #11101d;
+        font-size: 35px;
+    }
+
+    .home-section .home-content .bx-menu {
+        cursor: pointer;
+        margin-right: 10px;
+    }
+
+    .home-section .home-content .text {
+        font-size: 26px;
+        font-weight: 600;
+    }
+
+    @media screen and (max-width: 400px) {
+        .sidebar {
+            width: 240px;
         }
 
-        .header {
-            height: calc(var(--header-height) + 1rem);
-            padding: 0 2rem 0 calc(var(--nav-width) + 2rem)
+        .sidebar.close {
+            width: 78px;
         }
 
-        .header_img {
-            width: 40px;
-            height: 40px
+        .sidebar .profile-details {
+            width: 240px;
         }
 
-        .header_img img {
-            width: 45px
+        .sidebar.close .profile-details {
+            background: none;
         }
 
-        .l-navbar {
-            left: 0;
-            padding: 1rem 1rem 0 0
+        .sidebar.close .profile-details {
+            width: 78px;
         }
 
-        .show {
-            width: calc(var(--nav-width) + 156px)
+        .home-section {
+            left: 240px;
+            width: calc(100% - 240px);
         }
 
-        .body-pd {
-            padding-left: calc(var(--nav-width) + 188px)
+        .sidebar.close~.home-section {
+            left: 78px;
+            width: calc(100% - 78px);
         }
     }
-    
-    .dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: #f9f9f9;
-            min-width: 160px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-            z-index: 1;
-        }
-
-        .dropdown-content a {
-            color: black;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-        }
-
-        .dropdown-content a:hover {
-            background-color: #ddd;
-        }
-
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-
-        .nav_icon {
-            margin-right: 5px;
-        }
-
-        .high-100{
-            height: 50px;
-        }
-
-
-
-        
 </style>
 
-<body id="body-pd">
-    <header class="header" id="header">
-        <div class="header_toggle"> <i class='bx bx-menu' id="header-toggle"></i> </div>
-        <div class="header_img"> <img src="https://i.imgur.com/hczKIze.jpg" alt=""> </div>
-    </header>
-    <div class="l-navbar" id="nav-bar">
-        <nav class="nav">
-            <div> <a href="../admin/Dashboard.php" class="nav_logo"> <i class='bx bx-layer nav_logo-icon'></i> <span
-                        class="nav_logo-name">Admin</span> </a>
-                <div class="nav_list"> <a href="../admin/Dashboard.php" class="nav_link active"> <i class='bx bx-grid-alt nav_icon'></i>
-                        <span class="nav_name">Dashboard</span> </a>
-                    <a href="../admin/Users.php" class="nav_link"> <i class='bx bx-user nav_icon'></i> <span
-                            class="nav_name">Users</span> </a>
-                    <a href="../admin/ImportCSV.php" class="nav_link"> <i class='bx bx-message-square-detail nav_icon'></i> <span
-                            class="nav_name">Import.CSV</span> </a>
+<body>
+    <div class="sidebar close">
+        <div class="logo-details">
+            <img src="../../view/assets/img/logo/logo.png" alt="logo of wehome" weight="50px" height="50px"
+                style="padding-left:8px; padding-right:10px;" />
+            <span class="logo_name">Employee</span>
+        </div>
+        <ul class="nav-links">
 
-                    <div class="dropdown">
-                        <a href="#" class="nav_link">
-                            <i class='bx bx-bookmark nav_icon'></i>
-                            <span class="nav_name">Manage Web</span>
-                        </a>
-                        <div class="dropdown-content">
-                            <a href="../admin/banner.php">Banner</a>
-                            <a href="#">Contact</a>
-                            <a href="#">Question</a>
-                        </div>
+            <li>
+                <a href="../employee/sendingbill.php">
+                    <i class="bx bx-send nav_icon"></i>
+                    <span class="link_name">Sending Bill</span>
+                </a>
+                
+            </li>
+
+            <li>
+                <a href="../employee/preparing.php">
+                    <i class="bi bi-archive nav_icon"></i>
+                    <span class="link_name">Preparing</span>
+                </a>
+                <ul class="sub-menu blank">
+                    <li><a class="link_name" href="preparing.php">Preparing</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="../employee/sending.php">
+                    <i class="bi bi-truck nav_icon"></i>
+                    <span class="link_name">Sending</span>
+                </a>
+                <ul class="sub-menu blank">
+                    <li><a class="link_name" href="../employee/sending.php">Sending</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="../employee/history.php">
+                    <i class="bi bi-clock-history nav_icon"></i>
+                    <span class="link_name">History</span>
+                </a>
+                <ul class="sub-menu blank">
+                    <li><a class="link_name" href="../employee/history.php">History</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="../employee/problem.php">
+                    <i class="bi bi-bag-x nav_icon"></i>
+                    <span class="link_name">Problem</span>
+                </a>
+                <ul class="sub-menu blank">
+                    <li><a class="link_name" href="../employee/problem.php">Problem</a></li>
+                </ul>
+            </li>
+
+
+
+            <li>
+                <div class="profile-details">
+                    <div class="profile-content">
+                        <img src="../../view/admin/assets/img/adminpic/admin.jpg" alt="profileImg">
                     </div>
-                    
+                    <div class="name-job">
+                        <div class="profile_name">Employee</div>
+                        <div class="job">คนเก็บขี้ปืน</div>
+                    </div>
+                    <?php require_once "../../view/function/function_logout.php" ?>
+                    <button type="logout" style="background-color:#F0592E;" onclick="logout()"><i class='bx bx-log-out'>
+                        </i></button>
+
                 </div>
-            </div> <a href="#" onclick="logout()" class="nav_link"> <i class='bx bx-log-out nav_icon'></i> <span
-                    class="nav_name">SignOut</span> 
-                    <script>
-                        function logout(){
-                             let option = {
-                                url:'../function/action_logout.php',
-                                type:'post',
-                        data:{
-                                logout:1
-                             },
-                                 success:function(res){
-                                 setTimeout(() => {
-                                location.reload()
-                            }, 500);
-                            }
-                             }
-                                    Swal.fire({
-                                    title: 'ต้องการออกจากระบบ?',
-                                    text: "",
-                                    icon: 'warning',
-                                    showCancelButton: true,
-                                    confirmButtonColor: '#3085d6',
-                                    cancelButtonColor: '#d33',
-                                    confirmButtonText: 'ตกลง',
-                                    cancelButtonText: 'ยกเลิก',
-                                }).then((result) => {   
-                                    if (result.isConfirmed) {
-                                        $.ajax(option)
-                                    }
-                                })
-                                }
-                     </script>
-                    </a>
-        </nav>
+            </li>
+        </ul>
     </div>
-    <!-- Container Main start -->
-    <div class="high-100 bg-white">     
-    </div> 
-    <!-- Container Main end -->
+    <section class="home-section">
+        <div class="home-content">
+            <i class='bx bx-menu'></i>
+            <span class="text"></span>
+        </div>
+
+
+
+
+        <script>
+            let arrow = document.querySelectorAll(".arrow");
+            for (var i = 0; i < arrow.length; i++) {
+                arrow[i].addEventListener("click", (e) => {
+                    let arrowParent = e.target.parentElement.parentElement;//selecting main parent of arrow
+                    arrowParent.classList.toggle("showMenu");
+                });
+            }
+
+            let sidebar = document.querySelector(".sidebar");
+            let sidebarBtn = document.querySelector(".bx-menu");
+            console.log(sidebarBtn);
+            sidebarBtn.addEventListener("click", () => {
+                sidebar.classList.toggle("close");
+            });
+        </script>
+
 </body>
-<script>
-    document.addEventListener("DOMContentLoaded", function (event) {
 
-        const showNavbar = (toggleId, navId, bodyId, headerId) => {
-            const toggle = document.getElementById(toggleId),
-                nav = document.getElementById(navId),
-                bodypd = document.getElementById(bodyId),
-                headerpd = document.getElementById(headerId)
-
-            // Validate that all variables exist
-            if (toggle && nav && bodypd && headerpd) {
-                toggle.addEventListener('click', () => {
-                    // show navbar
-                    nav.classList.toggle('show')
-                    // change icon
-                    toggle.classList.toggle('bx-x')
-                    // add padding to body
-                    bodypd.classList.toggle('body-pd')
-                    // add padding to header
-                    headerpd.classList.toggle('body-pd')
-                })
-            }
-        }
-
-        showNavbar('header-toggle', 'nav-bar', 'body-pd', 'header')
-
-        /*===== LINK ACTIVE =====*/
-        const linkColor = document.querySelectorAll('.nav_link')
-
-        function colorLink() {
-            if (linkColor) {
-                linkColor.forEach(l => l.classList.remove('active'))
-                this.classList.add('active')
-            }
-        }
-        linkColor.forEach(l => l.addEventListener('click', colorLink))
-
-        // Your code to run since DOM is loaded and ready
-    });
-</script>
-
-
-
-
-<script src="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
-<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
+</html>
