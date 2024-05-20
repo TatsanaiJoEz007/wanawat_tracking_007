@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 08, 2024 at 05:44 AM
--- Server version: 10.4.27-MariaDB
--- PHP Version: 8.1.12
+-- Generation Time: May 20, 2024 at 07:15 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -10053,9 +10053,9 @@ CREATE TABLE `tb_banner` (
 --
 
 INSERT INTO `tb_banner` (`banner_id`, `banner_name`, `banner_img`) VALUES
-(1, 'banner 1 ', '../uploads/banner1.jpg'),
-(2, 'banner2', '../uploads/banner2.jpg'),
-(3, 'banner3', '../uploads/banner4.png');
+(3, 'banner3', '../uploads/banner4.png'),
+(5, 'banner ', '../uploads/banner1.jpg'),
+(6, 'banner 5', '../uploads/banner2.jpg');
 
 -- --------------------------------------------------------
 
@@ -10083,6 +10083,15 @@ CREATE TABLE `tb_freq` (
   `freq_create_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `freq_status` tinyint(4) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Dumping data for table `tb_freq`
+--
+
+INSERT INTO `tb_freq` (`freq_id`, `freq_header`, `freq_content`, `freq_create_at`, `freq_status`) VALUES
+(2, 'หากสินค้าไม่ขึ้นสถานะหลังจากกดสั่งซื้อ หมายถึงอะไร?', 'หมายถึง สินค้ากำลังดำเนินเพื่อออกบิล และนำส่งให้กับพนักงานเพื่ออัพเดทสถานะสินค้า เมื่อพนักงานอัพเดทสถานะแล้ว จะมีสถานะการจัดส่งขึ้นมาหลังจากนั้น', '2024-05-08 18:44:47', 1),
+(3, 'เลข Tracking นำมาจากไหน?', 'นำมาจากบิลที่ลูกค้าได้ทำการสั่งซื้อ เลขของคำสั่งซื้อจะอยู่มุมขวาบนของบิล ขึ้นต้นด้วย ED', '2024-05-08 18:54:58', 1),
+(16, 'puenlikeheecow', 'puenlikeheecow', '2024-05-10 18:38:55', 1);
 
 -- --------------------------------------------------------
 
@@ -10116,6 +10125,14 @@ CREATE TABLE `tb_question` (
   `question_status` tinyint(4) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
+--
+-- Dumping data for table `tb_question`
+--
+
+INSERT INTO `tb_question` (`question_id`, `question_sender_name`, `question_sender_email`, `question_content`, `question_create_at`, `question_status`) VALUES
+(1, 'tatsanai', 'tatsanai.n@rmutsvmail.com', 'test', '2024-05-12 10:44:03', 0),
+(2, 'tatsanai', 'tatsanai.n@rmutsvmail.com', 'test1', '2024-05-12 10:45:49', 0);
+
 -- --------------------------------------------------------
 
 --
@@ -10136,8 +10153,19 @@ CREATE TABLE `tb_user` (
   `district_id` varchar(6) NOT NULL,
   `user_tel` varchar(255) NOT NULL,
   `user_create_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `user_status` tinyint(4) DEFAULT 1
+  `user_status` int(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Dumping data for table `tb_user`
+--
+
+INSERT INTO `tb_user` (`user_id`, `user_firstname`, `user_lastname`, `user_email`, `user_pass`, `user_img`, `user_type`, `user_address`, `province_id`, `amphure_id`, `district_id`, `user_tel`, `user_create_at`, `user_status`) VALUES
+(1, 'admin', 'admin', 'admin@admin.com', '21232f297a57a5a743894a0e4a801fc3', '', 999, '123 Main St', 1, 1, '100101', '1234567890', '2024-05-08 18:12:31', 1),
+(2, 'user', 'user', 'user@user.com', 'ee11cbb19052e40b07aac0ca060c23ee', '', 0, '123 Main St', 1, 1, '100101', '1234567890', '2024-05-08 18:30:55', 1),
+(3, 'employee', 'employee', 'employee@employee.com', '$2y$10$IJZJvjbdLBL23zMNp6Ad9eKig0a22UHHJHlIWq76ZsoFZ7xYqftjC', '', 1, 'employee lan', 1, 1, '100101', '1234567890', '2024-05-08 18:32:47', 1),
+(4, 'clerk', 'clerk', 'clerk@clerk.com', '$2y$10$fZ4uDkDTqsjVs.1NkcmW0OaNQQG.b2S3KS.4iY163361Qnd183a1G', '', 2, 'clerk lan', 1, 1, '100101', '1234567890', '2024-05-08 18:34:40', 1),
+(6, 'ชวดล', 'สุวรรณสนิท', 'chawadol@gmail.com', '25f9e794323b453885f5181f1b624d0b', '', 0, '123 Main St', 9, 4, '100103', '0886649469', '2024-05-12 16:07:37', 1);
 
 --
 -- Indexes for dumped tables
@@ -10235,7 +10263,7 @@ ALTER TABLE `provinces`
 -- AUTO_INCREMENT for table `tb_banner`
 --
 ALTER TABLE `tb_banner`
-  MODIFY `banner_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `banner_id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `tb_category`
@@ -10247,7 +10275,7 @@ ALTER TABLE `tb_category`
 -- AUTO_INCREMENT for table `tb_freq`
 --
 ALTER TABLE `tb_freq`
-  MODIFY `freq_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `freq_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `tb_product`
@@ -10259,13 +10287,13 @@ ALTER TABLE `tb_product`
 -- AUTO_INCREMENT for table `tb_question`
 --
 ALTER TABLE `tb_question`
-  MODIFY `question_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `question_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `tb_user`
 --
 ALTER TABLE `tb_user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Constraints for dumped tables
