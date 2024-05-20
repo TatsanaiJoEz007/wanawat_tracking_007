@@ -7,6 +7,51 @@
    
 </head>
 <style>
+    .container {
+  max-width: 960px; /* Adjust for desired container width */
+  margin: 0 auto; /* Center the container horizontally */
+  padding: 2rem; /* Add some breathing room */
+}
+
+h2 {
+  text-align: center; /* Center the "Available Items" heading */
+}
+
+.card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  transition: all 0.2s ease-in-out; /* Smooth transition on hover */
+  margin-bottom: 2rem; /* Add spacing between cards */
+}
+
+.card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Enhance shadow on hover */
+  transform: translateY(-2px); /* Slight lift on hover */
+}
+
+.card-img-top {
+  width: 100%;
+  height: 200px; /* Adjust image height as needed */
+  object-fit: cover; /* Crop or contain image within container */
+}
+
+.add-to-cart {
+  background-color: #007bff; /* Adjust button color */
+  border-color: #007bff;
+  color: #fff;
+  text-decoration: none; /* Remove default underline */
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: all 0.2s ease-in-out;
+}
+
+.add-to-cart:hover {
+  background-color: #0069d9;
+  border-color: #0069d9;
+}
+
 </style>
 <?php require_once('function/sidebar_employee.php');  ?>
 <body>

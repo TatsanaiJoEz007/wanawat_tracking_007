@@ -1,5 +1,11 @@
+<?php 
+
+session_start();
+require_once('../config/connect.php');
+
+?>
+
 <!DOCTYPE html>
-<!-- Designined by CodingLab | www.youtube.com/codinglabyt -->
 <html lang="en" dir="ltr">
 
 <head>
@@ -393,7 +399,11 @@
                 </ul>
             </li>
 
-
+            <?php 
+                $sql = "SELECT * FROM tb_user WHERE user_id = '$_SESSION[user_id]'";
+                $query = $conn->query($sql);
+                $myprofile = $query->fetch_array();
+            ?>
 
             <li>
                 <div class="profile-details">
@@ -401,13 +411,13 @@
                         <img src="../../view/admin/assets/img/adminpic/admin.jpg" alt="profileImg">
                     </div>
                     <div class="name-job">
-                        <div class="profile_name">Employee</div>
+                        <div class="profile_name">
+                            <?php echo $myprofile['user_firstname']?>
+                        </div>
                         <div class="job">คนเก็บขี้ปืน</div>
                     </div>
-                    <?php require_once "../../view/function/function_logout.php" ?>
-                    <button type="logout" style="background-color:#F0592E;" onclick="logout()"><i class='bx bx-log-out'>
-                        </i></button>
-
+                    
+                    <button type="logout" style="background-color:#F0592E;" onclick="logout()"><i class='bx bx-log-out'></i></button>
                 </div>
             </li>
         </ul>
@@ -418,26 +428,48 @@
             <span class="text"></span>
         </div>
 
-
-
-
         <script>
-            let arrow = document.querySelectorAll(".arrow");
-            for (var i = 0; i < arrow.length; i++) {
-                arrow[i].addEventListener("click", (e) => {
-                    let arrowParent = e.target.parentElement.parentElement;//selecting main parent of arrow
-                    arrowParent.classList.toggle("showMenu");
-                });
+        function logout() {
+            let option = {
+                url: 'function/action_logout.php',
+                type: 'post',
+                data: {
+                    logout: 1
+                },
+                success: function(res) {
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'success',
+                        title: 'ออกจากระบบสำเร็จ!!',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                    setTimeout(() => {
+                        location.href = '../index'
+                    }, 900)
+                }
             }
+            $.ajax(option)
+        }
 
-            let sidebar = document.querySelector(".sidebar");
-            let sidebarBtn = document.querySelector(".bx-menu");
-            console.log(sidebarBtn);
-            sidebarBtn.addEventListener("click", () => {
-                sidebar.classList.toggle("close");
+        let arrow = document.querySelectorAll(".arrow");
+        for (var i = 0; i < arrow.length; i++) {
+            arrow[i].addEventListener("click", (e) => {
+                let arrowParent = e.target.parentElement.parentElement; // selecting main parent of arrow
+                arrowParent.classList.toggle("showMenu");
             });
+        }
+
+        let sidebar = document.querySelector(".sidebar");
+        let sidebarBtn = document.querySelector(".bx-menu");
+        console.log(sidebarBtn);
+        sidebarBtn.addEventListener("click", () => {
+            sidebar.classList.toggle("close");
+        });
         </script>
 
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://fastly.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 
 </html>
