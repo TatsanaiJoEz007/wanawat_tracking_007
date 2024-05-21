@@ -52,7 +52,7 @@
                     <div class="app-card-body">
                         <!-- Button to trigger modal -->
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            เพิ่มพนักในระบบ
+                            เพิ่มพนักงานในระบบ
                         </button>
 
                         <!-- Modal -->
