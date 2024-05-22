@@ -66,10 +66,10 @@ function main() {
     const dbConfig = {
         host: 'localhost',
         user: 'root',
-        password: 'password',
-        database: 'your_database'
+        password: '',
+        database: 'wanawat_tracking'
     };
-    const tableName = 'your_table';  // Name of the table in your database
+    const tableName = 'csvheader';  // Name of the table in your database
 
     readAndProcessCSV(inputFile, outputFile, (records) => {
         importToDatabase(records, dbConfig, tableName);

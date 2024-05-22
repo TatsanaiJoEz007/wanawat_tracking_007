@@ -74,3 +74,16 @@ CREATE TABLE IF NOT EXISTS tb_product (
     
     PRIMARY KEY (product_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS tb_bill (
+    bill_id                 INT                 AUTO_INCREMENT,
+    bill_date               DATE                    NOT NULL,
+    bill_number             VARCHAR(255)                NOT NULL,
+    bill_customer_id        VARCHAR(255)            NOT NULL,
+    bill_customer_name      VARCHAR(255)        NOT NULL,
+    bill_total              VARCHAR(255)       NOT NULL,
+    bill_isCanceled          VARCHAR(255)       NOT NULL,
+    
+    PRIMARY KEY (bill_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
