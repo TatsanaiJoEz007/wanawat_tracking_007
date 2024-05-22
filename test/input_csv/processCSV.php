@@ -1,13 +1,18 @@
 <?php
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 
 try {
-    $input = json_decode(file_get_contents('php://input'), true);
-    if ($input === null && json_last_error() !== JSON_ERROR_NONE) {
-        throw new Exception('Invalid JSON input');
+    $input = file_get_contents('php://input');
+    if ($input === false) {
+        throw new Exception('Failed to retrieve input data');
     }
+    
+    // Convert Windows Thai to UTF-8
+    $input_utf8 = iconv('Windows-874', 'UTF-8', $input);
+    
+    // Split the input data by comma to get individual records
+    $records = explode("\n", $input_utf8); // Assuming each record is in a new line
 
-    $records = $input['records'] ?? [];
     if (empty($records)) {
         throw new Exception('No records received');
     }
@@ -26,14 +31,19 @@ try {
 
     $errors = [];
     foreach ($records as $record) {
-        // Only one column in the CSV, so set the value directly
-        $bill_date = $record[0];
-        $bill_number = $record[1]; // Modify as per your requirement
-        $bill_customer_id = $record[2]; // Modify as per your requirement
-        $bill_customer_name = $record[3]; // Modify as per your requirement
-        $bill_total = $record[4]; // Modify as per your requirement
-        $bill_isCanceled = $record[5]; // Modify as per your requirement
+        // Explode each record by comma to get individual values
+        $fields = explode(",", $record);
+        
+        // Assuming each record has 6 fields
+        if (count($fields) != 6) {
+            $errors[] = "Invalid record format: " . $record;
+            continue; // Skip this record
+        }
 
+        // Assigning values to variables
+        list($bill_date, $bill_number, $bill_customer_id, $bill_customer_name, $bill_total, $bill_isCanceled) = $fields;
+
+        // Prepare SQL statement
         $sql = "INSERT INTO $tableName (bill_date, bill_number, bill_customer_id, bill_customer_name, bill_total, bill_isCanceled) VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         if (!$stmt) {
@@ -49,7 +59,7 @@ try {
             // Log the failed SQL query for debugging
             error_log('Failed SQL query: ' . $sql);
             // Log the values being inserted for debugging
-            error_log('Failed record values: ' . json_encode($record));
+            error_log('Failed record values: ' . json_encode($fields));
         }
 
         // Close statement
