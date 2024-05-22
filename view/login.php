@@ -98,7 +98,7 @@ $(document).ready(function() {
                         timer: 1500
                     });
                     setTimeout(function() {
-                        window.location.href = "../view/admin/index"; // // Redirect ไปยังหน้า index.php หรือหน้าที่ต้องการ
+                        window.location.href = "../view/admin/dashboard"; // // Redirect ไปยังหน้า index.php หรือหน้าที่ต้องการ
                     }, 1500);
                 }else if (response === 'employee') {
                     // เข้าสู่ระบบสำเร็จ

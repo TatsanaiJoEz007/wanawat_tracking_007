@@ -1,3 +1,11 @@
+<?php 
+session_start();
+
+if ($_SESSION['user_type'] != 'admin') {
+    header('Location: ../index.php');
+}
+
+?>  
 <!DOCTYPE html>
 <html lang="th">
 
