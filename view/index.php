@@ -1,5 +1,9 @@
+<?php
+session_start();
+?>
+
 <!DOCTYPE html>
-    <html lang="en">
+    <html lang="<?php echo $lang; ?>">
 
     <head>
         <?php

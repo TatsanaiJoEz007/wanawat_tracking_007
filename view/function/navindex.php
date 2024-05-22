@@ -1,4 +1,4 @@
-<?php require_once ('th_eng.php'); ?>
+<?php require_once('language.php'); ?>
 
 <style>
     .navbar.navbar-expand-lg.navbar-light .navbar-nav .nav-link {

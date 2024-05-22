@@ -1,6 +1,7 @@
 
 <?php
 require_once('function/navbar.php');
+session_start();
 ?>
 <!DOCTYPE html>
 <html lang="en">

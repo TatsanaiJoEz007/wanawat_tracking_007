@@ -1,4 +1,7 @@
-<?php require_once ('th_eng.php'); ?>
+<?php 
+require_once('language.php'); 
+session_start();
+?>
 
 <head>
   <style>
