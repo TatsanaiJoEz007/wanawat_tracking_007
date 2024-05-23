@@ -18,12 +18,15 @@
                 <input type="file" id="csvFileInput" class="hidden">Choose File
             </label>
             <button onclick="convertCSV()" class="btn btn-secondary">Convert</button>
+            <button onclick="importToDatabase()" class="btn btn-secondary">Import to Database</button>
         </div>
         <div id="output" class="p-6 rounded-lg shadow-md bg-gray-200"></div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script>
+        let convertedCSVData; // Store converted CSV data globally
+
         function convertCSV() {
             const fileInput = document.getElementById('csvFileInput');
             const file = fileInput.files[0];
@@ -34,8 +37,8 @@
                     const csvData = event.target.result;
                     Papa.parse(csvData, {
                         complete: function(results) {
-                            const convertedCSV = Papa.unparse(results.data);
-                            document.getElementById('output').innerText = convertedCSV;
+                            convertedCSVData = Papa.unparse(results.data);
+                            document.getElementById('output').innerText = convertedCSVData;
                         }
                     });
                 };
@@ -44,18 +47,30 @@
                 alert('Please select a CSV file.');
             }
         }
+
+        function importToDatabase() {
+            if (convertedCSVData) {
+                const formData = new FormData();
+                formData.append('csvData', convertedCSVData); // Pass converted CSV data
+
+                fetch('', { // Use current file path
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(message => alert(message))
+                .catch(error => console.error('Error:', error));
+            } else {
+                alert('Please convert a CSV file first.');
+            }
+        }
     </script>
-</body>
+    
+    <?php
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['csvData'])) {
+        $csvData = $_POST['csvData'];
+        $rows = str_getcsv($csvData, "\n");
 
-</html>
-
-<?php
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csvFile'])) {
-    $csvFile = $_FILES['csvFile'];
-
-    // Check if the file is a CSV file
-    $fileExtension = pathinfo($csvFile['name'], PATHINFO_EXTENSION);
-    if ($fileExtension === 'csv') {
         // Database connection settings
         $dbHost = 'localhost';
         $dbName = 'wanawat_tracking';
@@ -67,42 +82,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csvFile'])) {
             $pdo = new PDO("mysql:host=$dbHost;dbname=$dbName", $dbUser, $dbPass);
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            // Read CSV file line by line and insert into database
-            $handle = fopen($csvFile['tmp_name'], 'r');
-            if ($handle !== false) {
-                // Start a transaction
-                $pdo->beginTransaction();
+            // Start a transaction
+            $pdo->beginTransaction();
 
-                while (($data = fgetcsv($handle)) !== false) {
-                    if (count($data) === 6) { // Check if the row has all 6 columns
-                        $stmt = $pdo->prepare("INSERT INTO tb_bill (bill_date, bill_number, bill_customer_id, bill_customer_name, bill_total, bill_isCanceled) VALUES (?, ?, ?, ?, ?, ?)");
-                        $stmt->execute($data);
-                    }
+            foreach ($rows as $row) {
+                $data = str_getcsv($row);
+                if (count($data) === 6) { // Check if the row has all 6 columns
+                    $stmt = $pdo->prepare("INSERT INTO tb_bill (bill_date, bill_number, bill_customer_id, bill_customer_name, bill_total, bill_isCanceled) VALUES (?, ?, ?, ?, ?, ?)");
+                    $stmt->execute($data);
                 }
-
-                // Commit the transaction
-                $pdo->commit();
-                fclose($handle);
-
-                // Display a success message
-                echo 'The CSV data has been uploaded successfully.';
-            } else {
-                // Rollback the transaction if unable to open the CSV file
-                $pdo->rollBack();
-                echo 'Error: Unable to open the CSV file.';
             }
+
+            // Commit the transaction
+            $pdo->commit();
+
+            // Display a success message
+            echo '<script>alert("The CSV data has been uploaded successfully.");</script>';
         } catch (PDOException $e) {
             // Rollback the transaction on error
             $pdo->rollBack();
             // Display an error message
-            echo 'Error: ' . $e->getMessage();
+            echo '<script>alert("Error: ' . $e->getMessage() . '");</script>';
         }
-    } else {
-        // Display an error message if the file is not a CSV file
-        echo 'Error: Please upload a CSV file.';
     }
-} else {
-    // Display an error message if the file is not uploaded
-    echo 'Error: No file uploaded.';
-}
-?>
+    ?>
+</body>
+
+</html>
