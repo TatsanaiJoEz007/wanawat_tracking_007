@@ -68,10 +68,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $conn->close();
 
     // Send JSON response
+    header('Content-Type: application/json'); // Set content type as JSON
     echo json_encode($response);
 } else {
     $response['success'] = false;
     $response['message'] = 'Invalid request method';
+    header('Content-Type: application/json'); // Set content type as JSON
     echo json_encode($response);
 }
 ?>
