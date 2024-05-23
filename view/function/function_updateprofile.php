@@ -5,33 +5,30 @@
         $('#profileForm').on('submit', function(e) {
             e.preventDefault();
 
-            const formData = $(this).serialize();
-            console.log('Serialized Form Data:', formData); // This will log all data sent in the request
-
-
+            const formData = new FormData(this); // Use FormData to handle file uploads
 
             $.ajax({
-                url: '../view/function/action_updateprofile.php', // Update with the correct path
+                url: '../view/function/action_updateprofile.php',
                 type: 'POST',
-                data: formData,
+                data: formData, // Use FormData object directly
+                contentType: false, // Set contentType to false when using FormData
+                processData: false, // Set processData to false when using FormData
                 dataType: 'json',
                 beforeSend: function() {
                     console.log('Sending AJAX request...');
                 },
                 success: function(response) {
-                    console.log('Response received:', response); // Log response from server
+                    console.log('Response received:', response);
                     if (response.success) {
-                        console.log('Registration successful:', response.message);
+                        console.log('Profile updated successfully:', response.message);
                         Swal.fire({
                             icon: 'success',
                             title: 'Success',
                             text: response.message,
                             confirmButtonText: 'OK'
-                        }).then(() => {
-                            window.location.href = 'login.php';
                         });
                     } else {
-                        console.log('Registration failed:', response.message);
+                        console.log('Profile update failed:', response.message);
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
@@ -41,7 +38,7 @@
                     }
                 },
                 error: function(xhr, status, error) {
-                    console.error('AJAX error:', status, error); // Log AJAX errors
+                    console.error('AJAX error:', status, error);
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
