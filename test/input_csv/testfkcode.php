@@ -49,7 +49,6 @@
 
 </html>
 
-
 <?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csvFile'])) {
     $csvFile = $_FILES['csvFile'];
@@ -57,14 +56,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csvFile'])) {
     // Check if the file is a CSV file
     $fileExtension = pathinfo($csvFile['name'], PATHINFO_EXTENSION);
     if ($fileExtension === 'csv') {
-        // Convert encoding from windows-874 to UTF-8
-        $csvData = file_get_contents($csvFile['tmp_name']);
-        $utf8Data = iconv('windows-874', 'UTF-8', $csvData);
-
-        // Save the converted CSV data to a new file
-        $outputFileName = 'converted_' . $csvFile['name'];
-        file_put_contents($outputFileName, $utf8Data);
-
         // Database connection settings
         $dbHost = 'localhost';
         $dbName = 'wanawat_tracking';
@@ -76,29 +67,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csvFile'])) {
             $pdo = new PDO("mysql:host=$dbHost;dbname=$dbName", $dbUser, $dbPass);
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            // Prepare a SQL statement for insertion
-            $insertQuery = "INSERT INTO tb_bill (bill_date, bill_number, bill_customer_id, bill_customer_name, bill_total, bill_isCanceled) VALUES (:bill_date, :bill_number, :bill_customer_id, :bill_customer_name, :bill_total, :bill_isCanceled)";
-            $stmt = $pdo->prepare($insertQuery);
+            // Read CSV file line by line and insert into database
+            $handle = fopen($csvFile['tmp_name'], 'r');
+            if ($handle !== false) {
+                // Start a transaction
+                $pdo->beginTransaction();
 
-            // Parse the CSV data and bind the values to the statement
-            $rows = explode("\n", $utf8Data);
-            foreach ($rows as $row) {
-                $data = str_getcsv($row);
-                if (count($data) === 6) { // Check if the row has all 6 columns
-                    $stmt->bindValue(':bill_date', $data[0]);
-                    $stmt->bindValue(':bill_number', $data[1]);
-                    $stmt->bindValue(':bill_customer_id', $data[2]);
-                    $stmt->bindValue(':bill_customer_name', $data[3]);
-                    $stmt->bindValue(':bill_total', $data[4]);
-                    $stmt->bindValue(':bill_isCanceled', $data[5]);
-                    $stmt->execute();
+                while (($data = fgetcsv($handle)) !== false) {
+                    if (count($data) === 6) { // Check if the row has all 6 columns
+                        $stmt = $pdo->prepare("INSERT INTO tb_bill (bill_date, bill_number, bill_customer_id, bill_customer_name, bill_total, bill_isCanceled) VALUES (?, ?, ?, ?, ?, ?)");
+                        $stmt->execute($data);
+                    }
                 }
-            }
 
-            // Display a success message
-            echo 'The CSV data has been converted and uploaded successfully.';
+                // Commit the transaction
+                $pdo->commit();
+                fclose($handle);
+
+                // Display a success message
+                echo 'The CSV data has been uploaded successfully.';
+            } else {
+                // Rollback the transaction if unable to open the CSV file
+                $pdo->rollBack();
+                echo 'Error: Unable to open the CSV file.';
+            }
         } catch (PDOException $e) {
-            // Display an error message   
+            // Rollback the transaction on error
+            $pdo->rollBack();
+            // Display an error message
             echo 'Error: ' . $e->getMessage();
         }
     } else {
@@ -110,5 +106,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['csvFile'])) {
     echo 'Error: No file uploaded.';
 }
 ?>
-
-
