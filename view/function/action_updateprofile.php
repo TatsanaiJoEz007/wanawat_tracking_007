@@ -1,17 +1,9 @@
 <?php
 session_start();
 
-require_once('config/connect.php');
+require_once('../config/connect.php');
 
 $response = array(); // Initialize response array
-
-if (!isset($_SESSION['login'])) {
-    // If not logged in, redirect to login page
-    $response['success'] = false;
-    $response['message'] = 'User not logged in';
-    echo json_encode($response);
-    exit;
-}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Receive data from the form
@@ -38,8 +30,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Move uploaded file to the target directory
         if (move_uploaded_file($_FILES['avatar']['tmp_name'], $user_img)) {
+            // Encode image to base64
+            $user_img_base64 = base64_encode(file_get_contents($user_img));
+
             // Update profile information in the database
-            $sql = "UPDATE tb_user SET user_firstname = '$user_firstname', user_lastname = '$user_lastname', user_email = '$user_email', user_tel = '$user_tel', user_img = '$user_img' WHERE user_id = '$_SESSION[user_id]'";
+            $sql = "UPDATE tb_user SET user_firstname = '$user_firstname', user_lastname = '$user_lastname', user_email = '$user_email', user_tel = '$user_tel', user_img = '$user_img_base64' WHERE user_id = '$_SESSION[user_id]'";
             if ($conn->query($sql) === TRUE) {
                 $response['success'] = true;
                 $response['message'] = 'Profile updated successfully';
@@ -53,7 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     } else {
         // If no image uploaded
-        // Update profile information in the database
+        // Update profile information in the database without image
         $sql = "UPDATE tb_user SET user_firstname = '$user_firstname', user_lastname = '$user_lastname', user_email = '$user_email', user_tel = '$user_tel' WHERE user_id = '$_SESSION[user_id]'";
         if ($conn->query($sql) === TRUE) {
             $response['success'] = true;
