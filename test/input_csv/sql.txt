@@ -1,8 +1,8 @@
 TB STRUCTURE
 
 bill_id             int(11)         a_i,
-bill_date           date            NOT NULL,
-bill_number         vachar(50)      NOT NULL,
+bill_date           varchar(255)            NOT NULL,
+bill_number         vachar(255)      NOT NULL,
 bill_customer_id    vachar(255)     NOT NULL,
 bill_customer_name  vachar(255)     NOT NULL,
 bill_total          vachar(255)     NOT NULL,

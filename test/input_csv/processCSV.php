@@ -1,87 +1,56 @@
 <?php
-header('Content-Type: application/json');
-
-try {
-    // Get the uploaded CSV file
-    $csvFile = $_FILES['file']['tmp_name'];
-
-    // Check if the file was uploaded successfully
-    if (!is_uploaded_file($csvFile)) {
-        throw new Exception('No file uploaded');
-    }
-
-    // Open the CSV file
-    $fp = fopen($csvFile, 'r');
-
-    // Read the CSV file line by line
-    $records = [];
-    while (($row = fgetcsv($fp, 0, ",")) !== FALSE) {
-        $records[] = $row;
-    }
-
-    // Close the CSV file
-    fclose($fp);
-
-    // Check if there are any records
-    if (empty($records)) {
-        throw new Exception('No records in the CSV file');
-    }
-
-    // Connect to the database
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $dbname = "wanawat_tracking";
-    $tableName = "tb_bill";
-
-    $conn = new mysqli($servername, $username, $password, $dbname);
-
-    if ($conn->connect_error) {
-        throw new Exception('Connection failed: ' . $conn->connect_error);
-    }
-
-    $errors = [];
-    foreach ($records as $record) {
-        // Assign the values from the CSV row to the variables
-        $bill_date = $record[0];
-        $bill_number = $record[1]; // Modify as per your requirement
-        $bill_customer_id = $record[2]; // Modify as per your requirement
-        $bill_customer_name = $record[3]; // Modify as per your requirement
-        $bill_total = $record[4]; // Modify as per your requirement
-        $bill_isCanceled = $record[5]; // Modify as per your requirement
-
-        $sql = "INSERT INTO $tableName (bill_date, bill_number, bill_customer_id, bill_customer_name, bill_total, bill_isCanceled) VALUES (?, ?, ?, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        if (!$stmt) {
-            throw new Exception('Error preparing statement: ' . $conn->error);
-        }
-
-        // Bind parameters
-        $stmt->bind_param("ssssss", $bill_date, $bill_number, $bill_customer_id, $bill_customer_name, $bill_total, $bill_isCanceled);
-
-        // Execute statement
-        if (!$stmt->execute()) {
-            $errors[] = "Error executing statement: " . $stmt->error;
-            // Log the failed SQL query for debugging
-            error_log('Failed SQL query: ' . $sql);
-            // Log the values being inserted for debugging
-            error_log('Failed record values: ' . json_encode($record));
-        }
-
-        // Close statement
-        $stmt->close();
-    }
-
-    $conn->close();
-
-    if (empty($errors)) {
-        echo json_encode(["status" => "success", "message" => "Data imported successfully"]);
-    } else {
-        echo json_encode(["status" => "error", "message" => "Errors occurred during import", "errors" => $errors]);
-    }
-} catch (Exception $e) {
-    echo json_encode(["status" => "error", "message" => $e->getMessage()]);
-    // Log the error for debugging
-    error_log('Error in processCSV.php: ' . $e->getMessage());
+// Check if the file is uploaded successfully
+if (!isset($_FILES['csvFile']) || $_FILES['csvFile']['error'] != 0) {
+    echo json_encode(['message' => 'Error uploading file', 'errors' => ['File upload failed']]);
+    exit;
 }
-?>
+
+// Get the uploaded file
+$uploadedFile = $_FILES['csvFile']['tmp_name'];
+
+// Detect the encoding of the CSV file
+$encoding = mb_detect_encoding(file_get_contents($uploadedFile), 'ASCII, windows-874, UTF-8, ISO-8859-11');
+
+// Convert the file to UTF-8
+$fileContent = file_get_contents($uploadedFile);
+$utf8Content = mb_convert_encoding($fileContent, 'UTF-8', $encoding);
+file_put_contents($uploadedFile, $utf8Content);
+
+// Import the CSV file to the database
+$delimiter = ',';
+$dbHost = 'localhost';
+$dbUsername = 'root';
+$dbPassword = '';
+$dbName = 'wanawat_tracking';
+
+$conn = new mysqli($dbHost, $dbUsername, $dbPassword, $dbName);
+
+if ($conn->connect_error) {
+    echo json_encode(['message' => 'Error connecting to database', 'errors' => [$conn->connect_error]]);
+    exit;
+}
+
+$conn->set_charset('utf8mb4');
+
+$fp = fopen($uploadedFile, 'r');
+while (($row = fgetcsv($fp, 0, $delimiter)) !== FALSE) {
+    $insertQuery = "INSERT INTO tb_bill (bill_date, bill_number, bill_customer_id, bill_customer_name, bill_total, bill_isCanceled) VALUES (?, ?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($insertQuery);
+    if ($stmt) {
+        $stmt->bind_param('ssssss', $row[0], $row[1], $row[2], $row[3], $row[4], $row[5]);
+        $result = $stmt->execute();
+        if (!$result) {
+            echo json_encode(['message' => 'Error inserting data', 'errors' => [$conn->error]]);
+            exit;
+        }
+        $stmt->close();
+    } else {
+        echo json_encode(['message' => 'Error preparing statement', 'errors' => [$conn->error]]);
+        exit;
+    }
+}
+
+fclose($fp);
+$conn->close();
+
+echo json_encode(['message' => 'CSV file imported successfully']);
