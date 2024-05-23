@@ -133,7 +133,7 @@ if (!isset($_SESSION['login'])) {
             top: 0;
             width: 100%;
             height: 100%;
-            overflow: auto;
+            overflow: auto; /* เพิ่ม overflow: auto; ที่นี่ */
             background-color: rgba(0, 0, 0, 0.4);
         }
 
@@ -144,7 +144,10 @@ if (!isset($_SESSION['login'])) {
             border: 1px solid #888;
             width: 80%;
             border-radius: 10px;
+            overflow: auto; /* เพิ่ม overflow: auto; ที่นี่ */
+            max-height: 80vh; /* ปรับความสูงของ modal ให้สัมพันธ์กับส่วนที่เปิดเนื้อหาได้ในทุกๆ ความสูงของหน้าจอ */
         }
+
 
         .close {
             color: #aaa;
@@ -191,12 +194,13 @@ if (!isset($_SESSION['login'])) {
             <p class="text-muted mb-1"><?php echo $myprofile['user_email']?></p>
             <hr>
             <div class="d-flex justify-content-center mb-2">
-             
+              <button class="btn btn-primary" onclick="openModal('editProfileModal')">ตั้งค่าโปรไฟล์</button>
             </div>
           </div>
         </div>
-       
       </div>
+
+      
       <div class="col-lg-8">
         <div class="card mb-4">
           <div class="card-body">
@@ -305,6 +309,72 @@ if (!isset($_SESSION['login'])) {
     }
 
 </script>
+
+<!-- Modal HTML -->
+<div id="editProfileModal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">ตั้งค่าโปรไฟล์</h5>
+                <button type="button" class="close" onclick="closeModal('editProfileModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form action="#" id="profileForm" method="post">
+                    <!-- เพิ่มฟอร์มอัปโหลดรูปภาพ -->
+                    <div class="form-group">
+                        <label for="user_img">อัปโหลดรูปภาพ Avatar</label>
+                        <input type="file" class="form-control" id="user_img" name="user_img" onchange="previewImage(this)">
+                        <img id="avatar-preview" src="#" alt="Avatar Preview" style="max-width: 100%; max-height: 200px; display: none;">
+                    </div>
+                    <div class="form-group">
+                        <label for="user_firstname">ชื่อ</label>
+                        <input type="text" class="form-control" id="user_firstname" name="user_firstname" value="<?php echo $myprofile['user_firstname']; ?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="user_lastname">นามสกุล</label>
+                        <input type="text" class="form-control" id="user_lastname" name="user_lastname" value="<?php echo $myprofile['user_lastname']; ?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="user_email">อีเมล์</label>
+                        <input type="email" class="form-control" id="user_email" name="user_email" value="<?php echo $myprofile['user_email']; ?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="user_tel">เบอร์โทรศัพท์</label>
+                        <input type="text" class="form-control" id="user_tel" name="user_tel" value="<?php echo $myprofile['user_tel']; ?>">
+                    </div>
+                    <button type="submit" class="btn btn-success">บันทึกการเปลี่ยนแปลง</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<?php require_once('function/function_updateprofile.php'); ?>
+
+<script>
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            
+            reader.onload = function(e) {
+                document.getElementById('avatar-preview').src = e.target.result;
+                document.getElementById('avatar-preview').style.display = 'block'; // แสดงรูปภาพที่เลือก
+            }
+            
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function openModal(modalId) {
+        document.getElementById(modalId).style.display = "block";
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = "none";
+    }
+
+</script>
+
+
 
 </body>
 
