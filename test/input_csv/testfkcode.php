@@ -4,14 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <title>CSV Language Converter</title>
-    <!-- Add Tailwind CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <!-- Add DaisyUI -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss-daisyui@1.10.0/dist/full.css" rel="stylesheet">
-    <!-- Add animate.css for animations -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <!-- Add Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- Add SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11"></link>
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     <!-- Add custom styles -->
     <style>
         .rotate {
@@ -24,31 +22,38 @@
             }
         }
 
-        /* Custom animation for wiping effect */
-        @keyframes wipeOut {
-            0% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(-100%);
-            }
+        /* Hover effect for buttons */
+        .btn-custom:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Click animation for buttons */
+        .btn-custom:active {
+            transform: scale(0.95);
         }
     </style>
 </head>
 
-<body class="bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">
-    <div class="container mx-auto p-8 rounded-lg shadow-lg bg-white">
-        <h1 class="text-4xl font-bold text-center text-gray-800 mb-8">CSV Language Converter</h1>
-        <div class="flex items-center justify-center space-x-4 mb-8">
-            <label for="csvFileInput" class="btn btn-primary cursor-pointer bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded-lg">
-                <input type="file" id="csvFileInput" class="hidden">Choose File
+<body style="background: white; color: black;">
+    <div class="container p-4 rounded-lg shadow-lg bg-white mt-5">
+        <h1 class="text-4xl font-bold text-center text-dark mb-8">CSV Language Converter</h1>
+        <div class="d-flex justify-content-center mb-4">
+            <label for="csvFileInput" class="btn btn-primary btn-custom cursor-pointer d-flex align-items-center">
+                <i class="fas fa-file-upload mr-2"></i>
+                <span>Choose File</span>
+                <input type="file" id="csvFileInput" class="d-none">
             </label>
-            <button onclick="convertCSV()" class="btn btn-secondary bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-lg border border-gray-300 animate__animated animate__bounce">Convert</button>
-            <button onclick="importToDatabase()" id="importBtn" class="btn btn-secondary bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-lg border border-gray-300">Import to Database</button>
+            <button onclick="convertCSV()" class="btn btn-secondary btn-custom ml-3 d-flex align-items-center">
+                <i class="fas fa-sync-alt mr-2"></i>
+                <span>Convert</span>
+            </button>
+            <button onclick="importToDatabase()" id="importBtn" class="btn btn-secondary btn-custom ml-3 d-flex align-items-center">
+                <i class="fas fa-database mr-2"></i>
+                <span>Import to Database</span>
+            </button>
         </div>
-        <div id="output" class="p-6 rounded-lg shadow-md bg-gray-200 animate__animated animate__fadeIn"></div>
+        <div id="output" class="p-4 rounded-lg shadow-md bg-light text-dark"></div>
     </div>
 
     <!-- Add SweetAlert2 library -->
@@ -75,7 +80,6 @@
                     });
                 };
                 reader.readAsText(file, 'windows-874');
-                document.getElementById('output').classList.add('animate__fadeIn');
             } else {
                 Swal.fire({
                     icon: 'error',
@@ -97,18 +101,12 @@
                     .then(response => response.text())
                     .then(message => {
                         const output = document.getElementById('output');
-                        output.classList.remove('animate__fadeIn');
-                        output.classList.add('animate__animated', 'animate__wipeOut'); // Apply wipeOut animation
-
-                        setTimeout(function() {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Success',
-                                text: "กำลัง Import จร้าาาา"
-                            });
-                            output.classList.remove('animate__wipeOut');
-                            output.classList.add('animate__fadeIn');
-                        }, 1000); // Wait for animation to complete (1 second)
+                        output.innerText = '';
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: "Importing data successfully!"
+                        });
                     })
                     .catch(error => console.error('Error:', error));
             } else {
