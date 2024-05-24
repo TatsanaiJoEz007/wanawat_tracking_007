@@ -8,3 +8,10 @@ bill_customer_name  varchar(255)     NOT NULL, -
 bill_total          varchar(255)     NOT NULL, -
 bill_isCanceled     varchar(255)     NOT NULL,-
 bill_create_at      timestamp       NOT_NULL-
+
+
+TB STRUCTURE
+
+item_id         int(11)         a_i PK
+bill_number     varchar(255)    NOT_NULL
+item_seque

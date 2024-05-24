@@ -7,7 +7,8 @@ if (!isset($_SESSION['login'])) {
   //echo '<script>location.href="login"</script>';
 }
 
-function fetchUserProfile($conn, $userId) {
+function fetchUserProfile($conn, $userId)
+{
   $sql = "SELECT tb_user.*, 
             provinces.name_th AS province_name, 
             amphures.name_th AS amphure_name, 
@@ -24,7 +25,8 @@ function fetchUserProfile($conn, $userId) {
   return $stmt->get_result()->fetch_array(MYSQLI_ASSOC);
 }
 
-function getImageBase64($imageData) {
+function getImageBase64($imageData)
+{
   return 'data:image/jpeg;base64,' . base64_encode($imageData);
 }
 
@@ -221,7 +223,7 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
         <div class="card mb-4">
           <div class="card-body text-center">
             <div class="mb-2">
-              <i class="fas fa-history"></i> ประวัติการสั่งซื้อ
+              <a href="orderhistory.php" class="fas fa-history"></a> ประวัติการสั่งซื้อ
             </div>
             <hr>
             <div class="mb-2">
@@ -349,10 +351,9 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
           <button type="button" class="close" onclick="closeModal('editProfileModal')">&times;</button>
         </div>
         <div class="modal-body">
-          <form action="#" id="profileForm" method="post">
-            <!-- เพิ่มฟอร์มอัปโหลดรูปภาพ -->
+          <form action="#" id="profileForm" method="post" enctype="multipart/form-data">
             <div class="form-group">
-              <label for="user_img">อัปโหลดรูปภาพ Avatar</label>
+              <label for="user_img">Upload Profile Picture</label>
               <input type="file" class="form-control" id="user_img" name="user_img" onchange="previewImage(this)">
               <img id="avatar-preview" src="#" alt="Avatar Preview" style="max-width: 100%; max-height: 200px; display: none;">
             </div>

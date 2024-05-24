@@ -154,13 +154,10 @@
     <?php require_once('function/sidebar.php'); ?>
 
     <br>
-    <!-- <a href="uploadedbill.php" class="btn-custom2 upload-button">
-        <i class="fas fa-file"></i>
-        <span>&nbsp; Uploaded Bills | บิลที่เพิ่มเข้าระบบแล้ว</span>
-    </a> -->
-    
     <div class="container">
-        <h1 class="heading">Import CSV</h1>
+        <h1 class="heading" style="color:red;">Import Head CSV</h1>
+        <h3 style="color:red;"><center>นำเข้าไฟล์ CSV ของ Head</center></h3>
+        <br>
         <div class="buttons">
             <label for="csvFileInput" class="btn-custom btn-upload">
                 <i class="fas fa-file-upload"></i>
@@ -178,6 +175,33 @@
         </div>
         <div id="output" class="output-container"></div>
     </div>
+
+    <br>
+    <hr>
+    <br>
+
+    <div class="container">
+        <h1 class="heading" style="color:green;">Import Line CSV</h1>
+        <h3 style="color:green;"><center>นำเข้าไฟล์ CSV ของ Line</center></h3>
+        <br>
+        <div class="buttons">
+            <label for="csvFileInput" class="btn-custom btn-upload">
+                <i class="fas fa-file-upload"></i>
+                <span>&nbsp;Choose File</span>
+                <input type="file" id="csvFileInput" class="file-input d-none">
+            </label>
+            <button onclick="convertCSV2()" class="btn-custom ml-3">
+                <i class="fas fa-sync-alt"></i>
+                <span>&nbsp;Convert</span>
+            </button>
+            <button onclick="importToDatabase2()" id="importBtn" class="btn-custom ml-3">
+                <i class="fas fa-database"></i>
+                <span>&nbsp;Import to Database</span>
+            </button>
+        </div>
+        <div id="output" class="output-container"></div>
+    </div>
+
 
     <!-- Add SweetAlert2 library -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -264,8 +288,112 @@
             foreach ($rows as $row) {
                 $data = str_getcsv($row);
                 if (count($data) === 6) { // Check if the row has all 6 columns
-                    $stmt = $pdo->prepare("INSERT INTO tb_bill (bill_date, bill_number, bill_customer_id, bill_customer_name, bill_total, bill_isCanceled) VALUES (?, ?, ?, ?, ?, ?)");
+                    $stmt = $pdo->prepare("INSERT INTO tb_header (bill_date, bill_number, bill_customer_id, bill_customer_name, bill_total, bill_isCanceled) VALUES (?, ?, ?, ?, ?, ?)");
                     $stmt->execute($data);
+                }
+            }
+
+            // Commit the transaction
+            $pdo->commit();
+        } catch (PDOException $e) {
+            // Rollback the transaction on error
+            $pdo->rollBack();
+            // Display an error message using SweetAlert2
+            echo '<script>
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "' . $e->getMessage() . '"
+                    });
+                  </script>';
+        }
+    }
+    ?>
+
+<script>
+        let convertedCSVData2; // Store converted CSV data globally
+
+        function convertCSV2() {
+            const fileInput = document.getElementById('csvFileInput');
+            const file = fileInput.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const csvData = event.target.result;
+                    Papa.parse(csvData, {
+                        complete: function(results) {
+                            // Filter out blank rows
+                            const filteredData = results.data.filter(row => row.some(cell => cell.trim() !== ''));
+                            convertedCSVData2 = Papa.unparse(filteredData);
+                            document.getElementById('output').innerText = convertedCSVData2;
+                        }
+                    });
+                };
+                reader.readAsText(file, 'windows-874');
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please select a CSV file.'
+                });
+            }
+        }
+
+        function importToDatabase2() {
+            if (convertedCSVData2) {
+                const formData = new FormData();
+                formData.append('csvData', convertedCSVData2); // Pass converted CSV data
+
+                fetch('', { // Use current file path
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.text())
+                    .then(message => {
+                        const output = document.getElementById('output');
+                        output.innerText = '';
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: "Importing data successfully!"
+                        });
+                    })
+                    .catch(error => console.error('Error:', error));
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please convert a CSV file first.'
+                });
+            }
+        }
+    </script>
+
+<?php
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['csvData'])) {
+        $csvData2 = $_POST['csvData2'];
+        $rows = str_getcsv($csvData2, "\n");
+
+        // Database connection settings
+        $dbHost = 'localhost';
+        $dbName = 'wanawat_tracking';
+        $dbUser = 'root';
+        $dbPass = '';
+
+        try {
+            // Connect to the database
+            $pdo = new PDO("mysql:host=$dbHost;dbname=$dbName", $dbUser, $dbPass);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+            // Start a transaction
+            $pdo->beginTransaction();
+
+            foreach ($rows as $row) {
+                $data2 = str_getcsv($row);
+                if (count($data2) === 6) { // Check if the row has all 6 columns
+                    $stmt = $pdo->prepare("INSERT INTO tb_line (bill_date, bill_number, bill_customer_id, bill_customer_name, bill_total, bill_isCanceled) VALUES (?, ?, ?, ?, ?, ?)");
+                    $stmt->execute($data2);
                 }
             }
 
