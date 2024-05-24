@@ -4,8 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <title>CSV Language Converter</title>
-    <!-- Add Bootstrap CSS -->
-
     <!-- Add SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11">
     </link>
@@ -13,39 +11,29 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     <!-- Add custom styles -->
     <style>
-        .rotate {
-            animation: spin 2s linear infinite;
+        body {
+            background: #f8f9fa;
+            color: #333;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
         }
-
-        @keyframes spin {
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Hover effect for buttons */
-        .btn-custom:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Click animation for buttons */
-        .btn-custom:active {
-            transform: scale(0.95);
-        }
-
 
         .container {
             max-width: 600px;
-            margin: 0 auto;
+            margin: 40px auto;
             padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
         }
 
         .heading {
             text-align: center;
-            font-size: 24px;
+            font-size: 32px;
             font-weight: bold;
             margin-bottom: 20px;
+            color: #000000;
         }
 
         .buttons {
@@ -54,22 +42,33 @@
             margin-bottom: 20px;
         }
 
-        .button {
-            background-color: #007bff;
+        .btn-custom , .btn-custom2 {
+            background-color: #F0592E;
             color: #fff;
             border: none;
             padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
             margin: 0 5px;
+            text-decoration: none;
         }
 
-        .button:hover {
-            background-color: #0056b3;
+        .btn-custom2:hover {
+            background-color: #ee4616;
+            transform: scale(1.005);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
-        .button:active {
+        .btn-custom:hover {
+            background-color: #ee4616;
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-custom:active {
             transform: scale(0.95);
         }
 
@@ -94,31 +93,90 @@
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             margin-top: 20px;
+            word-wrap: break-word;
+        }
+
+        .fa {
+            margin-right: 8px;
+        }
+
+        .d-none {
+            display: none;
+        }
+
+        .ml-3 {
+            margin-left: 1rem;
+        }
+
+        .random-data-container {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #f2f2f2;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .random-data-container .heading {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .random-data {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .random-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .random-row-item {
+            flex: 1 1 50%;
+            /* Two items per row */
+            padding: 5px;
+        }
+
+        .random-row-item .label {
+            font-weight: bold;
+        }
+
+        .random-row-item .value {
+            margin-left: 5px;
         }
     </style>
 </head>
 
-<body style="background: white; color: black;">
+<body>
+
+
     <?php require_once('function/sidebar.php'); ?>
 
-    <div class="container p-4 rounded-lg shadow-lg bg-white mt-5">
-        <h1 class="text-4xl font-bold text-center text-dark mb-8">CSV Language Converter</h1>
-        <div class="d-flex justify-content-center mb-4">
-            <label for="csvFileInput" class="btn btn-primary btn-custom cursor-pointer d-flex align-items-center">
-                <i class="fas fa-file-upload mr-2"></i>
-                <span>Choose File</span>
-                <input type="file" id="csvFileInput" class="d-none">
+    <br>
+    <!-- <a href="uploadedbill.php" class="btn-custom2 upload-button">
+        <i class="fas fa-file"></i>
+        <span>&nbsp; Uploaded Bills | บิลที่เพิ่มเข้าระบบแล้ว</span>
+    </a> -->
+    
+    <div class="container">
+        <h1 class="heading">Import CSV</h1>
+        <div class="buttons">
+            <label for="csvFileInput" class="btn-custom btn-upload">
+                <i class="fas fa-file-upload"></i>
+                <span>&nbsp;Choose File</span>
+                <input type="file" id="csvFileInput" class="file-input d-none">
             </label>
-            <button onclick="convertCSV()" class="btn btn-secondary btn-custom ml-3 d-flex align-items-center">
-                <i class="fas fa-sync-alt mr-2"></i>
-                <span>Convert</span>
+            <button onclick="convertCSV()" class="btn-custom ml-3">
+                <i class="fas fa-sync-alt"></i>
+                <span>&nbsp;Convert</span>
             </button>
-            <button onclick="importToDatabase()" id="importBtn" class="btn btn-secondary btn-custom ml-3 d-flex align-items-center">
-                <i class="fas fa-database mr-2"></i>
-                <span>Import to Database</span>
+            <button onclick="importToDatabase()" id="importBtn" class="btn-custom ml-3">
+                <i class="fas fa-database"></i>
+                <span>&nbsp;Import to Database</span>
             </button>
         </div>
-        <div id="output" class="p-4 rounded-lg shadow-md bg-light text-dark"></div>
+        <div id="output" class="output-container"></div>
     </div>
 
     <!-- Add SweetAlert2 library -->
