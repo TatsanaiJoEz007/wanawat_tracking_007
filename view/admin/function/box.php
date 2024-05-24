@@ -30,6 +30,18 @@ mysqli_free_result($result);
 $total_user_box = $total_user;
 ?>
 
+<?php
+    require_once('../config/connect.php');
+    $query = "SELECT COUNT(*) AS total_bill FROM tb_bill";
+    $result = mysqli_query($conn, $query);
+    $row = mysqli_fetch_assoc($result);
+    $total_bill = $row['total_bill'];
+
+    mysqli_free_result($result);
+
+    $total_bill_box = $total_bill;
+?>
+
 <style>
     /* Add your custom styles here */
     body {
@@ -118,7 +130,7 @@ $total_user_box = $total_user;
         <div class="col-lg-3 col-6">
             <div class="small-box bg-warning">
                 <div class="inner">
-                    <h3>44</h3>
+                    <h3><?php echo $total_bill_box ?></h3>
                     <p>จำนวนบิล</p>
                 </div>
                 <div class="icon" style="background-color: #05433E;">
