@@ -26,6 +26,10 @@
                             title: 'Success',
                             text: response.message,
                             confirmButtonText: 'OK'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                closeModal('editProfileModal'); // Close the modal
+                            }
                         });
                     } else {
                         console.log('Profile update failed:', response.message);
@@ -52,4 +56,8 @@
             });
         });
     });
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = "none";
+    }
 </script>

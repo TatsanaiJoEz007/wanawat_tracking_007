@@ -198,6 +198,19 @@ if (!isset($_SESSION['login'])) {
             </div>
           </div>
         </div>
+
+
+        <div class="card mb-4">
+          <div class="card-body text-center">
+              <div class="mb-2" >
+                  <i class="fas fa-history"></i> ประวัติการสั่งซื้อ
+              </div>
+              <hr>
+              <div class="mb-2" >
+                  <i class="fas fa-shipping-fast"></i> กำลังจัดส่ง
+              </div>
+          </div>
+        </div>
       </div>
 
       
