@@ -136,7 +136,7 @@ $total_user_box = $total_user;
                 <div class="icon" style="background-color: #05433E;">
                     <i class="fas fa-user-plus" style="color: #FFFFFF;"></i>
                 </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                <a href="../admin/uploadedbill.php" class="small-box-footer">ดูบิลทั้งหมด <i class="fas fa-arrow-circle-right"></i></a>
             </div>
         </div>
         <div class="col-lg-3 col-6">
