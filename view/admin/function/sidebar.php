@@ -7,6 +7,8 @@
   <title> Drop Down Sidebar Menu | CodingLab </title>
   <!-- Boxiocns CDN Link -->
   <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
@@ -369,12 +371,16 @@
         </ul>
       </li>
       <li>
-        <a href="../admin/importCSV">
-          <i class="bx bxs-file-import nav_icon"></i>
-          <span class="link_name">Import CSV</span>
-        </a>
-        <ul class="sub-menu blank">
-          <li><a class="link_name" href="../admin/importCSV">Import CSV</a></li>
+        <div class="iocn-link">
+          <a href="#">
+            <i class="bx bx-cloud-upload nav_icon"></i>
+            <span class="link_name">Bill & CSV</span>
+          </a>
+          <i class='bx bxs-chevron-down arrow'></i>
+        </div>
+        <ul class="sub-menu">
+          <li><a href="../admin/importCSV.php">Import CSV</a></li>
+          <li><a href="../admin/uploadedbill.php">Uploaded Bill</a></li>
         </ul>
       </li>
       <li>
