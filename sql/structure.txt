@@ -1,18 +1,16 @@
-tb_user (table name)
+table_name (tb_user)
 user_id         int(11)         A_I     PK
+user_customerID varchar(255)
 user_firstname  varchar(255)
 user_lastname   varchar(255)
 user_email      varchar(255)
 user_pass       varchar(255)
-user_img        varchar(255)
+user_img        longblob
 user_type       int(50)
 user_address    varchar(255)
 province_id     int(5)                  FK
 amphure_id      int(5)                  FK
-district_id     varchar(6)
+district_id     varchar(6)              FK
 user_tel        varchar(255)
 user_create_at  timestamp
-ีuser_status     tinyint(4)
-
-
-is this the old one?
+ีuser_status     int(1)

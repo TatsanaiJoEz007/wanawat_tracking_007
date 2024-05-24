@@ -2,6 +2,4 @@ RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^([^\.]+)$ $1.php [NC,L]
 
-DENY FROM ALL the stuff that should be fix for pure php
-
 php_flag display_errors on

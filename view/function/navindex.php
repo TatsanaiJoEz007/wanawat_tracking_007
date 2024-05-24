@@ -1,130 +1,155 @@
-<?php require_once('language.php'); ?>
+<?php
+require_once('language.php');
+session_start();
 
-<style>
-    .navbar.navbar-expand-lg.navbar-light .navbar-nav .nav-link {
-        color: white !important;
-    }
+require_once('config/connect.php');
 
-    /* Style for language switcher icons */
-    .language-switcher {
-        display: flex;
-        align-items: center;
-    }
+if (!isset($_SESSION['login'])) {
+    // Uncomment the next line to enable redirection to the login page
+    // echo '<script>location.href="login"</script>';
+}
 
-    .language-switcher img {
-        width: 30px;
-        margin-left: 10px;
-        cursor: pointer;
-    }
+if (!isset($_SESSION['login'])) {
+    // echo '<script>location.href="login"</script>';
+}
 
-    /* New style for fixed navbar */
-    .navbar.fixed-top {
-        background-color: #f9a825;
-        /* Change background color for fixed state */
-        transition: background 0.3s ease-in-out;
-    }
+function Profilepic($conn, $userId)
+{
+    $sql = "SELECT tb_user.*, 
+          provinces.name_th AS province_name, 
+          amphures.name_th AS amphure_name, 
+          districts.name_th AS district_name,
+          districts.zip_code AS zipcode 
+          FROM tb_user
+          LEFT JOIN provinces ON tb_user.province_id = provinces.id 
+          LEFT JOIN amphures ON tb_user.amphure_id = amphures.id 
+          LEFT JOIN districts ON tb_user.district_id = districts.id 
+          WHERE user_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    return $stmt->get_result()->fetch_array(MYSQLI_ASSOC);
+}
 
-    .navbar-brand img {
-        position: absolute;
-        /* Position the logo absolutely */
-        left: 5%;
-        /* Center the logo horizontally */
-        transform: translate(-50%, 0);
-        /* Center the logo vertically */
-        width: 120px;
-        /* Adjust the logo width as needed */
-        height: auto;
-        /* Maintain aspect ratio */
-        top: -10px;
-        /* Position the logo above the navbar */
-        z-index: 9999;
-    }
+function base64img($imageData)
+{
+    return 'data:image/jpeg;base64,' . base64_encode($imageData);
+}
 
-    .navbar-nav {
-        margin-left: 120px;
-        /* Make space for the logo */
-    }
+$defaultAvatarPath = '../view/assets/img/logo/mascot.png'; // Path to your default avatar image
+$userId = $_SESSION['user_id'];
+$myprofile = Profilepic($conn, $userId);
 
-    .profile-image {
-        width: 50px;
-        /* Adjust size as needed */
-        height: 50px;
-        border-radius: 50%;
-        border: 2px solid white;
-        margin-top: 5px;
-        /* Adjust margin as needed */
-    }
+if (!empty($myprofile['user_img'])) {
+    $imageBase64 = base64img($myprofile['user_img']);
+} else {
+    $imageBase64 = $defaultAvatarPath; // Use default avatar image path if user image is empty
+}
+?>
 
-    .navbar-right {
-        position: absolute;
-        right: 20px;
-        /* Right padding when large screen */
-        top: 8px;
-        /* Vertical alignment */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Image</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .navbar.navbar-expand-lg.navbar-light .navbar-nav .nav-link {
+            color: white !important;
+        }
 
-    }
-
-    /* Media query for devices with a max-width of 991px (where Bootstrap's navbar toggler is active) */
-    @media (max-width: 991px) {
-        .navbar-right {
-            position: static;
-            /* Change from absolute to static */
-            margin-top: 10px;
-            /* Add top margin for mobile */
+        .language-switcher {
             display: flex;
-            /* Use flexbox */
-            justify-content: center;
-            /* Center horizontally */
             align-items: center;
-            /* Center vertically */
         }
 
-        .navbar-toggler {
-            clear: both;
-            /* Clear floats */
-            margin-top: 10px;
-            /* Ensure space above the toggler */
+        .language-switcher img {
+            width: 30px;
+            margin-left: 10px;
+            cursor: pointer;
         }
 
-        .dropdown-menu {
+        .navbar.fixed-top {
+            background-color: #f9a825;
+            transition: background 0.3s ease-in-out;
+        }
+
+        .navbar-brand img {
             position: absolute;
-            /* Make dropdown expand within the nav */
+            left: 5%;
+            transform: translate(-50%, 0);
+            width: 120px;
+            height: auto;
+            top: -10px;
+            z-index: 9999;
         }
-    }
 
-    /* For larger screens */
-    @media (min-width: 992px) {
+        .navbar-nav {
+            margin-left: 120px;
+        }
+
+        .profile-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid white;
+            margin-top: 8px;
+            object-fit: fill;
+        }
+
         .navbar-right {
             position: absolute;
             right: 20px;
-            top: 0px;
+            top: 8px;
         }
-    }
 
-    /* Style for language switcher icons */
-    .language-switcher {
-        display: flex;
-        align-items: center;
-        margin-right: 75px;
+        @media (max-width: 991px) {
+            .navbar-right {
+                position: static;
+                margin-top: 10px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
 
-    }
+            .navbar-toggler {
+                clear: both;
+                margin-top: 10px;
+            }
 
-    .language-switcher img {
-        width: 30px;
-        cursor: pointer;
-    }
+            .dropdown-menu {
+                position: absolute;
+            }
+        }
 
-    .navbar-right .dropdown-menu {
-        position: absolute;
-        right: 0;
-        /* ตั้งให้ dropdown ชิดขวา */
-        top: 100%;
-        /* ตั้งให้ dropdown เริ่มต้นจากตำแหน่งด้านล่างของ toggle button */
-        transform: translateX(-50%);
-        /* จัดตำแหน่งให้ dropdown ไม่ล้นขอบจอ */
-    }
-</style>
+        @media (min-width: 992px) {
+            .navbar-right {
+                position: absolute;
+                right: 20px;
+                top: 0px;
+            }
+        }
 
+        .language-switcher {
+            display: flex;
+            align-items: center;
+            margin-right: 75px;
+        }
+
+        .language-switcher img {
+            width: 30px;
+            cursor: pointer;
+        }
+
+        .navbar-right .dropdown-menu {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            transform: translateX(-50%);
+        }
+    </style>
+</head>
 <body>
     <nav id="navbar" class="navbar navbar-expand-lg navbar-light bg-orange">
         <div class="container-fluid">
@@ -146,30 +171,23 @@
                         <a class="nav-link" href="../view/contact"><?php echo $lang_contact ?></a>
                     </li>
                 </ul>
-                <!-- Language Switcher -->
                 <div class="language-switcher">
-
-
                     <a href="?lang=th"><img src="../view/assets/img/logo/thai.png"
                             alt="<?php echo $lang_th_language ?>"></a>
-
-
                     <a href="?lang=en"><img src="../view/assets/img/logo/eng.png"
                             alt="<?php echo $lang_en_language ?>"></a>
-
                 </div>
-
-
                 <div class="navbar-right">
                     <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown"
                         aria-expanded="false">
-                        <img src="../view/assets/img/logo/mascot.png" alt="Profile Image" class="profile-image">
+                        <img src="<?php echo $imageBase64; ?>" alt="Profile Image" class="profile-image">
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                        <li><a class="dropdown-item" href="../view/profile"> <?php echo $lang_profile ?> </a></li>
+                        <li><a class="dropdown-item" href="../view/profile"><?php echo $lang_profile ?></a></li>
                         <li>
                             <button type="logout" class="btn btn-link" onclick="logout()">
-                                <a class="dropdown-item" href="#"> <?php echo $lang_logout ?> </a> </button>
+                                <a class="dropdown-item" href="#"><?php echo $lang_logout ?></a> 
+                            </button>
                         </li>
                     </ul>
                 </div>
@@ -177,10 +195,8 @@
         </div>
     </nav>
 
-
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-beta1/js/bootstrap.min.js"></script>
     <script>
-        // Add JavaScript to handle navbar scrolling
         window.addEventListener('scroll', function () {
             const navbar = document.getElementById('navbar');
             const scrollY = window.scrollY;
@@ -192,5 +208,6 @@
             }
         });
     </script>
-    <?php require_once ('function/function_logout.php'); ?>
+    <?php require_once('function/function_logout.php'); ?>
 </body>
+</html>

@@ -1,7 +1,30 @@
-<?php require_once('../config/connect.php'); ?>
+<?php 
+require_once('../config/connect.php'); 
+session_start(); // Start the session
+
+// Function to get user profile picture
+function Profilepic($conn, $userId)
+{
+    $sql = "SELECT user_img
+            FROM tb_user
+            WHERE user_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    return $stmt->get_result()->fetch_array(MYSQLI_ASSOC);
+}
+
+// Function to convert image data to base64
+function base64img($imageData)
+{
+    return 'data:image/jpeg;base64,' . base64_encode($imageData);
+}
+
+?>
 
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <title>Manage - User</title>
     <meta charset="utf-8">
@@ -9,37 +32,11 @@
     <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
 
     <style>
-    /* ปรับแต่ง modal ให้อยู่ตรงกลางจอ */
-    .modal-dialog {
-        display: flex;
-        justify-content: center; /* จัดกลางแนวนอน */
-        align-items: center; /* จัดกลางแนวตั้ง */
-        min-height: 100vh; /* ตั้งค่าความสูงขั้นต่ำของ modal dialog */
-        margin: 0 auto !important; /* ใช้ margin auto และ !important เพื่อให้การจัดกลางแน่นอน */
-    }
-    .modal {
-        position: fixed;
-        top: 50% !important;
-        left: 50% !important;
-        transform: translate(-50%, -50%) !important;
-        width: auto !important;
-    }
-    .modal-content {
-        margin: auto !important; /* จัดกลาง modal-content ใน modal-dialog */
-    }
-    .modal-backdrop.show {
-        position: fixed;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100vw !important;
-        height: 100vh !important;
-    }
-    
-</style>
-
-
+        /* CSS Styles */
+    </style>
 
 </head>
+
 <body>
     <?php require_once('function/sidebar.php'); ?>
 
@@ -59,51 +56,7 @@
                         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered modal-lg">
                                 <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel">เพิ่มข้อมูล</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        
-                                        <form action="#" id="register" method="post">
-                                            <div class="mb-3">
-                                                <label for="user_firstname" class="form-label">ชื่อ</label>
-                                                <input type="text" class="form-control" id="user_firstname" name="user_firstname" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="user_lastname" class="form-label">นามสกุล</label>
-                                                <input type="text" class="form-control" id="user_lastname" name="user_lastname" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="user_email" class="form-label">อีเมล</label>
-                                                <input type="email" class="form-control" id="user_email" name="user_email" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="user_pass" class="form-label">รหัสผ่าน</label>
-                                                <input type="password" class="form-control" id="user_pass" name="user_pass" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="user_img" class="form-label">รูปภาพ</label>
-                                                <input type="file" class="form-control" id="user_img" name="user_img" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="status" class="form-label">สถานะ</label>
-                                                <select class="form-select" id="user_status" name="user_status" required>
-                                                    <option value="1">อยู่ในระบบ</option>
-                                                    <option value="0">ไม่อยู่ในระบบ</option>
-                                                </select>
-                                            </div>
-
-                                        </form>
-
-
-
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
-                                        <button type="button" class="btn btn-primary">บันทึกข้อมูล</button>
-                                        
-                                    </div>
+                                    <!-- Modal content -->
                                 </div>
                             </div>
                         </div>
@@ -125,26 +78,41 @@
                                 </thead>
                                 <tbody class="text-center">
                                     <?php
-                                    $i = 1;
-                                    $sql = "SELECT * FROM tb_user WHERE user_type = 0 ";
-                                    $query = $conn->query($sql);
-                                    foreach($query as $row):
+                                    // Check if session variable is set
+                                    if (isset($_SESSION['user_id'])) {
+                                        $i = 1;
+                                        $sql = "SELECT * FROM tb_user WHERE user_type = 0";
+                                        $query = $conn->query($sql);
+                                        while ($row = $query->fetch_assoc()) {
+                                            // Get user profile picture
+                                            $myprofile = Profilepic($conn, $row['user_id']);
+                                            // Set default avatar path
+                                            $defaultAvatarPath = '../../view/assets/img/logo/mascot.png';
+                                            // Check if user image is set
+                                            if (!empty($myprofile['user_img'])) {
+                                                $imageBase64 = base64img($myprofile['user_img']);
+                                            } else {
+                                                $imageBase64 = $defaultAvatarPath;
+                                            }
                                     ?>
-                                    <tr>
-                                        <td><?php echo $i++; ?></td>
-                                        <td class="align-middle"><img src="<?php echo $row['user_img']; ?>" alt="User Image" style="width: 50px; height: auto;"></td>
-                                        <td class="align-middle"><?php echo $row['user_firstname']?></td>
-                                        <td class="align-middle"><?php echo $row['user_lastname']?></td>
-                                        <td class="align-middle"><?php echo $row['user_email']?></td>
-                                        <td class="align-middle"><?php echo md5($row['user_pass']); ?></td>
-                                        <td class="align-middle"><?php echo ($row['user_status'] == 1) ? "อยู่ในระบบ" : "ไม่อยู่ในระบบ"; ?></td>
-                                        <td class="align-middle">
-                                            <a href="#" class="btn btn-sm btn-warning">Edit</a>
-                                            <a href="#" class="btn btn-sm btn-secondary">Reset Password</a>
-                                            <a href="#" class="btn btn-sm btn-danger">Delete</a>
-                                        </td>
-                                    </tr>
-                                    <?php endforeach; ?>
+                                            <tr>
+                                                <td><?php echo $i++; ?></td>
+                                                <td class="align-middle"><img src="<?php echo $imageBase64; ?>" alt="User Image" style="width: 50px; height: 50px;"></td>
+                                                <td class="align-middle"><?php echo $row['user_firstname'] ?></td>
+                                                <td class="align-middle"><?php echo $row['user_lastname'] ?></td>
+                                                <td class="align-middle"><?php echo $row['user_email'] ?></td>
+                                                <td class="align-middle"><?php echo md5($row['user_pass']); ?></td>
+                                                <td class="align-middle"><?php echo ($row['user_status'] == 1) ? "อยู่ในระบบ" : "ไม่อยู่ในระบบ"; ?></td>
+                                                <td class="align-middle">
+                                                    <a href="#" class="btn btn-sm btn-warning">Edit</a>
+                                                    <a href="#" class="btn btn-sm btn-secondary">Reset Password</a>
+                                                    <a href="#" class="btn btn-sm btn-danger">Delete</a>
+                                                </td>
+                                            </tr>
+                                    <?php
+                                        }
+                                    }
+                                    ?>
                                 </tbody>
                             </table>
                         </div>
@@ -156,4 +124,5 @@
 
     <script src="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
