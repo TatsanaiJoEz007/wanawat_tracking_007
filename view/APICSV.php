@@ -1,4 +1,3 @@
-
 <?php
 // ตรวจสอบการเชื่อมต่อ
 if ($conn->connect_error) {

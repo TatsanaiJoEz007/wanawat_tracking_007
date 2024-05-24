@@ -8,8 +8,6 @@
             const formData = $(this).serialize();
             console.log('Serialized Form Data:', formData); // This will log all data sent in the request
 
-
-
             $.ajax({
                 url: '../view/function/action_register.php', // Update with the correct path
                 type: 'POST',
