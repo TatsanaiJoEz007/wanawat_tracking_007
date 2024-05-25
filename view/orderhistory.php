@@ -56,69 +56,18 @@
                 <div class="app-card app-card-settings shadow-sm p-4">
                     <div class="app-card-body">
 
-                        <!-- Modal -->
-                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                            aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-body">
 
-                                        <form action="#" id="register" method="post">
-                                            <div class="mb-3">
-                                                <label for="user_firstname" class="form-label">ชื่อ</label>
-                                                <input type="text" class="form-control" id="user_firstname"
-                                                    name="user_firstname" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="user_lastname" class="form-label">นามสกุล</label>
-                                                <input type="text" class="form-control" id="user_lastname"
-                                                    name="user_lastname" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="user_email" class="form-label">อีเมล</label>
-                                                <input type="email" class="form-control" id="user_email"
-                                                    name="user_email" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="user_pass" class="form-label">รหัสผ่าน</label>
-                                                <input type="password" class="form-control" id="user_pass"
-                                                    name="user_pass" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="user_img" class="form-label">รูปภาพ</label>
-                                                <input type="file" class="form-control" id="user_img" name="user_img"
-                                                    required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="status" class="form-label">สถานะ</label>
-                                                <select class="form-select" id="user_status" name="user_status"
-                                                    required>
-                                                    <option value="1">อยู่ในระบบ</option>
-                                                    <option value="0">ไม่อยู่ในระบบ</option>
-                                                </select>
-                                            </div>
-
-                                        </form>
-
-
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Table of Users -->
+                        <!-- Table of Order History -->
                         <div class="table-responsive">
                             <table class="table table-striped" id="Tableall">
                                 <thead>
                                     <tr>
-                                        <th scope="col" style="text-align: center;">#</th>
-                                        <th scope="col" style="text-align: center;">รูปภาพ</th>
-                                        <th scope="col" style="text-align: center;">ชื่อ</th>
-                                        <th scope="col" style="text-align: center;">นามสกุล</th>
-                                        <th scope="col" style="text-align: center;">อีเมล</th>
-                                        <th scope="col" style="text-align: center;">รหัสผ่าน</th>
+                                        <th scope="col" style="text-align: center;">เลขคำสั่งซื้อ</th>
+                                        <th scope="col" style="text-align: center;">สินค้า</th>
                                         <th scope="col" style="text-align: center;">สถานะ</th>
+                                        <th scope="col" style="text-align: center;">วันที่สั่งซื้อ</th>
+                                        <th scope="col" style="text-align: center;">จัดการ</th>
+
                                         
                                     </tr>
                                 </thead>
@@ -136,11 +85,7 @@
                                             <td class="align-middle"><?php echo $row['user_firstname'] ?></td>
                                             <td class="align-middle"><?php echo $row['user_lastname'] ?></td>
                                             <td class="align-middle"><?php echo $row['user_email'] ?></td>
-                                            <td class="align-middle"><?php echo md5($row['user_pass']); ?></td>
-                                            <td class="align-middle">
-                                                <?php echo ($row['user_status'] == 1) ? "อยู่ในระบบ" : "ไม่อยู่ในระบบ"; ?>
-                                            </td>
-                                
+
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>

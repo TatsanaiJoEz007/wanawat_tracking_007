@@ -56,7 +56,51 @@ function base64img($imageData)
                         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered modal-lg">
                                 <div class="modal-content">
-                                    <!-- Modal content -->
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">เพิ่มข้อมูล</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        
+                                        <form action="#" id="" method="post">
+                                            <div class="mb-3">
+                                                <label for="user_firstname" class="form-label">ชื่อ</label>
+                                                <input type="text" class="form-control" id="user_firstname" name="user_firstname" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="user_lastname" class="form-label">นามสกุล</label>
+                                                <input type="text" class="form-control" id="user_lastname" name="user_lastname" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="user_email" class="form-label">อีเมล</label>
+                                                <input type="email" class="form-control" id="user_email" name="user_email" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="user_tel" class="form-label">รหัสผ่าน</label>
+                                                <input type="text" class="form-control" id="user_tel" name="user_tel" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="user_img" class="form-label">รูปภาพ</label>
+                                                <input type="file" class="form-control" id="user_img" name="user_img" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="status" class="form-label">สถานะ</label>
+                                                <select class="form-select" id="user_status" name="user_status" required>
+                                                    <option value="1">อยู่ในระบบ</option>
+                                                    <option value="0">ไม่อยู่ในระบบ</option>
+                                                </select>
+                                            </div>
+                                            <?php require_once('function/function_adduser.php'); ?>   
+                                        </form>
+
+
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+                                        <button type="button" class="btn btn-primary">บันทึกข้อมูล</button>
+                                        
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -71,7 +115,7 @@ function base64img($imageData)
                                         <th scope="col" style="text-align: center;">ชื่อ</th>
                                         <th scope="col" style="text-align: center;">นามสกุล</th>
                                         <th scope="col" style="text-align: center;">อีเมล</th>
-                                        <th scope="col" style="text-align: center;">รหัสผ่าน</th>
+                                        <th scope="col" style="text-align: center;">เบอร์โทรศัพท์</th>
                                         <th scope="col" style="text-align: center;">สถานะ</th>
                                         <th scope="col" style="text-align: center;">เมนู</th>
                                     </tr>
@@ -101,7 +145,7 @@ function base64img($imageData)
                                                 <td class="align-middle"><?php echo $row['user_firstname'] ?></td>
                                                 <td class="align-middle"><?php echo $row['user_lastname'] ?></td>
                                                 <td class="align-middle"><?php echo $row['user_email'] ?></td>
-                                                <td class="align-middle"><?php echo md5($row['user_pass']); ?></td>
+                                                <td class="align-middle"><?php echo $row['user_tel'] ?></td>
                                                 <td class="align-middle"><?php echo ($row['user_status'] == 1) ? "อยู่ในระบบ" : "ไม่อยู่ในระบบ"; ?></td>
                                                 <td class="align-middle">
                                                     <a href="#" class="btn btn-sm btn-warning">Edit</a>

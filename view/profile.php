@@ -195,6 +195,12 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
       text-decoration: none;
       cursor: pointer;
     }
+
+    .highlighted-text {
+      font-family: 'Kanit', sans-serif; /* Ensure consistent font */
+      font-size: 16px; /* Adjust size if necessary */
+      color: #000; /* Ensure the color is consistent */
+    }
   </style>
 </head>
 
@@ -223,7 +229,7 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
         <div class="card mb-4">
           <div class="card-body text-center">
             <div class="mb-2">
-              <a href="orderhistory.php" class="fas fa-history"></a> ประวัติการสั่งซื้อ
+              <a href="orderhistory" class="fas fa-history highlighted-text">ประวัติการสั่งซื้อ</a> 
             </div>
             <hr>
             <div class="mb-2">
