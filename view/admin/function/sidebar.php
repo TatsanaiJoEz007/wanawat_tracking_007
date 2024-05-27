@@ -366,7 +366,6 @@
           <li><a href="../admin/permission_admin">Admin</a></li>
           <li><a href="../admin/permission_user">User</a></li>
           <li><a href="../admin/permission_employee">Employee</a></li>
-          <li><a href="../admin/permission_clerk">Clerk</a></li>
 
         </ul>
       </li>

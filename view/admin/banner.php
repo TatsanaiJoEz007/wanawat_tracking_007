@@ -128,8 +128,7 @@
                                             <td class="align-middle">
 
 
-                                                <button type="button" class="btn btn-sm btn-danger"
-                                                    onclick="delBanner('<?php echo $row['banner_id']; ?>')">Delete</button>
+                                                <button type="button" class="btn btn-sm btn-danger" onclick="delBanner('<?php echo $row['banner_id']; ?>')">Delete</button>
                                             </td>
                                         </tr>
                                     <?php endwhile; ?>

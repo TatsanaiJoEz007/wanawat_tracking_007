@@ -27,7 +27,7 @@
                             text: response.message,
                             confirmButtonText: 'OK'
                         }).then(() => {
-                            $('#exampleModal').modal('hide'); // ปิด modal
+                            $('#adduserModal').modal('hide'); // ปิด modal
                         });
                     } else {
                         console.log('Registration failed:', response.message);
