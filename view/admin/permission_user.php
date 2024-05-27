@@ -36,80 +36,6 @@ $query = mysqli_query($conn, $sql);
         /* CSS Styles */
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            // Function to fetch user data and populate edit modal
-            function fetchAndPopulateUserData(userId) {
-                // Make a POST request to the PHP script to fetch user data
-                $.ajax({
-                    url: 'function/action_edituser/get_user_data.php',
-                    type: 'POST',
-                    dataType: 'json',
-                    data: {
-                        user_id: userId
-                    },
-                    success: function(response) {
-                        console.log('User Data:', response); // Log user data to the console
-                        // Populate modal fields with fetched user data
-                        $('#user_id').val(response.user_id);
-                        $('#edituser-firstname').val(response.user_firstname);
-                        $('#edituser-lastname').val(response.user_lastname);
-                        $('#edituser-email').val(response.user_email);
-                        $('#edituser-tel').val(response.user_tel);
-                        $('#edituser-address').val(response.user_address);
-                        $('#edit_province').val(response.province.id).change(); // Trigger change event to fetch amphures
-                        $('#edit_district').val(response.district.id).change(); // Trigger change event to fetch districts
-                        $('#edit_amphure').val(response.amphure.id).change(); // Trigger change event to fetch districts
-                        $('#user_status').val(response.user_status);
-                        $('#profile_picture').attr('src', response.user_img);
-
-                        // Show the edit user modal
-                        $('#edituserModal').modal('show');
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error:', error);
-                        // Display error message if needed
-                    }
-                });
-            }
-
-            // Trigger edit modal when edit button is clicked
-            $('.edit-btn').click(function() {
-                var userId = $(this).data('id');
-                fetchAndPopulateUserData(userId);
-            });
-
-            // Fetch districts when province is selected
-            $('#province').change(function() {
-                var province_id = $(this).val();
-                $.ajax({
-                    url: 'function/fetch_amphures.php',
-                    type: 'post',
-                    data: {
-                        province_id: province_id
-                    },
-                    success: function(response) {
-                        $('#amphure').html(response);
-                    }
-                });
-            });
-
-            // Fetch sub-districts when district is selected
-            $('#amphure').change(function() {
-                var amphure_id = $(this).val();
-                $.ajax({
-                    url: 'function/fetch_districts.php',
-                    type: 'post',
-                    data: {
-                        amphure_id: amphure_id
-                    },
-                    success: function(response) {
-                        $('#district').html(response);
-                    }
-                });
-            });
-        });
-    </script>
 </head>
 
 <body>
@@ -270,6 +196,181 @@ $query = mysqli_query($conn, $sql);
         </div>
     </div>
 
+    <script>
+        $(document).ready(function() {
+            window.fetchAndPopulateUserData = function(userId) {
+                $.ajax({
+                    url: 'function/action_edituser/get_user_data.php',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        user_id: userId
+                    },
+                    success: function(response) {
+                        $('#user_id').val(response.user_id);
+                        $('#edituser-firstname').val(response.user_firstname);
+                        $('#edituser-lastname').val(response.user_lastname);
+                        $('#edituser-email').val(response.user_email);
+                        $('#edituser-tel').val(response.user_tel);
+                        $('#edituser-address').val(response.user_address);
+                        $('#edit_province').val(response.province.id);
+                        $('#edit_province').change();
+                        // After amphures are loaded, set the user's amphure and fetch districts
+                        $.ajax({
+                            url: 'function/fetch_amphures.php',
+                            type: 'post',
+                            data: {
+                                province_id: response.province.id
+                            },
+                            success: function(amphureResponse) {
+                                $('#edit_amphure').html(amphureResponse);
+                                $('#edit_amphure').val(response.amphure.id).change(); // Trigger change to fetch districts
+
+                                $.ajax({
+                                    url: 'function/fetch_districts.php',
+                                    type: 'post',
+                                    data: {
+                                        amphure_id: response.amphure.id
+                                    },
+                                    success: function(districtResponse) {
+                                        $('#edit_district').html(districtResponse);
+                                        $('#edit_district').val(response.district.id);
+                                    }
+                                });
+                            }
+                        });
+
+
+                        $('#user_status').val(response.user_status);
+                        $('#profile_picture').attr('src', response.user_img); // Assuming you have an image element with id "profile_picture"
+
+                        $('#edituserModal').modal('show');
+                        console.log(response);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching user data:', error); // Log the error for debugging
+                    }
+                });
+            }; // End of fetchAndPopulateUserData function
+
+            // Attach the click event handler once fetchAndPopulateUserData is defined
+            $('.edit-btn').click(function() {
+                var userId = $(this).data('id');
+                window.fetchAndPopulateUserData(userId); // Call using window.
+            });
+        });
+
+
+        function handleProvinceChange(provinceSelectId, amphureSelectId, districtSelectId) {
+            var selectedProvinceId = $("#" + provinceSelectId).val();
+            console.log("Selected Province ID:", selectedProvinceId);
+
+            // Clear amphure and district dropdowns before fetching new data
+            $("#" + amphureSelectId).html('<option value="" disabled selected>เลือกอำเภอ</option>');
+            $("#" + districtSelectId).html('<option value="" disabled selected>เลือกตำบล</option>');
+
+            if (selectedProvinceId && selectedProvinceId != "") { // Check for valid province ID
+                $.ajax({
+                    url: 'function/fetch_amphures.php',
+                    type: 'post',
+                    data: {
+                        province_id: selectedProvinceId
+                    },
+                    success: function(response) {
+                        $("#" + amphureSelectId).html(response);
+                        console.log("Amphures loaded:", response);
+                        // If it's the edit modal, trigger amphure change to load districts
+                        if (amphureSelectId === 'edit_amphure' && response.trim() != "") {
+                            $("#edit_amphure").trigger('change');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error fetching amphures:", error);
+                    }
+                });
+            }
+        }
+
+        function handleAmphureChange(amphureSelectId, districtSelectId) {
+            var selectedAmphureId = $("#" + amphureSelectId).val();
+            console.log("Selected Amphure ID:", selectedAmphureId);
+
+            // Clear district dropdown before fetching new data
+            $("#" + districtSelectId).html('<option value="" disabled selected>เลือกตำบล</option>');
+
+            if (selectedAmphureId && selectedAmphureId != "") { // Check for valid amphure ID
+                $.ajax({
+                    url: 'function/fetch_districts.php',
+                    type: 'post',
+                    data: {
+                        amphure_id: selectedAmphureId
+                    },
+                    success: function(response) {
+                        $("#" + districtSelectId).html(response);
+                        console.log("Districts loaded:", response);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error fetching districts:", error);
+                    }
+                });
+            }
+        }
+
+        // Attach change event handlers to province dropdowns
+        $("#province").change(function() {
+            handleProvinceChange("province", "amphure", "district");
+        });
+        $("#edit_province").change(function() {
+            handleProvinceChange("edit_province", "edit_amphure", "edit_district");
+        });
+
+        // Attach change event handlers to amphure dropdowns
+        $("#amphure").change(function() {
+            handleAmphureChange("amphure", "district");
+        });
+        $("#edit_amphure").change(function() {
+            handleAmphureChange("edit_amphure", "edit_district");
+        });
+
+        $('#adduserModal, #edituserModal').on('hidden.bs.modal', function() {
+            $('#amphure, #district, #edit_amphure, #edit_district').html('<option value="" disabled selected>อำเภอ/ตำบล</option>');
+        });
+
+        // Combined change event handlers for both modals
+        $('#province, #edit_province').change(function() {
+            var provinceId = $(this).val();
+            var targetAmphureId = $(this).attr('id') === 'province' ? 'amphure' : 'edit_amphure';
+            $.ajax({
+                url: 'function/fetch_amphures.php',
+                type: 'post',
+                data: {
+                    province_id: provinceId
+                },
+                success: function(response) {
+                    console.log("Response from fetch_amphures.php:", response); // Check the response
+                    $('#' + targetAmphureId).html(response);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error fetching amphures:", error);
+                }
+            });
+        });
+
+        $('#amphure, #edit_amphure').change(function() {
+            var amphureId = $(this).val();
+            var targetDistrictId = $(this).attr('id') === 'amphure' ? 'district' : 'edit_district';
+            $.ajax({
+                url: 'function/fetch_districts.php',
+                type: 'post',
+                data: {
+                    amphure_id: amphureId
+                },
+                success: function(response) {
+                    $('#' + targetDistrictId).html(response);
+                }
+            });
+        });
+    </script>
     <!-- Edit Modal -->
     <div class="modal fade" id="edituserModal" tabindex="-1" aria-labelledby="edituserModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">

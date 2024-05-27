@@ -21,13 +21,16 @@ function base64img($imageData)
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['user_id'])) {
     $userId = $_POST['user_id'];
 
-    // Fetch user data along with province_id, district_id, and amphure_id
-    $sql = "SELECT u.*, p.id AS province_id, p.name_th AS province_name, d.id AS district_id, d.name_th AS district_name, a.id AS amphure_id, a.name_th AS amphure_name
-    FROM tb_user u
-    LEFT JOIN provinces p ON u.province_id = p.id
-    LEFT JOIN districts d ON u.district_id = d.id
-    LEFT JOIN amphures a ON u.amphure_id = a.id
-    WHERE u.user_id = ?";
+    // Fetch user data with province, district, and amphure details
+    $sql = "SELECT u.*, 
+                   p.id AS province_id, p.name_th AS province_name, 
+                   d.id AS district_id, d.name_th AS district_name, 
+                   a.id AS amphure_id, a.name_th AS amphure_name
+            FROM tb_user u
+            LEFT JOIN provinces p ON u.province_id = p.id
+            LEFT JOIN districts d ON u.district_id = d.id
+            LEFT JOIN amphures a ON u.amphure_id = a.id
+            WHERE u.user_id = ?";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $userId);
@@ -68,8 +71,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['user_id'])) {
                 'id' => $row['amphure_id'],
                 'name_th' => $row['amphure_name']
             ),
-            
-
             'user_img' => $imageBase64
         );
 
@@ -83,3 +84,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['user_id'])) {
     // Invalid request method or missing user ID
     echo json_encode(array('error' => 'Invalid request'));
 }
+?>
