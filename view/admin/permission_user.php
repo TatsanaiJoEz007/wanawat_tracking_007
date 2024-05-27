@@ -19,7 +19,11 @@ function base64img($imageData)
 {
     return 'data:image/jpeg;base64,' . base64_encode($imageData);
 }
+?>
 
+<?php 
+    $sql = "SELECT * FROM provinces";
+    $query = mysqli_query($conn, $sql);
 ?>
 
 <!DOCTYPE html>
@@ -34,6 +38,38 @@ function base64img($imageData)
     <style>
         /* CSS Styles */
     </style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // ดึงข้อมูลอำเภอเมื่อเลือกจังหวัด
+        $('#province').change(function() {
+            var province_id = $(this).val();
+            $.ajax({
+                url: 'function/fetch_amphures.php',
+                type: 'post',
+                data: {province_id: province_id},
+                success: function(response) {
+                    $('#amphure').html(response);
+                }
+            });
+        });
+
+        // ดึงข้อมูลตำบลเมื่อเลือกอำเภอ
+        $('#amphure').change(function() {
+            var amphure_id = $(this).val();
+            $.ajax({
+                url: 'function/fetch_districts.php',
+                type: 'post',
+                data: {amphure_id: amphure_id},
+                success: function(response) {
+                    $('#district').html(response);
+                }
+            });
+        });
+    });
+</script>
+
 
 </head>
 
@@ -62,44 +98,75 @@ function base64img($imageData)
                                     </div>
                                     <div class="modal-body">
                                         
-                                        <form action="#" id="" method="post">
+                                        <form action="#" id="adduserForm" method="post" enctype="multipart/form-data">
+
+                                            
                                             <div class="mb-3">
-                                                <label for="user_firstname" class="form-label">ชื่อ</label>
-                                                <input type="text" class="form-control" id="user_firstname" name="user_firstname" required>
+                                                <label for="adduser-firstname" class="form-label">ชื่อ</label>
+                                                <input type="text" class="form-control" id="adduser-firstname" name="adduser-firstname" required>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="user_lastname" class="form-label">นามสกุล</label>
-                                                <input type="text" class="form-control" id="user_lastname" name="user_lastname" required>
+                                                <label for="adduser-lastname" class="form-label">นามสกุล</label>
+                                                <input type="text" class="form-control" id="adduser-lastname" name="adduser-lastname" required>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="user_email" class="form-label">อีเมล</label>
-                                                <input type="email" class="form-control" id="user_email" name="user_email" required>
+                                                <label for="adduser-email" class="form-label">อีเมล</label>
+                                                <input type="email" class="form-control" id="adduser-email" name="adduser-email" required>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="user_tel" class="form-label">รหัสผ่าน</label>
-                                                <input type="text" class="form-control" id="user_tel" name="user_tel" required>
+                                                <label for="adduser-password" class="form-label">รหัสผ่าน</label>
+                                                <input type="password" class="form-control" id="adduser-password" name="adduser-password" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="adduser-password" class="form-label">ยืนยันรหัสผ่าน</label>
+                                                <input type="password" class="form-control" id="adduser-cpassword" name="adduser-cpassword" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="adduser-tel" class="form-label">เบอร์โทรศัพท์</label>
+                                                <input type="text" class="form-control" id="adduser-tel" name="adduser-tel" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="adduser-address" class="form-label">ที่อยู่</label>
+                                                <input type="text" class="form-control" id="adduser-address" name="adduser-address" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="province" class="form-label">จังหวัด</label>
+                                                <select class="form-select" id="province" name="province_id" required>
+                                                    <option value="" disabled selected>จังหวัด</option>
+                                                    <?php while($result = mysqli_fetch_assoc($query)): ?>
+                                                        <option value="<?=$result['id']?>"><?=$result['name_th']?></option>
+                                                    <?php endwhile; ?>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="amphure" class="form-label">อำเภอ</label>
+                                                <select class="form-select" id="amphure" name="amphure_id" required>
+                                                    <option value="" disabled selected>อำเภอ</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="district" class="form-label">ตำบล</label>
+                                                <select class="form-select" id="district" name="district_id" required>
+                                                    <option value="" disabled selected>ตำบล</option>
+                                                </select>
                                             </div>
                                             <div class="mb-3">
                                                 <label for="user_img" class="form-label">รูปภาพ</label>
                                                 <input type="file" class="form-control" id="user_img" name="user_img" required>
-                                            </div>
+                                            </div>    
                                             <div class="mb-3">
-                                                <label for="status" class="form-label">สถานะ</label>
+                                                <label for="user_status" class="form-label">สถานะ</label>
                                                 <select class="form-select" id="user_status" name="user_status" required>
                                                     <option value="1">อยู่ในระบบ</option>
                                                     <option value="0">ไม่อยู่ในระบบ</option>
                                                 </select>
                                             </div>
-                                            <?php require_once('function/function_adduser.php'); ?>   
                                         </form>
-
-
-
+                                        <?php require_once('function/function_adduser.php'); ?>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
-                                        <button type="button" class="btn btn-primary">บันทึกข้อมูล</button>
-                                        
+                                        <button type="submit" form="adduserForm" class="btn btn-primary">บันทึกข้อมูล</button>
                                     </div>
                                 </div>
                             </div>
@@ -165,6 +232,7 @@ function base64img($imageData)
             </div>
         </div>
     </div>
+
 
     <script src="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
 </body>

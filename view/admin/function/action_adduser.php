@@ -10,6 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
               $_POST['adduser-lastname'], 
               $_POST['adduser-email'], 
               $_POST['adduser-password'], 
+              $_POST['adduser-cpassword'], 
               $_POST['adduser-address'], 
               $_POST['province_id'], 
               $_POST['amphure_id'], 
@@ -21,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $lastname = $_POST['adduser-lastname'];
         $email = $_POST['adduser-email'];
         $password = $_POST['adduser-password'];
+        $confirm_password = $_POST['adduser-cpassword'];
         $address = $_POST['adduser-address'];
         $province_id = $_POST['province_id'];
         $amphure_id = $_POST['amphure_id'];

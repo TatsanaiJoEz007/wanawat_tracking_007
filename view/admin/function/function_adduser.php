@@ -10,6 +10,7 @@
 
             $.ajax({
                 url: 'function/action_adduser.php', // Update with the correct path
+               
                 type: 'POST',
                 data: formData,
                 dataType: 'json',
@@ -26,7 +27,7 @@
                             text: response.message,
                             confirmButtonText: 'OK'
                         }).then(() => {
-                            window.location.href = 'login.php';
+                            $('#exampleModal').modal('hide'); // ปิด modal
                         });
                     } else {
                         console.log('Registration failed:', response.message);
@@ -40,6 +41,7 @@
                 },
                 error: function(xhr, status, error) {
                     console.error('AJAX error:', status, error); // Log AJAX errors
+                    console.log('Response Text:', xhr.responseText); // Log the full response
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
@@ -47,6 +49,7 @@
                         confirmButtonText: 'OK'
                     });
                 },
+
                 complete: function() {
                     console.log('AJAX request completed.');
                 }
