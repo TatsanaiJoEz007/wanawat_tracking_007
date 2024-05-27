@@ -291,6 +291,14 @@ $query = mysqli_query($conn, $sql);
             }
         }
 
+        // Attach the change event handler to the edit province dropdown
+        $("#edit_province").change(function() {
+            var provinceId = $(this).val();
+            var targetAmphureId = 'edit_amphure';
+            var targetDistrictId = 'edit_district';
+            handleProvinceChange("edit_province", targetAmphureId, targetDistrictId);
+        });
+
         function handleAmphureChange(amphureSelectId, districtSelectId) {
             var selectedAmphureId = $("#" + amphureSelectId).val();
             console.log("Selected Amphure ID:", selectedAmphureId);
