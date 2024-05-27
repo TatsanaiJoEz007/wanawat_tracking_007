@@ -90,9 +90,9 @@ $(document).ready(function() {
                         timer: 1500
                     });
                     setTimeout(function() {
-                        window.location.href = "../view/mainpage"; // // Redirect ไปยังหน้า index.php หรือหน้าที่ต้องการ
+                        window.location.href = "../view/mainpage"; // Redirect ไปยังหน้า index.php หรือหน้าที่ต้องการ
                     }, 1500);
-                }else if (response === 'admin') {
+                } else if (response === 'admin') {
                     // เข้าสู่ระบบสำเร็จ
                     Swal.fire({
                         position: 'center',
@@ -102,9 +102,9 @@ $(document).ready(function() {
                         timer: 1500
                     });
                     setTimeout(function() {
-                        window.location.href = "../view/admin/dashboard"; // // Redirect ไปยังหน้า index.php หรือหน้าที่ต้องการ
+                        window.location.href = "../view/admin/dashboard"; // Redirect ไปยังหน้า index.php หรือหน้าที่ต้องการ
                     }, 1500);
-                }else if (response === 'employee') {
+                } else if (response === 'employee') {
                     // เข้าสู่ระบบสำเร็จ
                     Swal.fire({
                         position: 'center',
@@ -114,9 +114,9 @@ $(document).ready(function() {
                         timer: 1500
                     });
                     setTimeout(function() {
-                        window.location.href = "../view/employee/index"; // // Redirect ไปยังหน้า index.php หรือหน้าที่ต้องการ
+                        window.location.href = "../view/employee/index"; // Redirect ไปยังหน้า index.php หรือหน้าที่ต้องการ
                     }, 1500);
-                }else if (response === 'clerk') {
+                } else if (response === 'clerk') {
                     // เข้าสู่ระบบสำเร็จ
                     Swal.fire({
                         position: 'center',
@@ -126,9 +126,9 @@ $(document).ready(function() {
                         timer: 1500
                     });
                     setTimeout(function() {
-                        window.location.href = "../view/clerk/index"; // // Redirect ไปยังหน้า index.php หรือหน้าที่ต้องการ
+                        window.location.href = "../view/clerk/index"; // Redirect ไปยังหน้า index.php หรือหน้าที่ต้องการ
                     }, 1500);
-                }else if (response === 'failuser') {
+                } else if (response === 'failuser') {
                     // ไม่มีบัญชีนี้ในระบบ
                     Swal.fire({
                         position: 'center',
@@ -161,6 +161,82 @@ $(document).ready(function() {
             }
         });
     });
+
+    // Forgot password form submit
+    $('#forgotPasswordForm').submit(function(e) {
+        e.preventDefault();
+
+        let email = $('#forgot-password-email').val();
+
+        $.ajax({
+            url: 'function/forgotuser/check_mail.php', // เซิร์ฟเวอร์ที่จะตรวจสอบอีเมล
+            type: 'post',
+            data: { email: email },
+            success: function(response) {
+                if (response === 'exists') {
+                    $('#forgotPasswordModal').modal('hide');
+                    $('#resetPasswordModal').modal('show');
+                } else {
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'error',
+                        title: 'อีเมลนี้ไม่มีในระบบ',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+            }
+        });
+    });
+
+    // Reset password form submit
+    $('#resetPasswordForm').submit(function(e) {
+        e.preventDefault();
+
+        let email = $('#forgot-password-email').val();
+        let newPassword = $('#new-password').val();
+        let confirmPassword = $('#confirm-password').val();
+
+        if (newPassword !== confirmPassword) {
+            Swal.fire({
+                position: 'center',
+                icon: 'error',
+                title: 'รหัสผ่านไม่ตรงกัน',
+                showConfirmButton: false,
+                timer: 1500
+            });
+            return;
+        }
+
+        $.ajax({
+            url: 'function/forgotuser/reset_password.php', // เซิร์ฟเวอร์ที่จะเปลี่ยนรหัสผ่าน
+            type: 'post',
+            data: {
+                email: email,
+                newPassword: newPassword
+            },
+            success: function(response) {
+                if (response === 'success') {
+                    $('#resetPasswordModal').modal('hide');
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'success',
+                        title: 'เปลี่ยนรหัสผ่านสำเร็จ',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                } else {
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'error',
+                        title: 'เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+            }
+        });
+    });
 });
 </script>
 <!-- Forgot Password Modal -->
@@ -168,16 +244,44 @@ $(document).ready(function() {
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalLabel">กรุณาติดต่อแอดมิน</h5>
+                <h5 class="modal-title" id="modalLabel">ลืมรหัสผ่าน</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="forgotPasswordForm">
                     <div class="mb-3">
-                        <h1>Line ID : @admin</h1>
+                        <label for="forgot-password-email" class="form-label">อีเมล</label>
+                        <input type="email" class="form-control" id="forgot-password-email" name="email" required placeholder="Enter email">
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary bg-orange" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">ยืนยันอีเมล</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reset Password Modal -->
+<div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">เปลี่ยนรหัสผ่าน</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="resetPasswordForm">
+                    <div class="mb-3">
+                        <label for="new-password" class="form-label">รหัสผ่านใหม่</label>
+                        <input type="password" class="form-control" id="new-password" name="new-password" required placeholder="Enter new password">
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirm-password" class="form-label">ยืนยันรหัสผ่านใหม่</label>
+                        <input type="password" class="form-control" id="confirm-password" name="confirm-password" required placeholder="Confirm new password">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">ยืนยันการเปลี่ยนรหัสผ่าน</button>
                     </div>
                 </form>
             </div>
