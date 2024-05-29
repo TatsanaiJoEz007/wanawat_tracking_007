@@ -5,7 +5,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     if (isset($_GET['bill_id']) && !empty(trim($_GET['bill_id']))) {
         $bill_id = trim($_GET['bill_id']);
 
-        $sql = "DELETE FROM tb_bill WHERE bill_id = ?";
+        $sql = "DELETE FROM tb_header WHERE bill_id = ?";
         
         if ($stmt = $conn->prepare($sql)) {
             // Bind variables to the prepared statement as parameters

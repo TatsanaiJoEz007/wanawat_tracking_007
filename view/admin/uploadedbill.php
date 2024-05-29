@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
 
     <style>
-        /* Styles remain the same */
         .table-container {
             max-height: 500px; /* Adjust as needed */
             overflow-y: auto;
@@ -37,9 +36,16 @@
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
-                                        <th scope="col" style="text-align: center;">#</th>
+                                        <th class="sorting" scope="col" style="text-align: center;"> 
+                                        <a href="?sort=bill_number&order=<?php echo isset($_GET['order']) && $_GET['order'] == 'asc' ? 'desc' : 'asc'; ?>">
+                                                #
+                                            </a></th>
                                         <th scope="col" style="text-align: center;">บิลวันที่</th>
-                                        <th scope="col" style="text-align: center;">หมายเลขบิล</th>
+                                        <th scope="col" style="text-align: center;">
+                                            <a href="?sort=bill_number&order=<?php echo isset($_GET['order']) && $_GET['order'] == 'asc' ? 'desc' : 'asc'; ?>">
+                                                หมายเลขบิล
+                                            </a>
+                                        </th>
                                         <th scope="col" style="text-align: center;">รหัสลูกค้า</th>
                                         <th scope="col" style="text-align: center;">ชื่อลูกค้า</th>
                                         <th scope="col" style="text-align: center;">ยอดรวม</th>
@@ -51,8 +57,17 @@
                                 <tbody class="text-center">
                                     <?php
                                     $i = 1;
-                                    $sql = "SELECT * FROM tb_bill";
+                                    $orderBy = 'bill_number';
+                                    $order = 'asc';
+
+                                    if (isset($_GET['sort']) && isset($_GET['order'])) {
+                                        $orderBy = $_GET['sort'];
+                                        $order = $_GET['order'];
+                                    }
+
+                                    $sql = "SELECT * FROM tb_header ORDER BY $orderBy $order";
                                     $query = $conn->query($sql);
+
                                     foreach ($query as $row) :
                                     ?>
                                         <tr>
@@ -63,7 +78,7 @@
                                             <td class="align-middle"><?php echo $row['bill_customer_name'] ?></td>
                                             <td class="align-middle"><?php echo $row['bill_total'] ?></td>
                                             <td class="align-middle"><?php echo $row['bill_isCanceled'] ?></td>
-                                            <td class="align-middle"><?php echo $row['bill_create_at'] ?></td>
+                                            <td class="align-middle"><?php echo $row['creat_at'] ?></td>
                                             <td class="align-middle">
                                                 <a href="#" class="btn btn-sm btn-danger" onclick="confirmDelete(<?php echo $row['bill_id']; ?>)">Delete</a>
                                             </td>

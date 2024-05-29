@@ -6,7 +6,6 @@
     <title>CSV Language Converter</title>
     <!-- Add SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11">
-    </link>
     <!-- Add Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     <!-- Add custom styles -->
@@ -42,7 +41,7 @@
             margin-bottom: 20px;
         }
 
-        .btn-custom , .btn-custom2 {
+        .btn-custom, .btn-custom2 {
             background-color: #F0592E;
             color: #fff;
             border: none;
@@ -150,19 +149,20 @@
 
 <body>
 
-
     <?php require_once('function/sidebar.php'); ?>
 
     <br>
     <div class="container">
         <h1 class="heading" style="color:red;">Import Head CSV</h1>
-        <h3 style="color:red;"><center>นำเข้าไฟล์ CSV ของ Head</center></h3>
+        <h3 style="color:red;">
+            <center>นำเข้าไฟล์ CSV ของ Head</center>
+        </h3>
         <br>
         <div class="buttons">
-            <label for="csvFileInput" class="btn-custom btn-upload">
+            <label for="csvFileInput1" class="btn-custom btn-upload">
                 <i class="fas fa-file-upload"></i>
                 <span>&nbsp;Choose File</span>
-                <input type="file" id="csvFileInput" class="file-input d-none">
+                <input type="file" id="csvFileInput1" class="file-input d-none">
             </label>
             <button onclick="convertCSV()" class="btn-custom ml-3">
                 <i class="fas fa-sync-alt"></i>
@@ -173,7 +173,7 @@
                 <span>&nbsp;Import to Database</span>
             </button>
         </div>
-        <div id="output" class="output-container"></div>
+        <div id="output1" class="output-container"></div>
     </div>
 
     <br>
@@ -182,13 +182,15 @@
 
     <div class="container">
         <h1 class="heading" style="color:green;">Import Line CSV</h1>
-        <h3 style="color:green;"><center>นำเข้าไฟล์ CSV ของ Line</center></h3>
+        <h3 style="color:green;">
+            <center>นำเข้าไฟล์ CSV ของ Line</center>
+        </h3>
         <br>
         <div class="buttons">
-            <label for="csvFileInput" class="btn-custom btn-upload">
+            <label for="csvFileInput2" class="btn-custom btn-upload">
                 <i class="fas fa-file-upload"></i>
                 <span>&nbsp;Choose File</span>
-                <input type="file" id="csvFileInput" class="file-input d-none">
+                <input type="file" id="csvFileInput2" class="file-input d-none">
             </label>
             <button onclick="convertCSV2()" class="btn-custom ml-3">
                 <i class="fas fa-sync-alt"></i>
@@ -199,9 +201,8 @@
                 <span>&nbsp;Import to Database</span>
             </button>
         </div>
-        <div id="output" class="output-container"></div>
+        <div id="output2" class="output-container"></div>
     </div>
-
 
     <!-- Add SweetAlert2 library -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -210,7 +211,7 @@
         let convertedCSVData; // Store converted CSV data globally
 
         function convertCSV() {
-            const fileInput = document.getElementById('csvFileInput');
+            const fileInput = document.getElementById('csvFileInput1');
             const file = fileInput.files[0];
 
             if (file) {
@@ -222,7 +223,7 @@
                             // Filter out blank rows
                             const filteredData = results.data.filter(row => row.some(cell => cell.trim() !== ''));
                             convertedCSVData = Papa.unparse(filteredData);
-                            document.getElementById('output').innerText = convertedCSVData;
+                            document.getElementById('output1').innerText = convertedCSVData;
                         }
                     });
                 };
@@ -247,7 +248,7 @@
                     })
                     .then(response => response.text())
                     .then(message => {
-                        const output = document.getElementById('output');
+                        const output = document.getElementById('output1');
                         output.innerText = '';
                         Swal.fire({
                             icon: 'success',
@@ -310,11 +311,11 @@
     }
     ?>
 
-<script>
+    <script>
         let convertedCSVData2; // Store converted CSV data globally
 
         function convertCSV2() {
-            const fileInput = document.getElementById('csvFileInput');
+            const fileInput = document.getElementById('csvFileInput2');
             const file = fileInput.files[0];
 
             if (file) {
@@ -326,7 +327,7 @@
                             // Filter out blank rows
                             const filteredData = results.data.filter(row => row.some(cell => cell.trim() !== ''));
                             convertedCSVData2 = Papa.unparse(filteredData);
-                            document.getElementById('output').innerText = convertedCSVData2;
+                            document.getElementById('output2').innerText = convertedCSVData2;
                         }
                     });
                 };
@@ -343,7 +344,7 @@
         function importToDatabase2() {
             if (convertedCSVData2) {
                 const formData = new FormData();
-                formData.append('csvData', convertedCSVData2); // Pass converted CSV data
+                formData.append('csvData2', convertedCSVData2); // Pass converted CSV data
 
                 fetch('', { // Use current file path
                         method: 'POST',
@@ -351,7 +352,7 @@
                     })
                     .then(response => response.text())
                     .then(message => {
-                        const output = document.getElementById('output');
+                        const output = document.getElementById('output2');
                         output.innerText = '';
                         Swal.fire({
                             icon: 'success',
@@ -370,8 +371,8 @@
         }
     </script>
 
-<?php
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['csvData'])) {
+    <?php
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['csvData2'])) {
         $csvData2 = $_POST['csvData2'];
         $rows = str_getcsv($csvData2, "\n");
 
@@ -391,8 +392,8 @@
 
             foreach ($rows as $row) {
                 $data2 = str_getcsv($row);
-                if (count($data2) === 6) { // Check if the row has all 6 columns
-                    $stmt = $pdo->prepare("INSERT INTO tb_line (bill_date, bill_number, bill_customer_id, bill_customer_name, bill_total, bill_isCanceled) VALUES (?, ?, ?, ?, ?, ?)");
+                if (count($data2) === 8) { // Check if the row has all 8 columns
+                    $stmt = $pdo->prepare("INSERT INTO tb_line (bill_number, item_sequence, item_code, item_desc, item_quantity, item_unit, item_price, line_total) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
                     $stmt->execute($data2);
                 }
             }

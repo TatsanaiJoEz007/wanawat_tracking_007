@@ -30,7 +30,6 @@ if ($_SESSION['user_type'] != 'admin') {
     <?php require_once ('function/box.php'); ?>
     <?php require_once ('function/datepicker.php'); ?>
     <?php require_once ('function/graph.php'); ?>
-
 </body>
 
 </html> 
