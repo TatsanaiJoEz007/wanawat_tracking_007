@@ -13,6 +13,16 @@
             max-height: 500px; /* Adjust as needed */
             overflow-y: auto;
         }
+
+        .sortable-column {
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+        }
+
+        .sortable-column:hover {
+            color: #007bff; /* Optional: Change color on hover */
+        }
     </style>
 </head>
 
@@ -36,13 +46,10 @@
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
-                                        <th class="sorting" scope="col" style="text-align: center;"> 
-                                        <a href="?sort=bill_number&order=<?php echo isset($_GET['order']) && $_GET['order'] == 'asc' ? 'desc' : 'asc'; ?>">
-                                                #
-                                            </a></th>
+                                        <th class="sorting" scope="col" style="text-align: center;">#</th>
                                         <th scope="col" style="text-align: center;">บิลวันที่</th>
                                         <th scope="col" style="text-align: center;">
-                                            <a href="?sort=bill_number&order=<?php echo isset($_GET['order']) && $_GET['order'] == 'asc' ? 'desc' : 'asc'; ?>">
+                                            <a class="sortable-column" href="?sort=bill_number&order=<?php echo isset($_GET['order']) && $_GET['order'] == 'asc' ? 'desc' : 'asc'; ?>">
                                                 หมายเลขบิล
                                             </a>
                                         </th>
