@@ -30,7 +30,7 @@
     <?php require_once('function/sidebar.php'); ?>
 
     <div class="container">
-        <h1 class="app-page-title text-center my-4">ตารางบิลที่เพิ่มแล้ว</h1>
+        <h1 class="app-page-title text-center my-4">ตาราง Line ที่เพิ่มแล้ว</h1>
         <div class="row g-4 settings-section">
             <div class="col-12">
                 <div class="app-card app-card-settings shadow-sm p-4">
@@ -47,17 +47,19 @@
                                 <thead>
                                     <tr>
                                         <th class="sorting" scope="col" style="text-align: center;">#</th>
-                                        <th scope="col" style="text-align: center;">บิลวันที่</th>
                                         <th scope="col" style="text-align: center;">
                                             <a class="sortable-column" href="?sort=bill_number&order=<?php echo isset($_GET['order']) && $_GET['order'] == 'asc' ? 'desc' : 'asc'; ?>">
                                                 หมายเลขบิล
                                             </a>
                                         </th>
-                                        <th scope="col" style="text-align: center;">รหัสลูกค้า</th>
-                                        <th scope="col" style="text-align: center;">ชื่อลูกค้า</th>
+                                        <th scope="col" style="text-align: center;">ลำดับรายการ</th>
+                                        <th scope="col" style="text-align: center;">รหัสสินค้า</th>
+                                        <th scope="col" style="text-align: center;">รายละเอียดสินค้า</th>
+                                        <th scope="col" style="text-align: center;">จำนวนสินค้า</th>
+                                        <th scope="col" style="text-align: center;">หน่วย</th>
+                                        <th scope="col" style="text-align: center;">ราคา</th>
                                         <th scope="col" style="text-align: center;">ยอดรวม</th>
-                                        <th scope="col" style="text-align: center;">ยกเลิกบิลหรือไม่</th>
-                                        <th scope="col" style="text-align: center;">วันที่สร้าง</th>
+                                        <th scope="col" style="text-align: center;">สร้างเมื่อ</th>
                                         <th scope="col" style="text-align: center;">เมนู</th>
                                     </tr>
                                 </thead>
@@ -72,20 +74,23 @@
                                         $order = $_GET['order'];
                                     }
 
-                                    $sql = "SELECT * FROM tb_header ORDER BY $orderBy $order";
+                                    $sql = "SELECT * FROM tb_line ORDER BY $orderBy $order";
                                     $query = $conn->query($sql);
 
                                     foreach ($query as $row) :
                                     ?>
                                         <tr>
                                             <td><?php echo $i++; ?></td>
-                                            <td class="align-middle"><?php echo $row['bill_date'] ?></td>
                                             <td class="align-middle"><?php echo $row['bill_number'] ?></td>
-                                            <td class="align-middle"><?php echo $row['bill_customer_id'] ?></td>
-                                            <td class="align-middle"><?php echo $row['bill_customer_name'] ?></td>
-                                            <td class="align-middle"><?php echo $row['bill_total'] ?></td>
-                                            <td class="align-middle"><?php echo $row['bill_isCanceled'] ?></td>
+                                            <td class="align-middle"><?php echo $row['item_sequence'] ?></td>
+                                            <td class="align-middle"><?php echo $row['item_code'] ?></td>
+                                            <td class="align-middle"><?php echo $row['item_desc'] ?></td>
+                                            <td class="align-middle"><?php echo $row['item_quantity'] ?></td>
+                                            <td class="align-middle"><?php echo $row['item_unit'] ?></td>
+                                            <td class="align-middle"><?php echo $row['item_price'] ?></td>
+                                            <td class="align-middle"><?php echo $row['line_total'] ?></td>
                                             <td class="align-middle"><?php echo $row['creat_at'] ?></td>
+
                                             <td class="align-middle">
                                                 <a href="#" class="btn btn-sm btn-danger" onclick="confirmDelete(<?php echo $row['bill_id']; ?>)">Delete</a>
                                             </td>
@@ -113,7 +118,7 @@
             }).then((willDelete) => {
                 if (willDelete) {
                     // Perform deletion
-                    window.location.href = "function/action_bill/del_bill.php?bill_id=" + billId;
+                    window.location.href = "function/action_bill/del_line.php?line_id=" + billId;
                 }
             });
         }

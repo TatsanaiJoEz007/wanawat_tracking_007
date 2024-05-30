@@ -379,7 +379,8 @@
         </div>
         <ul class="sub-menu">
           <li><a href="../admin/importCSV.php">Import CSV</a></li>
-          <li><a href="../admin/uploadedbill.php">Uploaded Bill</a></li>
+          <li><a href="../admin/table_header.php">Uploaded Header Bill</a></li>
+          <li><a href="../admin/table_line.php">Uploaded Line Bill</a></li>
         </ul>
       </li>
       <li>
