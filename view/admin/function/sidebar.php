@@ -7,8 +7,7 @@
   <title> Drop Down Sidebar Menu | CodingLab </title>
   <!-- Boxiocns CDN Link -->
   <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
-
-  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
@@ -396,6 +395,16 @@
           <li><a href="../admin/banner">Banner</a></li>
           <li><a href="../admin/contact.php">Contact</a></li>
           <li><a href="../admin/question.php">Question</a></li>
+        </ul>
+      </li>
+      
+      <li>
+        <a href="../admin/activity.php">
+          <i class="bi bi-activity nav_icon"></i>
+          <span class="link_name">Activity Logs</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link_name" href="../activity.php">Activity Logs</a></li>
         </ul>
       </li>
       <li>
