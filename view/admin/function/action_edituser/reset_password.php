@@ -1,37 +1,38 @@
 <?php
+// connect to database
 require_once('../../../config/connect.php');
-session_start();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // ตรวจสอบว่ามีการรับค่า user_id และ new_password หรือไม่
-    if (isset($_POST['user_id']) && isset($_POST['new_password'])) {
-        $userId = $_POST['user_id'];
-        $newPassword = $_POST['new_password'];
-        $hashedPassword = md5($newPassword); // ใช้ md5 ในการเข้ารหัสรหัสผ่าน
+    $new_password = $_POST['newPassword'];
+    $user_id = $_POST['user_id'];
 
-        // ตรวจสอบการเชื่อมต่อฐานข้อมูล
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
-
-        $sql = "UPDATE tb_user SET user_pass = ? WHERE user_id = ?";
-        $stmt = $conn->prepare($sql);
-        if ($stmt === false) {
-            echo json_encode(['status' => 'error', 'message' => 'Prepare failed: ' . $conn->error]);
-            exit;
-        }
-        $stmt->bind_param('si', $hashedPassword, $userId);
-
-        if ($stmt->execute()) {
-            echo json_encode(['status' => 'success']);
-        } else {
-            echo json_encode(['status' => 'error', 'message' => 'Execute failed: ' . $stmt->error]);
-        }
-
-        $stmt->close();
-        $conn->close();
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Invalid input.']);
+    // Check if user_id is set
+    if (!isset($user_id)) {
+        echo 'error: missing user_id';
+        exit;
     }
+
+    // Check if user exists in the database
+    $query = $conn->prepare('SELECT * FROM tb_user WHERE user_id = ?');
+    $query->bind_param('s', $user_id);
+    $query->execute();
+    $result = $query->get_result();
+
+    if ($result->num_rows > 0) {
+        // Update the password with MD5 hash
+        $update_query = $conn->prepare('UPDATE tb_user SET user_pass = ? WHERE user_id = ?');
+        $hashed_password = md5($new_password); // Using MD5 hash
+        $update_query->bind_param('ss', $hashed_password, $user_id);
+        if ($update_query->execute()) {
+            echo 'success';
+        } else {
+            echo 'error';
+        }
+        $update_query->close();
+    } else {
+        echo 'notexists';
+    }
+
+    $query->close();
 }
 ?>
