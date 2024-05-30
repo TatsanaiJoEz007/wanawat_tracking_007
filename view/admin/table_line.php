@@ -92,7 +92,7 @@
                                             <td class="align-middle"><?php echo $row['creat_at'] ?></td>
 
                                             <td class="align-middle">
-                                                <a href="#" class="btn btn-sm btn-danger" onclick="confirmDelete(<?php echo $row['bill_id']; ?>)">Delete</a>
+                                                <a href="#" class="btn btn-sm btn-danger" onclick="confirmDelete(<?php echo $row['line_id']; ?>)">Delete</a>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
