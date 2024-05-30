@@ -3,10 +3,12 @@ $host = "localhost";
 $username = "root";
 $pass = "";
 $db = "wanawat_tracking";
-$conn = new mysqli($host,$username,$pass,$db);
+
+$conn = new mysqli($host, $username, $pass, $db);
 $conn->set_charset("utf8");
-date_default_timezone_set('Asia/bangkok');
-if(!$conn){
-    echo "error to connect database";
+date_default_timezone_set('Asia/Bangkok');
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
 }
 ?>
