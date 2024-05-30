@@ -353,9 +353,9 @@ require_once ('../config/connect.php');
         <ul class="nav-links">
 
             <li>
-                <a href="../employee/sendingbill.php">
+                <a href="../employee/statusbill.php">
                     <i class="bx bx-send nav_icon"></i>
-                    <span class="link_name">Sending Bill</span>
+                    <span class="link_name">Status Bill</span>
                 </a>
 
             </li>
@@ -397,6 +397,15 @@ require_once ('../config/connect.php');
                 </a>
                 <ul class="sub-menu blank">
                     <li><a class="link_name" href="../employee/problem.php">Problem</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="../employee/delivery_bill.php">
+                <i class="bi bi-basket nav_icon"></i>
+                    <span class="link_name">DeliveryBill</span>
+                </a>
+                <ul class="sub-menu blank">
+                    <li><a class="link_name" href="../employee/delivery_bill.php">DeliveryBill</a></li>
                 </ul>
             </li>
 

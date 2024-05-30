@@ -222,12 +222,12 @@ function getTotalPrice()
     <?php require_once ('function/sidebar_employee.php'); ?>
 
     <div class="container mt-5">
-        <h2>Available Items</h2>
+        <h2>จำนวนบิล</h2>
         <div class="scroll-wrapper">
             <div class="card-container">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Item 1</h5>
+                        <h5 class="card-title">ID 1</h5>
                         <p class="card-text">ID Product</p>
                         <p class="card-text">name product</p>
                         <p class="card-text">Price: $10</p>
@@ -235,13 +235,13 @@ function getTotalPrice()
                             <input type="hidden" name="id" value="1">
                             <input type="hidden" name="name" value="Item 1">
                             <input type="hidden" name="price" value="10">
-                            <button type="submit" name="add_to_cart" class="btn btn-primary">Add to Cart</button>
+                            <button type="submit" name="add_to_cart" class="btn btn-primary">อัพเดตสถานะ</button>
                         </form>
                     </div>
                 </div>
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Item 2</h5>
+                        <h5 class="card-title">ID 2</h5>
                         <p class="card-text">ID Product</p>
                         <p class="card-text">name product</p>
                         <p class="card-text">Price: $15</p>
@@ -249,7 +249,7 @@ function getTotalPrice()
                             <input type="hidden" name="id" value="2">
                             <input type="hidden" name="name" value="Item 2">
                             <input type="hidden" name="price" value="15">
-                            <button type="submit" name="add_to_cart" class="btn btn-primary">Add to Cart</button>
+                            <button type="submit" name="add_to_cart" class="btn btn-primary">อัพเดตสถานะ</button>
                         </form>
                     </div>
                 </div>
@@ -258,7 +258,7 @@ function getTotalPrice()
         </div>
     </div>
 
-    <div class="cart-summary">
+    <!-- <div class="cart-summary">
         <h2>Cart Summary</h2>
         <form id="cart-summary-form">
             <div id="cart-items">
@@ -286,7 +286,7 @@ function getTotalPrice()
             <button type="submit" class="btn btn-success mt-3">Submit Order</button>
 
         </form>
-    </div>
+    </div> -->
 
     <script>
 

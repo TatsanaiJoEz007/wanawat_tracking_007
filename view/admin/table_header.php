@@ -85,7 +85,7 @@
                                             <td class="align-middle"><?php echo $row['bill_customer_name'] ?></td>
                                             <td class="align-middle"><?php echo $row['bill_total'] ?></td>
                                             <td class="align-middle"><?php echo $row['bill_isCanceled'] ?></td>
-                                            <td class="align-middle"><?php echo $row['creat_at'] ?></td>
+                                            <td class="align-middle"><?php echo $row['create_at'] ?></td>
                                             <td class="align-middle">
                                                 <a href="#" class="btn btn-sm btn-danger" onclick="confirmDelete(<?php echo $row['bill_id']; ?>)">Delete</a>
                                             </td>

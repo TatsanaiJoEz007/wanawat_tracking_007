@@ -66,7 +66,7 @@
                                 <tbody class="text-center">
                                     <?php
                                     $i = 1;
-                                    $orderBy = 'bill_number';
+                                    $orderBy = 'line_bill_number';
                                     $order = 'asc';
 
                                     if (isset($_GET['sort']) && isset($_GET['order'])) {
@@ -81,7 +81,7 @@
                                     ?>
                                         <tr>
                                             <td><?php echo $i++; ?></td>
-                                            <td class="align-middle"><?php echo $row['bill_number'] ?></td>
+                                            <td class="align-middle"><?php echo $row['line_bill_number'] ?></td>
                                             <td class="align-middle"><?php echo $row['item_sequence'] ?></td>
                                             <td class="align-middle"><?php echo $row['item_code'] ?></td>
                                             <td class="align-middle"><?php echo $row['item_desc'] ?></td>
@@ -89,7 +89,7 @@
                                             <td class="align-middle"><?php echo $row['item_unit'] ?></td>
                                             <td class="align-middle"><?php echo $row['item_price'] ?></td>
                                             <td class="align-middle"><?php echo $row['line_total'] ?></td>
-                                            <td class="align-middle"><?php echo $row['creat_at'] ?></td>
+                                            <td class="align-middle"><?php echo $row['create_at'] ?></td>
 
                                             <td class="align-middle">
                                                 <a href="#" class="btn btn-sm btn-danger" onclick="confirmDelete(<?php echo $row['line_id']; ?>)">Delete</a>

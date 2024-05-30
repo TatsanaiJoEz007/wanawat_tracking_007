@@ -16,12 +16,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $sql = "UPDATE tb_user SET user_pass = ? WHERE user_id = ?";
         $stmt = $conn->prepare($sql);
+        if ($stmt === false) {
+            echo json_encode(['status' => 'error', 'message' => 'Prepare failed: ' . $conn->error]);
+            exit;
+        }
         $stmt->bind_param('si', $hashedPassword, $userId);
 
         if ($stmt->execute()) {
             echo json_encode(['status' => 'success']);
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Error updating password.']);
+            echo json_encode(['status' => 'error', 'message' => 'Execute failed: ' . $stmt->error]);
         }
 
         $stmt->close();
