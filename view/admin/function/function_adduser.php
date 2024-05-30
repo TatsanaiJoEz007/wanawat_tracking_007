@@ -28,6 +28,7 @@
                             confirmButtonText: 'OK'
                         }).then(() => {
                             $('#adduserModal').modal('hide'); // ปิด modal
+                            location.reload(); // รีโหลดหน้าเพจ
                         });
                     } else {
                         console.log('Registration failed:', response.message);

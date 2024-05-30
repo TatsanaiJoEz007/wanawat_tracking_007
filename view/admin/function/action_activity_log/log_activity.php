@@ -1,34 +1,17 @@
 <?php
-require_once('../../../config/connect.php');
+// Assuming you have already established a database connection
 
-$conn = new mysqli($host, $username, $pass, $db);
+// Function to log admin activity
+function logAdminActivity($userId, $action, $entity, $entityId = null, $additionalInfo = null) {
+    global $pdo; // Assuming $pdo is your database connection object
 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    // Prepare the SQL statement
+    $stmt = $pdo->prepare("INSERT INTO admin_activity_log (userId, action, entity, entity_id, additional_info) VALUES (?, ?, ?, ?, ?)");
+
+    // Bind parameters and execute the statement
+    $stmt->execute([$userId, $action, $entity, $entityId, $additionalInfo]);
+
+    // Check if the insertion was successful
+    return $stmt->rowCount() > 0;
 }
-
-function logAdminActivity($user_id, $action, $entity, $entity_id, $additional_info)
-{
-    global $conn;
-
-    $user_id = mysqli_real_escape_string($conn, $user_id);
-    $action = mysqli_real_escape_string($conn, $action);
-    $entity = mysqli_real_escape_string($conn, $entity);
-    $entity_id = mysqli_real_escape_string($conn, $entity_id);
-    $additional_info = mysqli_real_escape_string($conn, $additional_info);
-
-    $create_at = date('Y-m-d H:i:s');
-
-    $sql = "INSERT INTO admin_activity_log (user_id, action, entity, entity_id, create_at, additional_info)
-                VALUES ('$user_id', '$action', '$entity', '$entity_id', '$create_at', '$additional_info')";
-
-    if ($conn->query($sql) === TRUE) {
-        echo "Admin activity logged successfully!";
-    } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
-    }
-}
-
-    $conn->close();
-
 ?>
