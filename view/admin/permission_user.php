@@ -179,7 +179,7 @@ $query = mysqli_query($conn, $sql);
                                                 <td class="align-middle"><?php echo ($row['user_status'] == 1) ? "อยู่ในระบบ" : "ไม่อยู่ในระบบ"; ?></td>
                                                 <td class="align-middle">
                                                     <a href="#" class="btn btn-sm btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#edituserModal" data-id="<?php echo $row['user_id']; ?>">Edit</a>
-                                                    <a href="#" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#resetPasswordModal" data-id="<?php echo $row['user_id']; ?>">Reset Password</a>
+                                                    <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#resetPasswordModal" data-id="<?php echo $row['user_id']; ?>">Reset Password</button>
                                                     <button type="button" class="btn btn-sm btn-danger" onclick="delUser('<?php echo $row['user_id']; ?>')">Delete</button>
                                                 </td>
                                             </tr>
@@ -381,51 +381,65 @@ $query = mysqli_query($conn, $sql);
 
 
 
-
         $(document).ready(function() {
             // Show Reset Password Modal
             $('.reset-password-btn').on('click', function() {
                 var userId = $(this).data('id');
-                $('#reset_user_id').val(userId);
-                $('#resetpasswordModal').modal('show');
+                console.log('Setting user ID in hidden input:', userId); // Debug log
+                $('#user_id').val(userId); // ตั้งค่า user_id ใน hidden input
+                $('#resetPasswordModal').modal('show');
             });
 
             $('#resetPasswordForm').submit(function(e) {
-            e.preventDefault();
+                e.preventDefault();
 
-            let newPassword = $('#new-password').val();
-            let confirmPassword = $('#confirm-password').val();
-            let userId = $('#user-id').val(); // Ensure you have this value available
+                let newPassword = $('#new-password').val();
+                let confirmPassword = $('#confirm-password').val();
+                let userId = $('#user_id').val();
 
-            if (newPassword !== confirmPassword) {
-                Swal.fire({
-                    position: 'center',
-                    icon: 'error',
-                    title: 'รหัสผ่านไม่ตรงกัน',
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-                return;
-            }
+                console.log('Submitting form with User ID:', userId); // Debug log
 
-            $.ajax({
-                url: 'function/action_edituser/reset_password.php', // เซิร์ฟเวอร์ที่จะเปลี่ยนรหัสผ่าน
-                type: 'post',
-                data: {
-                    newPassword: newPassword,
-                    user_id: userId // Ensure this value is sent
-                },
-                success: function(response) {
-                    if (response === 'success') {
-                        $('#resetPasswordModal').modal('hide');
-                        Swal.fire({
-                            position: 'center',
-                            icon: 'success',
-                            title: 'เปลี่ยนรหัสผ่านสำเร็จ',
-                            showConfirmButton: false,
-                            timer: 1500
-                        });
-                    } else {
+                if (newPassword !== confirmPassword) {
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'error',
+                        title: 'รหัสผ่านไม่ตรงกัน',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    return;
+                }
+
+                $.ajax({
+                    url: 'function/action_edituser/reset_password.php',
+                    type: 'post',
+                    data: {
+                        newPassword: newPassword,
+                        user_id: userId
+                    },
+                    success: function(response) {
+                        console.log('Response from server:', response); // Debug log
+                        if (response === 'success') {
+                            $('#resetPasswordModal').modal('hide');
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: 'เปลี่ยนรหัสผ่านสำเร็จ',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        } else {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'error',
+                                title: 'เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('AJAX Error:', error);
                         Swal.fire({
                             position: 'center',
                             icon: 'error',
@@ -434,11 +448,14 @@ $query = mysqli_query($conn, $sql);
                             timer: 1500
                         });
                     }
-                }
+                });
             });
         });
 
-        });
+
+
+
+
 
 
 
@@ -518,35 +535,34 @@ $query = mysqli_query($conn, $sql);
         </div>
     </div>
 
-        <!-- Reset Password Modal -->
-        <div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalLabel">เปลี่ยนรหัสผ่าน</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
+    <!-- Reset Password Modal -->
+    <div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">เปลี่ยนรหัสผ่าน</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
                     <form id="resetPasswordForm">
-                    <input type="hidden" id="user-id" name="user-id" value=""> <!-- This will be set dynamically -->
-                    <div class="mb-3">
-                        <label for="new-password" class="form-label">รหัสผ่านใหม่</label>
-                        <input type="password" class="form-control" id="new-password" name="new-password" required placeholder="Enter new password">
-                    </div>
-                    <div class="mb-3">
-                        <label for="confirm-password" class="form-label">ยืนยันรหัสผ่านใหม่</label>
-                        <input type="password" class="form-control" id="confirm-password" name="confirm-password" required placeholder="Confirm new password">
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-success">ยืนยันการเปลี่ยนรหัสผ่าน</button>
-                    </div>
-                </form>
-
-
-                    </div>
+                        <input type="hidden" id="user_id" name="user_id" value=""> <!-- This will be set dynamically -->
+                        <div class="mb-3">
+                            <label for="new-password" class="form-label">รหัสผ่านใหม่</label>
+                            <input type="password" class="form-control" id="new-password" name="newPassword" required placeholder="Enter new password">
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirm-password" class="form-label">ยืนยันรหัสผ่านใหม่</label>
+                            <input type="password" class="form-control" id="confirm-password" name="confirmPassword" required placeholder="Confirm new password">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">ยืนยันการเปลี่ยนรหัสผ่าน</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
+    </div>
+
 
 
 
