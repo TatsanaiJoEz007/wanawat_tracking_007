@@ -12,7 +12,6 @@
 <style>
     body {
         font-family: 'Kanit', sans-serif !important;
-        font-weight: bold !important;
     }
 </style>
 </head>
