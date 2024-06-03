@@ -25,6 +25,13 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
             margin-right: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .product-table-container {
+            flex-grow: 1;
+            overflow: auto;
+            max-height: 400px; /* กำหนดความสูงคงที่ให้กับตาราง */
         }
         .cart {
             width: 30%;
@@ -78,81 +85,67 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
+<?php
+// db.php
+$servername = "localhost";  // Usually 'localhost' if running on the same server
+$username = "root";  // Replace with your database username
+$password = "";  // Replace with your database password
+$dbname = "wanawat_tracking";  // Replace with your database name
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+?>
+
 <?php require_once ('function/sidebar_employee.php'); ?>
+
     <br><br>
     <div class="container">
         <div class="product-list">
             <h1>สินค้ารอเลือกบิล</h1>
-            <table>
-                <thead>
-                    <tr>
-                        <th>เลขบิล</th>
-                        <th>รหัสสินค้า</th>
-                        <th>รายละเอียด</th>
-                        <th>จำนวน</th>
-                        <th>ราคา</th>
-                        <th>ราคารวม</th>
-                        <th>Select</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>#</td>
-                        <td><img src="product1.jpg" alt="Product 1" style="width: 50px; height: 50px;"></td>
-                        <td>Product 1</td>
-                        <td>This is a great product.</td>
-                        <td>$10</td>
-                        <td>$10</td>
-                        <td><input type="checkbox" class="product-checkbox" data-name="Product 1" data-price="10"></td>
-                    </tr>
-                    <tr>
-                        <td>#</td>
-                        <td><img src="product1.jpg" alt="Product 2" style="width: 50px; height: 50px;"></td>
-                        <td>Product 2</td>
-                        <td>This is a great product.</td>
-                        <td>$20</td>
-                        <td>$20</td>
-                        <td><input type="checkbox" class="product-checkbox" data-name="Product 2" data-price="20"></td>
-                    </tr>
-                    <tr>
-                        <td>#</td>
-                        <td><img src="product1.jpg" alt="Product 3" style="width: 50px; height: 50px;"></td>
-                        <td>Product 3</td>
-                        <td>This is a great product.</td>
-                        <td>$30</td>
-                        <td>$30</td>
-                        <td><input type="checkbox" class="product-checkbox" data-name="Product 3" data-price="30"></td>
-                    </tr>
-                    <tr>
-                        <td>#</td>
-                        <td><img src="product1.jpg" alt="Product 4" style="width: 50px; height: 50px;"></td>
-                        <td>Product 4</td>
-                        <td>This is a great product.</td>
-                        <td>$40</td>
-                        <td>$40</td>
-                        <td><input type="checkbox" class="product-checkbox" data-name="Product 4" data-price="40"></td>
-                    </tr>
-                    <tr>
-                        <td>#</td>
-                        <td><img src="product1.jpg" alt="Product 5" style="width: 50px; height: 50px;"></td>
-                        <td>Product 5</td>
-                        <td>This is a great product.</td>
-                        <td>$50</td>
-                        <td>$50</td>
-                        <td><input type="checkbox" class="product-checkbox" data-name="Product 5" data-price="50"></td>
-                    </tr>
-                    <tr>
-                        <td>#</td>
-                        <td><img src="product1.jpg" alt="Product 6" style="width: 50px; height: 50px;"></td>
-                        <td>Product 6</td>
-                        <td>This is a great product.</td>
-                        <td>$60</td>
-                        <td>$60</td>
-                        <td><input type="checkbox" class="product-checkbox" data-name="Product 6" data-price="60"></td>
-                    </tr>
-                    <!-- เพิ่มรายการสินค้าเพิ่มเติมที่นี่ -->
-                </tbody>
-            </table>
+            <div class="product-table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>เลขบิล</th>
+                            <th>รหัสสินค้า</th>
+                            <th>รายละเอียด</th>
+                            <th>จำนวน</th>
+                            <th>หน่วย</th>
+                            <th>ราคา</th>
+                            <th>ราคารวม</th>
+                            <th>Select</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $sql = "SELECT * FROM tb_line";
+                        $result = $conn->query($sql);
+
+                        if ($result->num_rows > 0) {
+                            while($row = $result->fetch_assoc()) {
+                                echo "<tr>
+                                    <td>" . $row["line_id"] . "</td>
+                                    <td>" . $row["line_bill_number"] . "</td>
+                                    <td>" . $row["item_desc"] . "</td>
+                                    <td>" . $row["item_quantity"] . "</td>
+                                    <td>" . $row["item_unit"] . "</td>
+                                    <td>฿" . $row["item_price"] . "</td>
+                                    <td>฿" . ((float)$row["line_total"] * (float)$row["item_quantity"]) . "</td>
+                                    <td><input type='checkbox' class='product-checkbox' data-name='" . $row["item_desc"] . "' data-price='" . $row["item_price"] . "' data-unit='" . $row["item_unit"] . "'></td>
+                                </tr>";
+                            }
+                        } else {
+                            echo "<tr><td colspan='8'>No products found</td></tr>";
+                        }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
         <div class="cart">
             <h2 class="cart-title">ตะกร้าสินค้า</h2>
@@ -173,11 +166,12 @@
             checkbox.addEventListener('change', () => {
                 const name = checkbox.getAttribute('data-name');
                 const price = checkbox.getAttribute('data-price');
+                const unit = checkbox.getAttribute('data-unit');
 
                 if (checkbox.checked) {
                     const li = document.createElement('li');
                     li.classList.add('cart-item');
-                    li.textContent = `${name} - $${price}`;
+                    li.textContent = `${name}  - ฿${price}- ${unit}`;
                     li.setAttribute('data-price', price);
                     cartItems.appendChild(li);
                 } else {
