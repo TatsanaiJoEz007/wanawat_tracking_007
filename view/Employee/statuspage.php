@@ -119,10 +119,7 @@
                         ?>
                     </tbody>
                 </table>
-                <form method="POST">
-                    <input type="hidden" name="selected_items" value="<?php echo htmlentities($_POST['selected_items']); ?>">
-                    <button type="submit">ยืนยันบิล</button>
-                </form>
+               
             </div>
         </div>
 
@@ -139,6 +136,10 @@
                 ?>
             </ul>
             <h7>ราคารวม: <span id="total-price">฿0</span></h7>
+            <form method="POST">
+                    <input type="hidden" name="selected_items" value="<?php echo htmlentities($_POST['selected_items']); ?>">
+                    <button type="submit">ยืนยันบิล</button>
+                </form>
         </div>
     </div>
     <script>
