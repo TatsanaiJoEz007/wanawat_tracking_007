@@ -115,12 +115,13 @@
                                 <tbody class="text-center">
                                     <?php
                                     include ('../config/connect.php');
+                                    $i = 1;
                                     $sql = "SELECT * FROM tb_banner";
                                     $query = $conn->query($sql);
                                     while ($row = $query->fetch_assoc()):
                                         ?>
                                         <tr>
-                                            <td class="align-middle"><?php echo $row['banner_id']; ?></td>
+                                            <td class="align-middle"><?php echo $i++; ?></td>
                                             <td class="align-middle"><?php echo $row['banner_name']; ?></td>
                                             <td class="align-middle"><img src="assets/<?php echo $row['banner_img']; ?>"
                                                     alt="Banner Image" style="object-fit: cover;" width="100%" height="140">

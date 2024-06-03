@@ -67,13 +67,13 @@
                                 <tbody class="text-center">
                                     <?php
                                     $i = 1;
-                                    $sql = "SELECT * FROM admin_activity_log ORDER BY id DESC";
+                                    $sql = "SELECT * FROM admin_activity_log ORDER BY id DESC ";
                                     $query = $conn->query($sql);
                                     foreach($query as $row):
                                     ?>
                                     <tr>
                                         <td><?php echo $i++; ?></td>
-                                        <td class="align-middle"><?php echo $row['user_id']?></td>
+                                        <td class="align-middle"><?php echo $row['userId']?></td>
                                         <td class="align-middle"><?php echo $row['action']?></td>
                                         <td class="align-middle"><?php echo $row['entity']?></td>
                                         <td class="align-middle"><?php echo $row['entity_id']; ?></td>

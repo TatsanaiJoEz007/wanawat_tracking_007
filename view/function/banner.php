@@ -31,7 +31,7 @@ require_once('../view/config/connect.php');
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
                 echo '<div class="carousel-item ' . $active . '">';
-                echo '<img src="' . $row['banner_img'] . '" class="d-block w-100" alt="Banner" style="object-fit: cover;" width="1000" height="700">';
+                echo '<img src="admin' . $row['banner_img'] . '" class="d-block w-100" alt="Banner" style="object-fit: cover;" width="1000" height="700">';
                 echo '</div>';
                 $active = ''; // ล้างค่าตัวแปร active หลังจากไอเทมแรก
             }

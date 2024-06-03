@@ -3,15 +3,16 @@
 
 // Function to log admin activity
 function logAdminActivity($userId, $action, $entity, $entityId = null, $additionalInfo = null) {
-    global $pdo; // Assuming $pdo is your database connection object
+    global $conn; // Use the global $conn variable
 
     // Prepare the SQL statement
-    $stmt = $pdo->prepare("INSERT INTO admin_activity_log (userId, action, entity, entity_id, additional_info) VALUES (?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO admin_activity_log (userId, action, entity, entity_id, additional_info) VALUES (?, ?, ?, ?, ?)");
 
     // Bind parameters and execute the statement
-    $stmt->execute([$userId, $action, $entity, $entityId, $additionalInfo]);
+    $stmt->bind_param("issss", $userId, $action, $entity, $entityId, $additionalInfo);
+    $stmt->execute();
 
     // Check if the insertion was successful
-    return $stmt->rowCount() > 0;
+    return $stmt->affected_rows > 0;
 }
 ?>

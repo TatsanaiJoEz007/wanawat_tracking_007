@@ -1,8 +1,11 @@
 <?php
 header('Content-Type: application/json');
 require_once('../../config/connect.php');
+require_once('../function/action_activity_log/log_activity.php'); // Include log_activity.php
 
 $response = [];
+
+session_start(); // Make sure the session is started
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (
@@ -54,6 +57,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $stmt->bind_param("sssssiisssii", $firstname, $lastname, $email, $hashed_password, $address, $province_id, $amphure_id, $district_id, $tel, $user_img, $user_type, $user_status);
 
                 if ($stmt->execute()) {
+                    // Log the activity
+                    $admin_user_id = $_SESSION['user_id']; // Assuming admin user_id is stored in session
+                    $action = 'add user';
+                    $entity = 'user';
+                    $entity_id = $conn->insert_id; // Get the last inserted ID
+                    $additional_info = "Added user with email: " . $email;
+                    logAdminActivity($admin_user_id, $action, $entity, $entity_id, $additional_info);
+
                     $response['success'] = true;
                     $response['message'] = 'Registration successful.';
                 } else {

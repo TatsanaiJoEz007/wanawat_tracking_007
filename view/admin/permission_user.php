@@ -113,17 +113,17 @@ $query = mysqli_query($conn, $sql);
                                                     <option value="" disabled selected>ตำบล</option>
                                                 </select>
                                             </div>
-                                            <div class="mb-3">
+                                            <!-- <div class="mb-3">
                                                 <label for="user_img" class="form-label">รูปภาพ</label>
                                                 <input type="file" class="form-control" id="user_img" name="user_img">
-                                            </div>
-                                            <div class="mb-3">
+                                            </div> -->
+                                            <!-- <div class="mb-3">
                                                 <label for="user_status" class="form-label">สถานะ</label>
                                                 <select class="form-select" id="user_status" name="user_status" required>
                                                     <option value="1">อยู่ในระบบ</option>
                                                     <option value="0">ไม่อยู่ในระบบ</option>
                                                 </select>
-                                            </div>
+                                            </div> -->
                                         </form>
                                         <?php require_once('function/function_adduser.php'); ?>
                                     </div>
@@ -572,22 +572,33 @@ $query = mysqli_query($conn, $sql);
             let option = {
                 url: 'function/action_edituser/del_user.php',
                 type: 'post',
+                dataType: 'json',
                 data: {
                     id: id,
                     delUser: 1
                 },
                 success: function(res) {
-                    // Display success message using Swal.fire
-                    Swal.fire({
-                        title: 'Success!',
-                        text: 'ลบผู้ใช้งานสำเร็จ',
-                        icon: 'success',
-                        confirmButtonText: 'ตกลง'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            location.reload(); // Reload the page after successful deletion
-                        }
-                    });
+                    if (res.status === 'success') {
+                        // Display success message using Swal.fire
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'ลบผู้ใช้งานสำเร็จ',
+                            icon: 'success',
+                            confirmButtonText: 'ตกลง'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                location.reload(); // Reload the page after successful deletion
+                            }
+                        });
+                    } else {
+                        // Display error message using Swal.fire
+                        Swal.fire({
+                            title: 'Error!',
+                            text: res.message,
+                            icon: 'error',
+                            confirmButtonText: 'ตกลง'
+                        });
+                    }
                 },
                 error: function(xhr, status, error) {
                     // Display error message using Swal.fire
@@ -613,12 +624,12 @@ $query = mysqli_query($conn, $sql);
                 cancelButtonText: 'ยกเลิก',
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Proceed with AJAX request to delete the banner
+                    // Proceed with AJAX request to delete the user
                     $.ajax(option);
-
                 }
             });
         }
+
     </script>
 
     <script src="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>

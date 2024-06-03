@@ -1,37 +1,48 @@
 <?php
 require_once('../../../config/connect.php');
-
 require_once('../action_activity_log/log_activity.php');
-// Include the logAdminActivity function here
 
-// Function to log admin activity
-function logAdminActivity($userId, $action, $entity, $entityId = null, $additionalInfo = null) {
-    global $conn; // Assuming $conn is your database connection object
-    
-    // Prepare the SQL statement
-    $stmt = $conn->prepare("INSERT INTO admin_activity_log (userId, action, entity, entity_id, additional_info) VALUES (?, ?, ?, ?, ?)");
-    
-    // Bind parameters and execute the statement
-    $stmt->execute([$userId, $action, $entity, $entityId, $additionalInfo]);
-
-    return true; // Log entry inserted successfully
-}
-
+session_start(); // Make sure the session is started
 
 if (isset($_POST['delUser'])) {
-    // Assuming $_SESSION['user_id'] contains the ID of the admin user
-    $userId = $_SESSION['user_id']; 
-    $action = "delete"; // Action performed by the admin
-    $entity = "user"; // Entity affected by the action
-    $entityId = $_POST['id']; // ID of the deleted user
-    $additionalInfo = "Deleted user with ID: " . $_POST['id']; // Additional information about the action
+    if (isset($_SESSION['user_id'])) {
+        $adminUserId = $_SESSION['user_id']; 
+        $userIdToDelete = $_POST['id'];
+        
+        // Fetch email of the user to be deleted
+        $emailStmt = $conn->prepare("SELECT user_email FROM tb_user WHERE user_id = ?");
+        $emailStmt->bind_param("i", $userIdToDelete);
+        $emailStmt->execute();
+        $emailStmt->bind_result($userEmail);
+        $emailStmt->fetch();
+        $emailStmt->close();
+        
+        if ($userEmail) {
+            $action = "delete user";
+            $entity = "user";
+            $additionalInfo = "Deleted user with email: " . $userEmail;
 
-    // Call the logAdminActivity function to log admin activity
-    logAdminActivity($userId, $action, $entity, $entityId, $additionalInfo);
-
-    // Proceed with deleting the user
-    $stmt = $conn->prepare("DELETE FROM tb_user WHERE user_id = ?");
-    $stmt->execute([$_POST['id']]);
-
+            // Call the logAdminActivity function to log admin activity
+            if (logAdminActivity($adminUserId, $action, $entity, $userIdToDelete, $additionalInfo)) {
+                // Proceed with deleting the user
+                $stmt = $conn->prepare("DELETE FROM tb_user WHERE user_id = ?");
+                $stmt->bind_param("i", $userIdToDelete);
+                if ($stmt->execute() && $stmt->affected_rows > 0) {
+                    echo json_encode(['status' => 'success', 'message' => 'User deleted successfully.']);
+                } else {
+                    echo json_encode(['status' => 'error', 'message' => 'Failed to delete user.']);
+                }
+                $stmt->close();
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Failed to log admin activity.']);
+            }
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'User not found.']);
+        }
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Unauthorized action.']);
+    }
+} else {
+    echo json_encode(['status' => 'error', 'message' => 'Invalid request.']);
 }
 ?>
