@@ -445,29 +445,28 @@ $query = mysqli_query($conn, $sql);
 
     <script>
         $(document).ready(function() {
-            var userId;
+            let userId = null;
+            let userIdSet = false;
 
-            // Event listener for the initial button click
+            if($('#user_id').val()) {
+                userId = $('#user_id').val();
+                userIdSet = true;
+            }
+
             $(document).on('click', '.reset-password-btn', function() {
-                console.log('Clicked button:', $(this)); // Add this line
-                var userId = $(this).data('id'); // Retrieve user ID from data-id attribute
-                console.log('User ID retrieved from button:', userId); // Debug log
-                $('#resetPasswordModal').data('userId', userId); // Store user ID in data attribute of the modal
-                $('#resetPasswordModal').modal('show');
-            });
-
-            $('#resetPasswordModal').on('shown.bs.modal', function() {
-                var userId = $(this).data('userId'); // Retrieve user ID from data attribute of the modal
-                $('#user_id').val(userId); // Set user ID in hidden input
-                console.log('User ID set in hidden input:', $('#user_id').val()); // Debug log
-                $('#resetPasswordForm').data('userId', userId); // Store user ID in data attribute of the form
+                if (!userIdSet) {
+                    userId = $(this).data('id');
+                    console.log('User ID retrieved from button:', userId);
+                    $('#user_id').val(userId);
+                    console.log('User ID set in hidden input:', $('#user_id').val());
+                    userIdSet = true;
+                }
+                console.log('User ID set:', userIdSet);
             });
 
             $('#resetPasswordForm').submit(function(e) {
                 e.preventDefault();
 
-                // Retrieve user ID from data attribute of the form
-                var userId = $(this).data('userId');
                 console.log('Submitting form with User ID:', userId); // Debug log
                 $('#user_id').val(userId); // Set user ID in hidden input
 
@@ -484,7 +483,7 @@ $query = mysqli_query($conn, $sql);
                     });
                     return;
                 }
-
+                console.log('New Password');
                 $.ajax({
                     url: 'function/action_edituser/reset_password.php',
                     type: 'post',
@@ -551,7 +550,7 @@ $query = mysqli_query($conn, $sql);
                             <input type="password" class="form-control" id="confirm-password" name="confirmPassword" required placeholder="Confirm new password">
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="reset-password-btn btn btn-success">ยืนยันการเปลี่ยนรหัสผ่าน</button>
+                            <button type="submit" class="reset-password-btn btn btn-success">ยืนยันการเปลี่ยนรหัสผ่าน</button>
 
                         </div>
                     </form>

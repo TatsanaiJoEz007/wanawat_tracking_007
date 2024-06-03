@@ -198,6 +198,8 @@ if ($conn->connect_error) {
             totalPriceElement.textContent = `฿${totalPrice}`;
         }
 
+        
+
         document.addEventListener('DOMContentLoaded', calculateTotal);
 
         createBillBtn.addEventListener('click', () => {
