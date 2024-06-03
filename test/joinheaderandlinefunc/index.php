@@ -60,7 +60,6 @@
                     }
                     $merged_rows[$bill_number]["item_details"] .= "Item Code: " . $row["item_code"] . "<br>";
                     $merged_rows[$bill_number]["item_details"] .= "Item Description: " . $row["item_desc"] . "<br> <hr>";
-                
                 }
             }
 

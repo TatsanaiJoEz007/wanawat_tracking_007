@@ -129,37 +129,76 @@
                     <thead>
                         <tr>
                             <th>เลขบิล</th>
+                            <th>ชื่อลูกค้า</th>
                             <th>รหัสสินค้า</th>
                             <th>รายละเอียด</th>
                             <th>จำนวน</th>
-                            <th>หน่วย</th>
                             <th>ราคา</th>
+                            <th>หน่วย</th>
                             <th>ราคารวม</th>
                             <th>Select</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
-                        $sql = "SELECT * FROM tb_line";
+
+                        // Your SQL query
+                        $sql = "SELECT *
+                        FROM tb_header
+                        INNER JOIN tb_line ON TRIM(tb_header.bill_number) = TRIM(tb_line.line_bill_number)";
+
                         $result = $conn->query($sql);
+
+                        $merged_rows = [];
 
                         if ($result->num_rows > 0) {
                             while ($row = $result->fetch_assoc()) {
-                                echo "<tr>
-                                    <td>" . $row["line_id"] . "</td>
-                                    <td>" . $row["line_bill_number"] . "</td>
-                                    <td>" . $row["item_desc"] . "</td>
-                                    <td>" . $row["item_quantity"] . "</td>
-                                    <td>" . $row["item_unit"] . "</td>
-                                    <td>฿" . $row["item_price"] . "</td>
-                                    <td>฿" . ((float)$row["line_total"] * (float)$row["item_quantity"]) . "</td>
-                                    <td><input type='checkbox' class='product-checkbox' data-name='" . $row["item_desc"] . "' data-price='" . $row["item_price"] . "' data-unit='" . $row["item_unit"] . "'></td>
-                                </tr>";
+                                $bill_number = $row["bill_number"];
+                                if (!isset($merged_rows[$bill_number])) {
+                                    $merged_rows[$bill_number] = [
+                                        "bill_number" => $bill_number,
+                                        "bill_customer_name" => $row["bill_customer_name"],
+
+                                        "item_details" => []
+                                    ];
+                                }
+                                // Add item details to the item_details array
+                                $merged_rows[$bill_number]["item_details"][] = [
+                                    "item_code" => $row["item_code"],
+                                    "item_desc" => $row["item_desc"],
+                                    "item_quantity" => $row["item_quantity"],
+                                    "item_unit" => $row["item_unit"],
+                                    "item_price" => $row["item_price"],
+                                    "line_total" => $row["line_total"]
+                                ];
                             }
-                        } else {
-                            echo "<tr><td colspan='8'>No products found</td></tr>";
                         }
+
+                        foreach ($merged_rows as $row) {
+                            echo "<tr>";
+                            echo "<td rowspan='" . count($row["item_details"]) . "'>" . $row["bill_number"] . "</td>";
+                            echo "<td rowspan='" . count($row["item_details"]) . "'>" . $row["bill_customer_name"] . "</td>";
+                            // echo "<td rowspan='" . count($row["item_details"]) . "'>" . $row["bill_total"] . "</td>";
+                            // Loop through item_details array to output each item detail
+                            foreach ($row["item_details"] as $index => $item) {
+                                if ($index > 0) {
+                                    echo "<tr>";
+                                }
+                                echo "<td>" . $item["item_code"] . "</td>";
+                                echo "<td>" . $item["item_desc"] . "</td>";
+                                echo "<td>" . $item["item_quantity"] . "</td>";
+                                echo "<td>" . $item["item_unit"] . "</td>";
+                                echo "<td>" . $item["item_price"] . "</td>";
+                                echo "<td>" . $item["line_total"] . "</td>";
+                                echo "<td><input type='checkbox' class='product-checkbox' data-name='" . $item["item_desc"] . "' data-price='" . $item["line_total"] . "' data-unit='" . $item["item_unit"] . "'></td>";
+                                echo "</tr>";
+                            }
+                        }
+
+                        $conn->close();
                         ?>
+
+
                     </tbody>
                 </table>
             </div>
@@ -190,8 +229,10 @@
                 if (checkbox.checked) {
                     const li = document.createElement('li');
                     li.classList.add('cart-item');
-                    li.textContent = `${name}  - ฿${price}- ${unit}`;
+                    li.textContent = `${name} - ฿${price} - ${unit}`;
                     li.setAttribute('data-price', price);
+                    li.setAttribute('data-unit', unit); // Ensure 'data-unit' is set correctly
+
                     cartItems.appendChild(li);
                 } else {
                     const items = cartItems.querySelectorAll('.cart-item');
@@ -231,11 +272,6 @@
             form.submit();
         });
 
-
-
-
-
-
         function calculateTotal() {
             const cartItems = document.querySelectorAll('#cart-items .cart-item');
             let totalPrice = 0;
@@ -244,41 +280,15 @@
                 const price = parseFloat(item.getAttribute('data-price'));
                 totalPrice += price;
             });
-
             totalPriceElement.textContent = `฿${totalPrice}`;
         }
 
 
 
         document.addEventListener('DOMContentLoaded', calculateTotal);
-
-        createBillBtn.addEventListener('click', () => {
-            Swal.fire({
-                title: 'คุณแน่ใจหรือไม่?',
-                text: `คุณต้องการสร้างบิลใช่หรือไม่? ราคารวมทั้งหมดคือ ${totalPriceElement.textContent}`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'ใช่, สร้างบิล!',
-                cancelButtonText: 'ยกเลิก'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire(
-                        'สร้างบิลเรียบร้อย!',
-                        `บิลของคุณถูกสร้างแล้ว. ราคารวมทั้งหมดคือ ${totalPriceElement.textContent}`,
-                        'success'
-                    ).then(() => {
-                        // รีเซ็ตตะกร้าสินค้า
-                        cartItems.innerHTML = '';
-                        totalPriceElement.textContent = '฿0';
-                        // รีเซ็ต checkbox ทั้งหมด
-                        checkboxes.forEach(checkbox => checkbox.checked = false);
-                    });
-                }
-            });
-        });
     </script>
+
+    
 </body>
 
 </html>

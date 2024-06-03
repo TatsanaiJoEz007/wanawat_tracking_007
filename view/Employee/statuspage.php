@@ -14,7 +14,7 @@
         }
 
         .container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 20px auto;
             padding: 20px;
             background-color: #fff;
@@ -91,6 +91,7 @@
 </head>
 
 <body>
+<?php require_once('function/sidebar_employee.php'); ?>
     <div class="container">
         <div class="bill-summary">
             <h1>สรุปบิล</h1>
@@ -111,15 +112,19 @@
                             foreach ($selectedItems as $item) {
                                 echo "<tr>
                                         <td>{$item['name']}</td>
-                                        <td>{$item['price']}</td>
-                                        <td>{$item['unit']}</td>
-                                    </tr>";
-                            }
+                                        <td>{$item['price']}</td>";
+                                // Check if 'unit' index is set before accessing it
+                                if (isset($item['unit'])) {
+                                    echo "<td>{$item['unit']}</td>";
+                                } else {
+                                    echo "<td></td>"; // or provide a default value
+                                }
+                                echo "</tr>";
+                            }                            
                         }
                         ?>
                     </tbody>
                 </table>
-               
             </div>
         </div>
 
@@ -136,7 +141,7 @@
                 ?>
             </ul>
             <h7>ราคารวม: <span id="total-price">฿0</span></h7>
-            <form method="POST">
+                <form method="POST">
                     <input type="hidden" name="selected_items" value="<?php echo htmlentities($_POST['selected_items']); ?>">
                     <button type="submit">ยืนยันบิล</button>
                 </form>
