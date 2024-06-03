@@ -444,87 +444,89 @@ $query = mysqli_query($conn, $sql);
     </div>
 
     <script>
-        $(document).ready(function() {
-            let userId = null;
-            let userIdSet = false;
+$(document).ready(function() {
+    let userId = null;
+    let userIdSet = false;
 
-            if($('#user_id').val()) {
-                userId = $('#user_id').val();
-                userIdSet = true;
-            }
+    if($('#user_id').val()) {
+        userId = $('#user_id').val();
+        userIdSet = true;
+    }
 
-            $(document).on('click', '.reset-password-btn', function() {
-                if (!userIdSet) {
-                    userId = $(this).data('id');
-                    console.log('User ID retrieved from button:', userId);
-                    $('#user_id').val(userId);
-                    console.log('User ID set in hidden input:', $('#user_id').val());
-                    userIdSet = true;
-                }
-                console.log('User ID set:', userIdSet);
+    $(document).on('click', '.reset-password-btn', function() {
+        if (!userIdSet) {
+            userId = $(this).data('id');
+            console.log('User ID retrieved from button:', userId);
+            $('#user_id').val(userId);
+            console.log('User ID set in hidden input:', $('#user_id').val());
+            userIdSet = true;
+        }
+        console.log('User ID set:', userIdSet);
+    });
+
+    $('#resetPasswordForm').submit(function(e) {
+        e.preventDefault();
+
+        console.log('Submitting form with User ID:', userId); // Debug log
+        $('#user_id').val(userId); // Set user ID in hidden input
+
+        let newPassword = $('#new-password').val();
+        let confirmPassword = $('#confirm-password').val();
+
+        if (newPassword !== confirmPassword) {
+            Swal.fire({
+                position: 'center',
+                icon: 'error',
+                title: 'รหัสผ่านไม่ตรงกัน',
+                showConfirmButton: false,
+                timer: 1500
             });
-
-            $('#resetPasswordForm').submit(function(e) {
-                e.preventDefault();
-
-                console.log('Submitting form with User ID:', userId); // Debug log
-                $('#user_id').val(userId); // Set user ID in hidden input
-
-                let newPassword = $('#new-password').val();
-                let confirmPassword = $('#confirm-password').val();
-
-                if (newPassword !== confirmPassword) {
+            return;
+        }
+        console.log('New Password');
+        $.ajax({
+            url: 'function/action_edituser/reset_password.php',
+            type: 'post',
+            dataType: 'json', // Expect JSON response
+            data: {
+                newPassword: newPassword,
+                user_id: userId
+            },
+            success: function(response) {
+                console.log('Response from server:', response); // Debug log
+                if (response.status === 'success') {
+                    $('#resetPasswordModal').modal('hide');
                     Swal.fire({
                         position: 'center',
-                        icon: 'error',
-                        title: 'รหัสผ่านไม่ตรงกัน',
+                        icon: 'success',
+                        title: 'เปลี่ยนรหัสผ่านสำเร็จ',
                         showConfirmButton: false,
                         timer: 1500
                     });
-                    return;
+                } else {
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'error',
+                        title: response.message || 'เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
                 }
-                console.log('New Password');
-                $.ajax({
-                    url: 'function/action_edituser/reset_password.php',
-                    type: 'post',
-                    data: {
-                        newPassword: newPassword,
-                        user_id: userId
-                    },
-                    success: function(response) {
-                        console.log('Response from server:', response); // Debug log
-                        if (response === 'success') {
-                            $('#resetPasswordModal').modal('hide');
-                            Swal.fire({
-                                position: 'center',
-                                icon: 'success',
-                                title: 'เปลี่ยนรหัสผ่านสำเร็จ',
-                                showConfirmButton: false,
-                                timer: 1500
-                            });
-                        } else {
-                            Swal.fire({
-                                position: 'center',
-                                icon: 'error',
-                                title: 'เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน',
-                                showConfirmButton: false,
-                                timer: 1500
-                            });
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('AJAX Error:', error);
-                        Swal.fire({
-                            position: 'center',
-                            icon: 'error',
-                            title: 'เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน',
-                            showConfirmButton: false,
-                            timer: 1500
-                        });
-                    }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error:', error);
+                Swal.fire({
+                    position: 'center',
+                    icon: 'error',
+                    title: 'เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน',
+                    showConfirmButton: false,
+                    timer: 1500
                 });
-            });
+            }
         });
+    });
+});
+
     </script>
 
     <!-- Reset Password Modal -->
