@@ -156,6 +156,8 @@ if ($conn->connect_error) {
             <button class="create-bill-btn" id="create-bill-btn">สร้างบิล</button>
         </div>
     </div>
+
+    
     <script>
         const checkboxes = document.querySelectorAll('.product-checkbox');
         const cartItems = document.getElementById('cart-items');
@@ -185,6 +187,32 @@ if ($conn->connect_error) {
                 calculateTotal();
             });
         });
+
+        createBillBtn.addEventListener('click', () => {
+    const selectedItems = [];
+    const items = cartItems.querySelectorAll('.cart-item');
+    items.forEach(item => {
+        const name = item.textContent.split(' - ')[0];
+        const price = item.getAttribute('data-price');
+        selectedItems.push({ name, price });
+    });
+    const selectedItemsJSON = JSON.stringify(selectedItems);
+    const form = document.createElement('form');
+    form.setAttribute('method', 'POST');
+    form.setAttribute('action', 'statuspage.php');
+    const hiddenField = document.createElement('input');
+    hiddenField.setAttribute('type', 'hidden');
+    hiddenField.setAttribute('name', 'selected_items');
+    hiddenField.setAttribute('value', selectedItemsJSON);
+    form.appendChild(hiddenField);
+    document.body.appendChild(form);
+    form.submit();
+});
+
+
+
+
+
 
         function calculateTotal() {
             const cartItems = document.querySelectorAll('#cart-items .cart-item');
