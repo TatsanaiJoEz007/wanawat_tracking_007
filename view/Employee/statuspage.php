@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,6 +17,28 @@
             max-width: 800px;
             margin: 20px auto;
             padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .bill-summary {
+            width: 60%;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .cart {
+            width: 30%;
+            padding: 20px;
+            box-sizing: border-box;
             background-color: #fff;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
@@ -37,7 +60,8 @@
             margin-top: 20px;
         }
 
-        th, td {
+        th,
+        td {
             padding: 10px;
             border-bottom: 1px solid #ddd;
             text-align: left;
@@ -65,49 +89,75 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
-        <h1>สรุปบิล</h1>
-        <div>
-            <h2>รายการสินค้าที่เลือก</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>สินค้า</th>
-                        <th>ราคา</th>
-                        <th>หน่วย</th>
-                  
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    if (isset($_POST['selected_items'])) {
-                        $selectedItems = json_decode($_POST['selected_items'], true);
-                        foreach ($selectedItems as $item) {
-                            echo "<tr>
-                                    <td>{$item['name']}</td>
-                                    <td>{$item['price']} บาท</td>
-                                    <td>{$item['unit']}</td>
-                                </tr>";
+        <div class="bill-summary">
+            <h1>สรุปบิล</h1>
+            <div>
+                <h2>รายการสินค้าที่เลือก</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>สินค้า</th>
+                            <th>ราคา</th>
+                            <th>หน่วย</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        if (isset($_POST['selected_items'])) {
+                            $selectedItems = json_decode($_POST['selected_items'], true);
+                            foreach ($selectedItems as $item) {
+                                echo "<tr>
+                                        <td>{$item['name']}</td>
+                                        <td>{$item['price']}</td>
+                                        <td>{$item['unit']}</td>
+                                    </tr>";
+                            }
                         }
+                        ?>
+                    </tbody>
+                </table>
+                <form method="POST">
+                    <input type="hidden" name="selected_items" value="<?php echo htmlentities($_POST['selected_items']); ?>">
+                    <button type="submit">ยืนยันบิล</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="cart">
+            <h2>ราคารวม</h2>
+            <ul class="cart-items" id="cart-items">
+                <?php
+                if (isset($_POST['selected_items'])) {
+                    $selectedItems = json_decode($_POST['selected_items'], true);
+                    foreach ($selectedItems as $item) {
+                        echo "<li data-price='{$item['price']}'>{$item['name']} - ฿{$item['price']}</li>";
                     }
-                    ?>
-                </tbody>
-            </table>
-            <form method="POST">
-                <input type="hidden" name="selected_items" value="<?php echo htmlentities($_POST['selected_items']); ?>">
-                <button type="submit">ยืนยันบิล</button>
-            </form>
+                }
+                ?>
+            </ul>
+            <h7>ราคารวม: <span id="total-price">฿0</span></h7>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            calculateTotal();
+        });
 
-    <div class="cart">
-        <h2 class="cart-title">ราคารวม</h2>
-        <ul class="cart-items" id="cart-items">
-            <!-- สินค้าที่เลือกจะปรากฏที่นี่ -->
-        </ul>
-        <h7 class="cart-total">ราคารวม: <span id="total-price">฿0</span></h7>
-        <button class="create-bill-btn" id="create-bill-btn">สร้างบิล</button>
-    </div>
+        function calculateTotal() {
+            const cartItems = document.querySelectorAll('.cart-items li');
+            let totalPrice = 0;
+
+            cartItems.forEach(item => {
+                const price = parseFloat(item.getAttribute('data-price'));
+                totalPrice += price;
+            });
+
+            document.getElementById('total-price').textContent = `฿${totalPrice.toFixed(2)}`;
+        }
+    </script>
 </body>
+
 </html>

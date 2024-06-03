@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,11 +14,13 @@
             height: 100vh;
             background-color: #f0f0f0;
         }
+
         .container {
             display: flex;
             width: 100%;
             margin: 0 auto;
         }
+
         .product-list {
             width: 70%;
             padding: 20px;
@@ -28,11 +31,14 @@
             display: flex;
             flex-direction: column;
         }
+
         .product-table-container {
             flex-grow: 1;
             overflow: auto;
-            max-height: 400px; /* กำหนดความสูงคงที่ให้กับตาราง */
+            max-height: 400px;
+            /* กำหนดความสูงคงที่ให้กับตาราง */
         }
+
         .cart {
             width: 30%;
             background-color: #f9f9f9;
@@ -41,31 +47,40 @@
             border-radius: 8px;
             display: flex;
             flex-direction: column;
-            max-height: 400px; /* กำหนดความสูงคงที่ให้กับ cart */
-            overflow: auto; /* กำหนดการเลื่อนภายใน cart */
+            max-height: 400px;
+            /* กำหนดความสูงคงที่ให้กับ cart */
+            overflow: auto;
+            /* กำหนดการเลื่อนภายใน cart */
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-        th, td {
+
+        th,
+        td {
             padding: 10px;
             border-bottom: 1px solid #ddd;
             text-align: left;
         }
+
         th {
             background-color: #f9f9f9;
         }
+
         .cart-title {
             font-size: 1.2em;
             margin-bottom: 10px;
         }
+
         .cart-items {
             list-style-type: none;
             padding: 0;
             flex-grow: 1;
         }
+
         .create-bill-btn {
             background-color: #4CAF50;
             color: white;
@@ -78,30 +93,32 @@
             border-radius: 5px;
             transition: background-color 0.3s;
         }
+
         .create-bill-btn:hover {
             background-color: #45a049;
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
+
 <body>
-<?php
-// db.php
-$servername = "localhost";  // Usually 'localhost' if running on the same server
-$username = "root";  // Replace with your database username
-$password = "";  // Replace with your database password
-$dbname = "wanawat_tracking";  // Replace with your database name
+    <?php
+    // db.php
+    $servername = "localhost";  // Usually 'localhost' if running on the same server
+    $username = "root";  // Replace with your database username
+    $password = "";  // Replace with your database password
+    $dbname = "wanawat_tracking";  // Replace with your database name
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+    // Create connection
+    $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-?>
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+    ?>
 
-<?php require_once ('function/sidebar_employee.php'); ?>
+    <?php require_once('function/sidebar_employee.php'); ?>
 
     <br><br>
     <div class="container">
@@ -127,7 +144,7 @@ if ($conn->connect_error) {
                         $result = $conn->query($sql);
 
                         if ($result->num_rows > 0) {
-                            while($row = $result->fetch_assoc()) {
+                            while ($row = $result->fetch_assoc()) {
                                 echo "<tr>
                                     <td>" . $row["line_id"] . "</td>
                                     <td>" . $row["line_bill_number"] . "</td>
@@ -157,7 +174,7 @@ if ($conn->connect_error) {
         </div>
     </div>
 
-    
+
     <script>
         const checkboxes = document.querySelectorAll('.product-checkbox');
         const cartItems = document.getElementById('cart-items');
@@ -189,25 +206,30 @@ if ($conn->connect_error) {
         });
 
         createBillBtn.addEventListener('click', () => {
-    const selectedItems = [];
-    const items = cartItems.querySelectorAll('.cart-item');
-    items.forEach(item => {
-        const name = item.textContent.split(' - ')[0];
-        const price = item.getAttribute('data-price');
-        selectedItems.push({ name, price });
-    });
-    const selectedItemsJSON = JSON.stringify(selectedItems);
-    const form = document.createElement('form');
-    form.setAttribute('method', 'POST');
-    form.setAttribute('action', 'statuspage.php');
-    const hiddenField = document.createElement('input');
-    hiddenField.setAttribute('type', 'hidden');
-    hiddenField.setAttribute('name', 'selected_items');
-    hiddenField.setAttribute('value', selectedItemsJSON);
-    form.appendChild(hiddenField);
-    document.body.appendChild(form);
-    form.submit();
-});
+            const selectedItems = [];
+            const items = cartItems.querySelectorAll('.cart-item');
+            items.forEach(item => {
+                const name = item.textContent.split(' - ')[0];
+                const price = item.getAttribute('data-price');
+                const unit = item.textContent.split(' - ')[2];
+                selectedItems.push({
+                    name,
+                    price,
+                    unit
+                });
+            });
+            const selectedItemsJSON = JSON.stringify(selectedItems);
+            const form = document.createElement('form');
+            form.setAttribute('method', 'POST');
+            form.setAttribute('action', 'statuspage.php');
+            const hiddenField = document.createElement('input');
+            hiddenField.setAttribute('type', 'hidden');
+            hiddenField.setAttribute('name', 'selected_items');
+            hiddenField.setAttribute('value', selectedItemsJSON);
+            form.appendChild(hiddenField);
+            document.body.appendChild(form);
+            form.submit();
+        });
 
 
 
@@ -226,7 +248,7 @@ if ($conn->connect_error) {
             totalPriceElement.textContent = `฿${totalPrice}`;
         }
 
-        
+
 
         document.addEventListener('DOMContentLoaded', calculateTotal);
 
@@ -258,4 +280,5 @@ if ($conn->connect_error) {
         });
     </script>
 </body>
+
 </html>
