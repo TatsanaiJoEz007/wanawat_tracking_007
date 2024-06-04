@@ -14,7 +14,7 @@
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1500px;
             margin: 20px auto;
             padding: 20px;
             background-color: #fff;
@@ -140,6 +140,9 @@
                 }
                 ?>
             </ul>
+            <br>
+            <hr>
+            <br>
             <h7>ราคารวม: <span id="total-price">฿0</span></h7>
                 <form method="POST">
                     <input type="hidden" name="selected_items" value="<?php echo htmlentities($_POST['selected_items']); ?>">

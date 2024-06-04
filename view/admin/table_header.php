@@ -23,6 +23,8 @@
         .sortable-column:hover {
             color: #007bff; /* Optional: Change color on hover */
         }
+
+
     </style>
 </head>
 
@@ -44,7 +46,7 @@
                         <!-- Table of Users -->
                         <div class="table-container">
                             <table class="table table-striped">
-                                <thead>
+                                <thead >
                                     <tr>
                                         <th class="sorting" scope="col" style="text-align: center;">#</th>
                                         <th scope="col" style="text-align: center;">บิลวันที่</th>
@@ -72,7 +74,7 @@
                                         $order = $_GET['order'];
                                     }
 
-                                    $sql = "SELECT * FROM tb_header ORDER BY $orderBy $order";
+                                    $sql = "SELECT * FROM tb_header WHERE bill_status = 1 ORDER BY $orderBy $order";
                                     $query = $conn->query($sql);
 
                                     foreach ($query as $row) :

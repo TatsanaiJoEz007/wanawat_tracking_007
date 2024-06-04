@@ -74,7 +74,7 @@
                                         $order = $_GET['order'];
                                     }
 
-                                    $sql = "SELECT * FROM tb_line ORDER BY $orderBy $order";
+                                    $sql = "SELECT * FROM tb_line WHERE line_status = 1 ORDER BY $orderBy $order";
                                     $query = $conn->query($sql);
 
                                     foreach ($query as $row) :

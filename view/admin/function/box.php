@@ -32,7 +32,7 @@ $total_user_box = $total_user;
 
 <?php
 require_once('../config/connect.php');
-$query = "SELECT COUNT(*) AS total_bill FROM tb_header";
+$query = "SELECT COUNT(*) AS total_bill FROM tb_header WHERE bill_status = 1";
 $result = mysqli_query($conn, $query);
 $row = mysqli_fetch_assoc($result);
 $total_bill = $row['total_bill'];
@@ -41,7 +41,7 @@ mysqli_free_result($result);
 
 $total_bill_box = $total_bill;
 
-$query = "SELECT COUNT(*) AS total_line FROM tb_line";
+$query = "SELECT COUNT(*) AS total_line FROM tb_line WHERE line_status = 1";
 $result = mysqli_query($conn, $query);
 $row = mysqli_fetch_assoc($result);
 $total_line = $row['total_line'];
@@ -139,13 +139,14 @@ $total_line_box = $total_line;
         <div class="col-lg-3 col-6">
             <div class="small-box bg-warning">
                 <div class="inner">
-                    <h3><?php echo $total_bill_box ?> | <?php echo $total_line_box ?></h3>
+                    <h3>Header : <?php echo $total_bill_box ?></h3>
+                    <h3>Line : <?php echo $total_line_box ?></h3>
                     <p>จำนวน Header และ Line</p>
                 </div>
                 <div class="icon" style="background-color: #05433E;">
                     <i class="fas fa-user-plus" style="color: #FFFFFF;"></i>
                 </div>
-                <a href="../admin/uploadedbill.php" class="small-box-footer">ดูบิลทั้งหมด <i class="fas fa-arrow-circle-right"></i></a>
+                <a href="../admin/table_header.php" class="small-box-footer">ดูบิลทั้งหมด <i class="fas fa-arrow-circle-right"></i></a>
             </div>
         </div>
         <div class="col-lg-3 col-6">

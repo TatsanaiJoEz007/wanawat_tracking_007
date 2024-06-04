@@ -35,7 +35,8 @@
         .product-table-container {
             flex-grow: 1;
             overflow: auto;
-            max-height: 400px;
+            overflow-y: auto;
+            max-height: 600px;
             /* กำหนดความสูงคงที่ให้กับตาราง */
         }
 
@@ -47,7 +48,7 @@
             border-radius: 8px;
             display: flex;
             flex-direction: column;
-            max-height: 400px;
+            max-height: 600px;
             /* กำหนดความสูงคงที่ให้กับ cart */
             overflow: auto;
             /* กำหนดการเลื่อนภายใน cart */
@@ -68,6 +69,17 @@
 
         th {
             background-color: #f9f9f9;
+        }
+
+        thead th {
+            /* Target table header cells directly */
+            position: sticky;
+            top: 0;
+            /* Stick to the top */
+            background-color: #f9f9f9;
+            /* Keep the background color */
+            z-index: 1;
+            /* Ensure it's above the table body when scrolling */
         }
 
         .cart-title {
@@ -133,8 +145,8 @@
                             <th>รหัสสินค้า</th>
                             <th>รายละเอียด</th>
                             <th>จำนวน</th>
-                            <th>ราคา</th>
                             <th>หน่วย</th>
+                            <th>ราคา</th>
                             <th>ราคารวม</th>
                             <th>Select</th>
                         </tr>
@@ -143,9 +155,10 @@
                         <?php
 
                         // Your SQL query
-                        $sql = "SELECT *
+                        $sql = "SELECT * 
                         FROM tb_header
-                        INNER JOIN tb_line ON TRIM(tb_header.bill_number) = TRIM(tb_line.line_bill_number)";
+                        INNER JOIN tb_line ON TRIM(tb_header.bill_number) = TRIM(tb_line.line_bill_number)
+                        WHERE tb_header.bill_status = 1 AND tb_line.line_status = 1"; // Added WHERE clause for filtering;
 
                         $result = $conn->query($sql);
 
@@ -190,7 +203,7 @@
                                 echo "<td>" . $item["item_unit"] . "</td>";
                                 echo "<td>" . $item["item_price"] . "</td>";
                                 echo "<td>" . $item["line_total"] . "</td>";
-                                echo "<td><input type='checkbox' class='product-checkbox' data-name='" . $item["item_desc"] . "' data-price='" . $item["line_total"] . "' data-unit='" . $item["item_unit"] . "'></td>";
+                                echo "<td><center><input type='checkbox' class='product-checkbox' data-name='" . $item["item_desc"] . "' data-price='" . $item["line_total"] . "' data-unit='" . $item["item_unit"] . "'></center></td>";
                                 echo "</tr>";
                             }
                         }
@@ -209,6 +222,7 @@
                 <!-- สินค้าที่เลือกจะปรากฏที่นี่ -->
             </ul>
             <hr>
+       
             <h7 class="cart-total">ราคารวม: <span id="total-price">฿0</span></h7>
             <button class="create-bill-btn" id="create-bill-btn">สร้างบิล</button>
         </div>
@@ -220,9 +234,17 @@
         const cartItems = document.getElementById('cart-items');
         const totalPriceElement = document.getElementById('total-price');
         const createBillBtn = document.getElementById('create-bill-btn');
+        let itemCounter = 1;
+        const maxItems = 15;
 
         checkboxes.forEach(checkbox => {
             checkbox.addEventListener('change', () => {
+                if (checkbox.checked && itemCounter > maxItems) {
+                    Swal.fire('เกิดข้อผิดพลาด!', 'เลือกสินค้าได้มากที่สุด 15 ชิ้นต่อการขนส่ง 1 ครั้ง', 'error');
+                    checkbox.checked = false; // Uncheck the box
+                    return;
+                }
+
                 const name = checkbox.getAttribute('data-name');
                 const price = checkbox.getAttribute('data-price');
                 const unit = checkbox.getAttribute('data-unit');
@@ -230,19 +252,24 @@
                 if (checkbox.checked) {
                     const li = document.createElement('li');
                     li.classList.add('cart-item');
-                    li.textContent = `${name} - ฿${price} - ${unit}`;
+                    li.textContent = `${itemCounter}. ${name} - ฿${price} - ${unit}`; // Add item number
                     li.setAttribute('data-price', price);
-                    li.setAttribute('data-unit', unit); // Ensure 'data-unit' is set correctly
-
+                    li.setAttribute('data-unit', unit);
                     cartItems.appendChild(li);
+                    itemCounter++; // Increment the counter
                 } else {
-                    const items = cartItems.querySelectorAll('.cart-item');
-                    items.forEach(item => {
+                    cartItems.querySelectorAll('.cart-item').forEach(item => {
                         if (item.textContent.includes(name)) {
                             cartItems.removeChild(item);
+                            itemCounter--; // Decrement when unchecked
+                            // Re-number the remaining items:
+                            cartItems.querySelectorAll('.cart-item').forEach((item, index) => {
+                                item.textContent = `${index + 1}. ${item.textContent.substring(item.textContent.indexOf(".") + 2)}`;
+                            });
                         }
                     });
                 }
+
                 calculateTotal();
             });
         });
@@ -289,7 +316,7 @@
         document.addEventListener('DOMContentLoaded', calculateTotal);
     </script>
 
-    
+
 </body>
 
 </html>

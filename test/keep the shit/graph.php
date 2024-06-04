@@ -1,3 +1,5 @@
+
+
 <style>
     /* Additional Styles for the graph */
     canvas {
@@ -62,7 +64,7 @@
     var pieData = {
         labels: ['ส่งสำเร็จ', 'ออกจากปลายทาง', 'ยังอยู่ปลายทาง', 'นำส่ง', 'ยังอยู่ต้นทาง', 'ติดปัญหา'],
         datasets: [{
-            data: [12, 19, 3, 7, 3, 1],
+            data: [$total_cancel, 19, 3, 7, 3, 1],
             backgroundColor: [
                 '#11D4AA',
                 '#36A2EB',
