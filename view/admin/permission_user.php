@@ -552,7 +552,7 @@ $(document).ready(function() {
                             <input type="password" class="form-control" id="confirm-password" name="confirmPassword" required placeholder="Confirm new password">
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="reset-password-btn btn btn-success">ยืนยันการเปลี่ยนรหัสผ่าน</button>
+                            <button type="submit" class="reset-password-btn btn btn-success">ยืนยันการเปลี่ยนรหัสผ่าน</button>
 
                         </div>
                     </form>
