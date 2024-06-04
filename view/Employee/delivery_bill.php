@@ -208,6 +208,7 @@
             <ul class="cart-items" id="cart-items">
                 <!-- สินค้าที่เลือกจะปรากฏที่นี่ -->
             </ul>
+            <hr>
             <h7 class="cart-total">ราคารวม: <span id="total-price">฿0</span></h7>
             <button class="create-bill-btn" id="create-bill-btn">สร้างบิล</button>
         </div>
