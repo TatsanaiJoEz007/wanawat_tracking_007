@@ -167,7 +167,7 @@ $query = mysqli_query($conn, $sql);
                                                 <td class="align-middle"><?php echo $row['user_tel'] ?></td>
                                                 <td class="align-middle"><?php echo ($row['user_status'] == 1) ? "อยู่ในระบบ" : "ไม่อยู่ในระบบ"; ?></td>
                                                 <td class="align-middle">
-                                                    <a href="#" class="btn btn-sm btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#edituserModal" data-id="<?php echo $row['user_id']; ?>">Edit</a>
+                                                    <a href="#" class="btn btn-sm btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#edituserModal" data-id="<?php echo $row['user_id']; ?>">เพิ่ม Customer ID</a>
                                                     <button type="button" class="btn btn-sm btn-secondary reset-password-btn" data-bs-toggle="modal" data-bs-target="#resetPasswordModal" data-id="<?php echo $row['user_id']; ?>">Reset Password</button>
                                                     <button type="button" class="btn btn-sm btn-danger" onclick="delUser('<?php echo $row['user_id']; ?>')">Delete</button>
                                                 </td>

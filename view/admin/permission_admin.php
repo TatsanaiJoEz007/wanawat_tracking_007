@@ -8,8 +8,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, admin-scalable=0, minimal-ui">
     <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <style>
         /* ปรับแต่ง modal ให้อยู่ตรงกลางจอ */
         .modal-dialog {
@@ -75,7 +73,7 @@
                                     </div>
                                     <div class="modal-body">
 
-                                        <form action="#" id="register" method="post">
+                                        <form action="#" id="register" method="post" enctype="multipart/form-data">
                                             <div class="mb-3">
                                                 <label for="admin_firstname" class="form-label">ชื่อ</label>
                                                 <input type="text" class="form-control" id="admin_firstname" name="admin_firstname" required>
@@ -94,22 +92,22 @@
                                             </div>
                                             <div class="mb-3">
                                                 <label for="admin_img" class="form-label">รูปภาพ</label>
-                                                <input type="file" class="form-control" id="admin_img" name="admin_img" required>
+                                                <input type="file" class="form-control" id="admin_img" name="admin_img">
                                             </div>
                                             <div class="mb-3">
-                                                <label for="status" class="form-label">สถานะ</label>
+                                                <label for="admin_status" class="form-label">สถานะ</label>
                                                 <select class="form-select" id="admin_status" name="admin_status" required>
                                                     <option value="1">อยู่ในระบบ</option>
                                                     <option value="0">ไม่อยู่ในระบบ</option>
                                                 </select>
                                             </div>
-
                                         </form>
+
 
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
-                                        <button type="submit" class="btn btn-primary">บันทึกข้อมูล</button>
+                                        <button type="submit" form="register" class="btn btn-primary">บันทึกข้อมูล</button>
                                     </div>
 
                                 </div>
@@ -147,9 +145,8 @@
                                             <td class="align-middle"><?php echo md5($row['user_pass']); ?></td>
                                             <td class="align-middle"><?php echo ($row['user_status'] == 1) ? "อยู่ในระบบ" : "ไม่อยู่ในระบบ"; ?></td>
                                             <td class="align-middle">
-                                                <a href="#" class="btn btn-sm btn-warning">Edit</a>
                                                 <a href="#" class="btn btn-sm btn-secondary">Reset Password</a>
-                                                <a href="#" class="btn btn-sm btn-danger">Delete</a>
+                                                <a href="#" onclick="delUser('<?php echo $row['user_id']; ?>')" class="btn btn-sm btn-danger">Delete</a>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -163,6 +160,7 @@
     </div>
 
     <script src="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function() {
             $('#register').submit(function(event) {
@@ -182,6 +180,7 @@
                                 text: response.message
                             }).then(() => {
                                 $('#exampleModal').modal('hide');
+                                location.reload();
                                 // Optionally: refresh your table or add the new row dynamically
                             });
                         } else {
@@ -202,6 +201,68 @@
                 });
             });
         });
+
+        function delUser(id) {
+            let option = {
+                url: 'function/action_admin/action_deladmin.php',
+                type: 'post',
+                dataType: 'json',
+                data: {
+                    id: id,
+                    delUser: 1
+                },
+                success: function(res) {
+                    if (res.status === 'success') {
+                        // Display success message using Swal.fire
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'ลบผู้ใช้งานสำเร็จ',
+                            icon: 'success',
+                            confirmButtonText: 'ตกลง'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                location.reload(); // Reload the page after successful deletion
+                            }
+                        });
+                    } else {
+                        // Display error message using Swal.fire
+                        Swal.fire({
+                            title: 'Error!',
+                            text: res.message,
+                            icon: 'error',
+                            confirmButtonText: 'ตกลง'
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Display error message using Swal.fire
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'เกิดข้อผิดพลาดในการลบผู้ใช้งาน',
+                        icon: 'error',
+                        confirmButtonText: 'ตกลง'
+                    });
+                    console.error(xhr.responseText); // Log the error response for debugging
+                }
+            };
+
+            // Show confirmation dialog before proceeding with the deletion
+            Swal.fire({
+                title: 'ต้องการลบข้อมูลใช่ไหม?',
+                text: "",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'ตกลง',
+                cancelButtonText: 'ยกเลิก',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Proceed with AJAX request to delete the user
+                    $.ajax(option);
+                }
+            });
+        }
     </script>
 </body>
 
