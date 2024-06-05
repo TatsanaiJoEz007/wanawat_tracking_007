@@ -428,9 +428,7 @@ require_once ('../config/connect.php');
                         </div>
                         <div class="job">คนเก็บขี้ปืน</div>
                     </div>
-
-                    <button type="logout" style="background-color:#F0592E;" onclick="logout()"><i
-                            class='bx bx-log-out'></i></button>
+                    <i class='bx bx-log-out' onclick="logout()"></i>
                 </div>
             </li>
         </ul>

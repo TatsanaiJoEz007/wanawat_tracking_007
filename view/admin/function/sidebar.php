@@ -417,7 +417,7 @@
             <div class="job">Web Desginer</div>
           </div>
           <?php require_once "../../view/admin/function/function_logout.php" ?>
-          <button type="logout" style="background-color:#F0592E;" onclick="logout()"><i class='bx bx-log-out'> </i></button>
+          <i class='bx bx-log-out' onclick="logout()"></i>
         </div>
       </li>
     </ul>
