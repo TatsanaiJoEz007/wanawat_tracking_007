@@ -350,7 +350,7 @@
           <span class="link_name">Dashboard</span>
         </a>
         <ul class="sub-menu blank">
-          <li><a class="link_name" href="../Dashboard.php">Dashboard</a></li>
+          <li><a class="link_name" href="../admin/Dashboard.php">Dashboard</a></li>
         </ul>
       </li>
       <li>
