@@ -45,15 +45,7 @@
 }
 
 /* Container Styling */
-.home-section {
-    max-height: 100vh; /* Adjust height as needed */
-    overflow-y: auto; /* Allow vertical scroll */
-    overflow-x: hidden; /* Prevent horizontal scroll */
-    padding: 20px;
-    background-color: #f9f9f9;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-}
+
     
 </style>
 

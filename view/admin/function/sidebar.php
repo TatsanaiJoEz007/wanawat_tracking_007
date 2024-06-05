@@ -401,10 +401,10 @@
       <li>
         <a href="../admin/activity.php">
           <i class="bi bi-activity nav_icon"></i>
-          <span class="link_name">Activity Logs</span>
+          <span class="link_name" >Activity Logs </span>
         </a>
         <ul class="sub-menu blank">
-          <li><a class="link_name" href="../activity.php">Activity Logs</a></li>
+          <li><a class="link_name" href="../admin/activity">Activity Logs</a></li>
         </ul>
       </li>
       <li>
