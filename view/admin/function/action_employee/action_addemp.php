@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $missing_fields = [];
 
     // Check each field
-    $required_fields = ['admin_firstname', 'admin_lastname', 'admin_email', 'admin_pass'];
+    $required_fields = ['emp_firstname', 'emp_lastname', 'emp_email', 'emp_pass'];
     foreach ($required_fields as $field) {
         if (!isset($_POST[$field])) {
             $missing_fields[] = $field;
@@ -33,11 +33,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $response['message'] = 'Required fields are missing: ' . implode(', ', $missing_fields);
     } else {
         // Sanitize and assign the input values
-        $firstname = $_POST['admin_firstname'];
-        $lastname = $_POST['admin_lastname'];
-        $email = $_POST['admin_email'];
-        $password = $_POST['admin_pass'];
-        $status = $_POST['admin_status'];
+        $firstname = $_POST['emp_firstname'];
+        $lastname = $_POST['emp_lastname'];
+        $email = $_POST['emp_email'];
+        $password = $_POST['emp_pass'];
+        $status = $_POST['emp_status'];
 
         // Check if email is already in use
         $email_check_stmt = $conn->prepare("SELECT user_id FROM tb_user WHERE user_email = ?");
@@ -52,12 +52,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $hashed_password = md5($password); // Use password_hash for better security
 
             // Handle file upload if provided
-            if (isset($_FILES['admin_img']) && $_FILES['admin_img']['error'] == UPLOAD_ERR_OK) {
+            if (isset($_FILES['emp_img']) && $_FILES['emp_img']['error'] == UPLOAD_ERR_OK) {
                 $upload_dir = '../../../uploads/'; // Define your upload directory
-                $file_name = basename($_FILES['admin_img']['name']);
+                $file_name = basename($_FILES['emp_img']['name']);
                 $file_path = $upload_dir . $file_name;
 
-                if (move_uploaded_file($_FILES['admin_img']['tmp_name'], $file_path)) {
+                if (move_uploaded_file($_FILES['emp_img']['tmp_name'], $file_path)) {
                     $user_img = $file_path;
                 } else {
                     $response['success'] = false;
@@ -70,17 +70,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
 
             $stmt = $conn->prepare("INSERT INTO tb_user (user_firstname, user_lastname, user_email, user_pass, user_img, user_type, user_create_at, user_status) VALUES (?, ?, ?, ?, ?, ?, NOW(), ?)");
-            $user_type = 999; // Default user type
+            $user_type = 1; // Default user type
 
             $stmt->bind_param("ssssssi", $firstname, $lastname, $email, $hashed_password, $user_img, $user_type, $status);
 
             if ($stmt->execute()) {
                 // Log the activity
                 $admin_user_id = $_SESSION['user_id']; // Assuming admin user_id is stored in session
-                $action = 'add user';
+                $action = 'Add Employee';
                 $entity = 'user';
                 $entity_id = $conn->insert_id; // Get the last inserted ID
-                $additional_info = "Added user with email: " . $email;
+                $additional_info = "Added Employee with email: " . $email;
                 logAdminActivity($admin_user_id, $action, $entity, $entity_id, $additional_info);
 
                 $response['success'] = true;
