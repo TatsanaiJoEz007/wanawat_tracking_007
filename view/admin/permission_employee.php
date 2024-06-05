@@ -9,6 +9,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
     <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
 
+    <?php
+    // Function to get user profile picture
+    function Profilepic($conn, $userId)
+    {
+        $sql = "SELECT user_img FROM tb_user WHERE user_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_array(MYSQLI_ASSOC);
+    }
+
+    // Function to convert image data to base64
+    function base64img($imageData)
+    {
+        return 'data:image/jpeg;base64,' . base64_encode($imageData);
+    }
+    ?>
+    ?>
     <style>
         /* ปรับแต่ง modal ให้อยู่ตรงกลางจอ */
         .modal-dialog {
@@ -137,11 +155,22 @@
                                     $i = 1;
                                     $sql = "SELECT * FROM tb_user WHERE user_type = 1 ";
                                     $query = $conn->query($sql);
-                                    foreach ($query as $row) :
+                                    while ($row = $query->fetch_assoc()) {
+                                        // Get user profile picture
+                                        $myprofile = Profilepic($conn, $row['user_id']);
+                                        // Set default avatar path
+                                        $defaultAvatarPath = '../../view/assets/img/logo/mascot.png';
+                                        // Check if user image is set
+                                        if (!empty($myprofile['user_img'])) {
+                                            $imageBase64 = base64img($myprofile['user_img']);
+                                        } else {
+                                            $imageBase64 = $defaultAvatarPath;
+                                        
+                                    
                                     ?>
                                         <tr>
                                             <td><?php echo $i++; ?></td>
-                                            <td class="align-middle"><img src="<?php echo $row['user_img']; ?>" alt="User Image" style="width: 50px; height: auto;"></td>
+                                            <td class="align-middle"><img src="<?php echo $imageBase64; ?>" alt="User Image" style="width: 50px; height: 50px;"></td>
                                             <td class="align-middle"><?php echo $row['user_firstname'] ?></td>
                                             <td class="align-middle"><?php echo $row['user_lastname'] ?></td>
                                             <td class="align-middle"><?php echo $row['user_email'] ?></td>
@@ -152,7 +181,10 @@
                                                 <a href="#" onclick="delUser('<?php echo $row['user_id']; ?>')" class="btn btn-sm btn-danger">Delete</a>
                                             </td>
                                         </tr>
-                                    <?php endforeach; ?>
+                                        <?php
+                                        }
+                                    }
+                                    ?>
                                 </tbody>
                             </table>
                         </div>
@@ -161,7 +193,8 @@
             </div>
         </div>
     </div>
-    <script> // Add Admin Modal Script and Delete
+    <script>
+        // Add Admin Modal Script and Delete
         $(document).ready(function() {
             $('#register').submit(function(event) {
                 event.preventDefault();
@@ -265,7 +298,8 @@
         }
     </script>
 
-    <script> // Reset Password Modal Script
+    <script>
+        // Reset Password Modal Script
         $(document).ready(function() {
             let userId = null;
             let userIdSet = false;

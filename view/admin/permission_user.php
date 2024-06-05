@@ -133,6 +133,7 @@ $query = mysqli_query($conn, $sql);
                                         <th scope="col" style="text-align: center;">รูปภาพ</th>
                                         <th scope="col" style="text-align: center;">ชื่อ</th>
                                         <th scope="col" style="text-align: center;">นามสกุล</th>
+                                        <th scope="col" style="text-align: center;">รหัสลูกค้า</th>
                                         <th scope="col" style="text-align: center;">อีเมล</th>
                                         <th scope="col" style="text-align: center;">เบอร์โทรศัพท์</th>
                                         <th scope="col" style="text-align: center;">สถานะ</th>
@@ -163,6 +164,7 @@ $query = mysqli_query($conn, $sql);
                                                 <td class="align-middle"><img src="<?php echo $imageBase64; ?>" alt="User Image" style="width: 50px; height: 50px;"></td>
                                                 <td class="align-middle"><?php echo $row['user_firstname'] ?></td>
                                                 <td class="align-middle"><?php echo $row['user_lastname'] ?></td>
+                                                <td class="align-middle"><?php echo $row['customer_id'] ?></td>
                                                 <td class="align-middle"><?php echo $row['user_email'] ?></td>
                                                 <td class="align-middle"><?php echo $row['user_tel'] ?></td>
                                                 <td class="align-middle"><?php echo ($row['user_status'] == 1) ? "อยู่ในระบบ" : "ไม่อยู่ในระบบ"; ?></td>

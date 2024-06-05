@@ -51,7 +51,7 @@
 
     //Login Page 
 
-    $email_translate = array('th' => 'อีเมล' , 'en' => 'Email');
+    $email_translate = array('th' => 'อีเมลล์' , 'en' => 'Email');
     $lang_email = $email_translate[$lang];
 
     $password_translate = array('th' => 'รหัสผ่าน' , 'en' => 'Password');
@@ -166,7 +166,7 @@
      $fullname_translate = array('th' => 'ชื่อ-นามสกุล' , 'en' => 'Fullname');
      $lang_fullname = $fullname_translate  [$lang];
 
-     $email_translate = array('th' => 'อีเมล์' , 'en' => 'Email');
+     $email_translate = array('th' => 'อีเมลล์' , 'en' => 'Email');
      $lang_email = $email_translate  [$lang];
 
      $mobile_translate = array('th' => 'เบอร์โทรศัพท์' , 'en' => 'Mobile');

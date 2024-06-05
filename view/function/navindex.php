@@ -184,11 +184,7 @@ if (!empty($myprofile['user_img'])) {
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                         <li><a class="dropdown-item" href="../view/profile"><?php echo $lang_profile ?></a></li>
-                        <li>
-                            <button type="logout" class="btn btn-link" onclick="logout()">
-                                <a class="dropdown-item" href="#"><?php echo $lang_logout ?></a> 
-                            </button>
-                        </li>
+                        <li><a class="dropdown-item" onclick="logout()" ><?php echo $lang_logout ?></a></li>
                     </ul>
                 </div>
             </div>

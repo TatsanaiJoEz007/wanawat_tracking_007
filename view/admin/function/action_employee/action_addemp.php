@@ -11,10 +11,10 @@ session_start(); // Make sure the session is started
 $response['post_data'] = $_POST;
 $response['files_data'] = $_FILES;
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $missing_fields = [];
 
-    // Check each field
+    // Check each required field
     $required_fields = ['emp_firstname', 'emp_lastname', 'emp_email', 'emp_pass'];
     foreach ($required_fields as $field) {
         if (!isset($_POST[$field])) {
@@ -27,17 +27,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_POST['admin_status'] = 1;
     }
 
-    // Check if any fields are missing
+    // Check if any required fields are missing
     if (!empty($missing_fields)) {
         $response['success'] = false;
         $response['message'] = 'Required fields are missing: ' . implode(', ', $missing_fields);
     } else {
         // Sanitize and assign the input values
-        $firstname = $_POST['emp_firstname'];
-        $lastname = $_POST['emp_lastname'];
-        $email = $_POST['emp_email'];
+        $firstname = $conn->real_escape_string($_POST['emp_firstname']);
+        $lastname = $conn->real_escape_string($_POST['emp_lastname']);
+        $email = $conn->real_escape_string($_POST['emp_email']);
         $password = $_POST['emp_pass'];
-        $status = $_POST['emp_status'];
+        $status = (int)$_POST['emp_status'];
 
         // Check if email is already in use
         $email_check_stmt = $conn->prepare("SELECT user_id FROM tb_user WHERE user_email = ?");
@@ -49,30 +49,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $response['success'] = false;
             $response['message'] = 'Email is already in use.';
         } else {
-            $hashed_password = md5($password); // Use password_hash for better security
+            $hashed_password = md5($password); // Consider using password_hash() for better security
 
             // Handle file upload if provided
-            if (isset($_FILES['emp_img']) && $_FILES['emp_img']['error'] == UPLOAD_ERR_OK) {
-                $upload_dir = '../../../uploads/'; // Define your upload directory
-                $file_name = basename($_FILES['emp_img']['name']);
-                $file_path = $upload_dir . $file_name;
-
-                if (move_uploaded_file($_FILES['emp_img']['tmp_name'], $file_path)) {
-                    $user_img = $file_path;
-                } else {
-                    $response['success'] = false;
-                    $response['message'] = 'Failed to upload image.';
-                    echo json_encode($response);
-                    exit;
-                }
+            if (isset($_FILES['emp_img']) && $_FILES['emp_img']['error'] === UPLOAD_ERR_OK) {
+                $file_content = file_get_contents($_FILES['emp_img']['tmp_name']);
+                $user_img = $conn->real_escape_string($file_content);
             } else {
-                $user_img = ''; // Assuming a default image or no image
+                $user_img = null; // Assuming no image
             }
 
             $stmt = $conn->prepare("INSERT INTO tb_user (user_firstname, user_lastname, user_email, user_pass, user_img, user_type, user_create_at, user_status) VALUES (?, ?, ?, ?, ?, ?, NOW(), ?)");
-            $user_type = 1; // Default user type
+            if (!$stmt) {
+                $response['success'] = false;
+                $response['message'] = 'Database error: ' . $conn->error;
+                echo json_encode($response);
+                exit;
+            }
 
-            $stmt->bind_param("ssssssi", $firstname, $lastname, $email, $hashed_password, $user_img, $user_type, $status);
+            $user_type = 1; // Default user type
+            $stmt->bind_param("ssssbsi", $firstname, $lastname, $email, $hashed_password, $user_img, $user_type, $status);
 
             if ($stmt->execute()) {
                 // Log the activity

@@ -217,50 +217,51 @@
         return false; // Prevent default action of link click
     }
 
-$(document).ready(function() {
-    $('#bug-report-form').submit(function(event) {
-        // Prevent default form submission
-        console.log("Form submitted");
-        event.preventDefault();
-        
-        // Serialize form data
-        var formData = $(this).serialize();
-        console.log(formData);
-        // Submit form data via AJAX
-        $.ajax({
-            type: 'POST',
-            url: 'function/action_contact.php', // Change the URL to your PHP script
-            data: formData,
-            dataType: 'json',
-            success: function(response) {
-                if (response.success) {
-                    console.log(response.message);
-                    // Display success message
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: response.message
-                    });
-                } else {
-                    console.log(response.message);
+    $(document).ready(function() {
+        $('#bug-report-form').submit(function(event) {
+            // Prevent default form submission
+            event.preventDefault();
+            
+            // Serialize form data
+            var formData = $(this).serialize();
+            
+            // Submit form data via AJAX
+            $.ajax({
+                type: 'POST',
+                url: 'function/action_contact.php', // Change the URL to your PHP script
+                data: formData,
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        // Display success message
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message
+                        }).then((result) => {
+                            // Reload the page after success
+                            location.reload();
+                        });
+                    } else {
+                        // Display error message
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.message
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
                     // Display error message
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: response.message
+                        text: 'An error occurred while submitting the form: ' + error
                     });
                 }
-            },
-            error: function(xhr, status, error) {
-                console.log(xhr.responseText);
-                // Display error message
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'An error occurred while submitting the form: ' + error
-                });
-            }
+            });
         });
     });
-});
+
+
 </script>

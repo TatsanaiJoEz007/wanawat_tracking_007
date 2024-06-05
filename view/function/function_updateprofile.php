@@ -29,7 +29,7 @@
                         }).then((result) => {
                             if (result.isConfirmed) {
                                 closeModal('editProfileModal'); // Close the modal
-                            }
+                            }location.reload(); // Reload the page
                         });
                     } else {
                         console.log('Profile update failed:', response.message);
