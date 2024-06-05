@@ -23,7 +23,7 @@
     $contact_translate = array('th' => 'ติดต่อเรา' , 'en' => 'Contact Us');
     $lang_contact = $contact_translate[$lang];
 
-    $question_translate = array('th' => 'ถามคำถาม หรือแจ้งปัญหาในการใช้งาน' , 'en' => 'Ask a question or report a problem');
+    $question_translate = array('th' => 'คำถามที่พบบ่อย' , 'en' => 'Frequency Asked Questions (FAQs)');
     $lang_question = $question_translate[$lang];
 
     $profile_translate = array('th' => 'ดูโปรไฟล์' , 'en' => 'View Profile');
