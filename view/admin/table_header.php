@@ -24,6 +24,17 @@
             color: #007bff; /* Optional: Change color on hover */
         }
 
+        ::-webkit-scrollbar {
+    width: 12px; /* Adjust width for vertical scrollbar */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #FF5722; /* Color for scrollbar thumb */
+    border-radius: 10px; /* Rounded corners for scrollbar thumb */
+}
+
+/* Container Styling */
+
 
     </style>
 </head>
