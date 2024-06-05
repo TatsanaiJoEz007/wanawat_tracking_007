@@ -26,6 +26,15 @@ session_start();
         color: #F0592E; /* Custom orange color for links */
     }
 
+    ::-webkit-scrollbar {
+    width: 9px; /* Adjust width for vertical scrollbar */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #FF5722; /* Color for scrollbar thumb */
+    border-radius: 10px; /* Rounded corners for scrollbar thumb */
+}
+
 </style>
 
 </head>

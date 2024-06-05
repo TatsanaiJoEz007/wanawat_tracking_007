@@ -27,6 +27,7 @@ if ($_SESSION['user_type'] != 'admin') {
 <body>
     <?php require_once ('function/sidebar.php'); ?>
     <?php require_once ('function/box.php'); ?>
+    <?php require_once ( 'function/date.php');?>
 </body>
 
 </html> 

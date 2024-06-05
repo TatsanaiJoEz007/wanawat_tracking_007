@@ -8,6 +8,25 @@
             require_once('function/head.php');
         ?>
     </head>
+
+    <style>
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+::-webkit-scrollbar {
+    width: 9px; /* Adjust width for vertical scrollbar */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #FF5722; /* Color for scrollbar thumb */
+    border-radius: 10px; /* Rounded corners for scrollbar thumb */
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+/* Note: Firefox currently does not support hiding the scrollbar */
+
+
+
+    </style>
     <body>
         <div>
         <?php

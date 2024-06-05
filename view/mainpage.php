@@ -17,6 +17,18 @@ if ($_SESSION['user_type'] != 'user') {
             
         
     </head>
+
+    <style>
+        ::-webkit-scrollbar {
+    width: 9px; /* Adjust width for vertical scrollbar */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #FF5722; /* Color for scrollbar thumb */
+    border-radius: 10px; /* Rounded corners for scrollbar thumb */
+}
+
+    </style>
     <body>
         <?php require_once('function/navindex.php'); ?>
             
