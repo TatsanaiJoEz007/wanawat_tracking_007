@@ -145,7 +145,7 @@
                                             <td class="align-middle"><?php echo md5($row['user_pass']); ?></td>
                                             <td class="align-middle"><?php echo ($row['user_status'] == 1) ? "อยู่ในระบบ" : "ไม่อยู่ในระบบ"; ?></td>
                                             <td class="align-middle">
-                                                <a href="#" class="btn btn-sm btn-secondary">Reset Password</a>
+                                                <a href="#" class="btn btn-sm btn-secondary reset-password-btn" data-bs-toggle="modal" data-bs-target="#resetPasswordModal" data-id="<?php echo $row['user_id']; ?>">Reset Password</a>
                                                 <a href="#" onclick="delUser('<?php echo $row['user_id']; ?>')" class="btn btn-sm btn-danger">Delete</a>
                                             </td>
                                         </tr>
@@ -264,6 +264,122 @@
             });
         }
     </script>
+    <script>
+        $(document).ready(function() {
+            let userId = null;
+            let userIdSet = false;
+
+            if ($('#user_id').val()) {
+                userId = $('#user_id').val();
+                userIdSet = true;
+            }
+
+            $(document).on('click', '.reset-password-btn', function() {
+                if (!userIdSet) {
+                    userId = $(this).data('id');
+                    console.log('User ID retrieved from button:', userId);
+                    $('#user_id').val(userId);
+                    console.log('User ID set in hidden input:', $('#user_id').val());
+                    userIdSet = true;
+                }
+                console.log('User ID set:', userIdSet);
+            });
+
+            $('#resetPasswordForm').submit(function(e) {
+                e.preventDefault();
+
+                console.log('Submitting form with User ID:', userId); // Debug log
+                $('#user_id').val(userId); // Set user ID in hidden input
+
+                let newPassword = $('#new-password').val();
+                let confirmPassword = $('#confirm-password').val();
+
+                if (newPassword !== confirmPassword) {
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'error',
+                        title: 'รหัสผ่านไม่ตรงกัน',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    return;
+                }
+                console.log('New Password');
+                $.ajax({
+                    url: 'function/action_admin/action_adminreset.php',
+                    type: 'post',
+                    dataType: 'json', // Expect JSON response
+                    data: {
+                        newPassword: newPassword,
+                        user_id: userId
+                    },
+                    success: function(response) {
+                        console.log('Response from server:', response); // Debug log
+                        if (response.status === 'success') {
+                            $('#resetPasswordModal').modal('hide');
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: 'เปลี่ยนรหัสผ่านสำเร็จ',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        } else {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'error',
+                                title: response.message || 'เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('AJAX Error:', error);
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'error',
+                            title: 'เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
+    <!-- Reset Password Modal -->
+    <div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">เปลี่ยนรหัสผ่าน</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="resetPasswordForm">
+                        <div class="mb-3">
+                            <input type="hidden" id="user_id" name="user_id" value="">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="new-password" class="form-label">รหัสผ่านใหม่</label>
+                            <input type="password" class="form-control" id="new-password" name="newPassword" required placeholder="Enter new password">
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirm-password" class="form-label">ยืนยันรหัสผ่านใหม่</label>
+                            <input type="password" class="form-control" id="confirm-password" name="confirmPassword" required placeholder="Confirm new password">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="reset-password-btn btn btn-success">ยืนยันการเปลี่ยนรหัสผ่าน</button>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

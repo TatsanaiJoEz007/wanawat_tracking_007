@@ -167,7 +167,7 @@ $query = mysqli_query($conn, $sql);
                                                 <td class="align-middle"><?php echo $row['user_tel'] ?></td>
                                                 <td class="align-middle"><?php echo ($row['user_status'] == 1) ? "อยู่ในระบบ" : "ไม่อยู่ในระบบ"; ?></td>
                                                 <td class="align-middle">
-                                                    <a href="#" class="btn btn-sm btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#edituserModal" data-id="<?php echo $row['user_id']; ?>">เพิ่ม Customer ID</a>
+                                                    <a href="#" class="btn btn-warning btn-sm editCustomerID" data-user-id="<?php echo $row['user_id']; ?>"><i class="fa fa-edit"></i> เพิ่ม Customer ID</a>
                                                     <button type="button" class="btn btn-sm btn-secondary reset-password-btn" data-bs-toggle="modal" data-bs-target="#resetPasswordModal" data-id="<?php echo $row['user_id']; ?>">Reset Password</button>
                                                     <button type="button" class="btn btn-sm btn-danger" onclick="delUser('<?php echo $row['user_id']; ?>')">Delete</button>
                                                 </td>
@@ -369,164 +369,169 @@ $query = mysqli_query($conn, $sql);
         });
     </script>
 
-    <!-- Edit Modal -->
-    <div class="modal fade" id="edituserModal" tabindex="-1" aria-labelledby="edituserModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
+    <!-- Modal for Editing Customer ID -->
+    <div class="modal fade" id="editCustomerIDModal" tabindex="-1" aria-labelledby="editCustomerIDModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="edituserModalLabel">เพิ่มข้อมูล</h5>
+                    <h5 class="modal-title" id="editCustomerIDModalLabel">แก้ไข Customer ID</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="#" id="edituserForm" method="post" enctype="multipart/form-data">
-                        <input type="hidden" id="user_id" name="user_id">
+                    <form id="editCustomerIDForm">
+                        <input type="hidden" id="edit_user_id" name="edit_user_id">
                         <div class="mb-3">
-                            <label for="edituser-firstname" class="form-label">ชื่อ</label>
-                            <input type="text" class="form-control" id="edituser-firstname" name="edituser-firstname" required>
+                            <label for="customer_id" class="form-label">Customer ID</label>
+                            <input type="text" class="form-control" id="customer_id" name="customer_id" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="edituser-lastname" class="form-label">นามสกุล</label>
-                            <input type="text" class="form-control" id="edituser-lastname" name="edituser-lastname" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edituser-email" class="form-label">อีเมล</label>
-                            <input type="email" class="form-control" id="edituser-email" name="edituser-email" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edituser-tel" class="form-label">เบอร์โทรศัพท์</label>
-                            <input type="text" class="form-control" id="edituser-tel" name="edituser-tel" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edituser-address" class="form-label">ที่อยู่</label>
-                            <input type="text" class="form-control" id="edituser-address" name="edituser-address" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="province" class="form-label">จังหวัด</label>
-                            <select class="form-select" id="edit_province" name="province_id" required>
-                                <option value="" disabled selected>จังหวัด</option>
-                                <?php while ($result = mysqli_fetch_assoc($query)) : ?>
-                                    <option value="<?= $result['id'] ?>"><?= $result['name_th'] ?></option>
-                                <?php endwhile; ?>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="amphure" class="form-label">อำเภอ</label>
-                            <select class="form-select" id="edit_amphure" name="amphure_id" required>
-                                <option value="" disabled selected>อำเภอ</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="district" class="form-label">ตำบล</label>
-                            <select class="form-select" id="edit_district" name="district_id" required>
-                                <option value="" disabled selected>ตำบล</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="user_img" class="form-label">รูปภาพ</label>
-                            <input type="file" class="form-control" id="user_img" name="user_img">
-                        </div>
-                        <div class="mb-3">
-                            <label for="user_status" class="form-label">สถานะ</label>
-                            <select class="form-select" id="user_status" name="user_status" required>
-                                <option value="1">อยู่ในระบบ</option>
-                                <option value="0">ไม่อยู่ในระบบ</option>
-                            </select>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+                            <button type="submit" class="btn btn-primary">บันทึกข้อมูล</button>
                         </div>
                     </form>
-                    <?php require_once('function/function_adduser.php'); ?>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
-                    <button type="submit" form="adduserForm" class="btn btn-primary">บันทึกข้อมูล</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js"></script>
     <script>
-$(document).ready(function() {
-    let userId = null;
-    let userIdSet = false;
-
-    if($('#user_id').val()) {
-        userId = $('#user_id').val();
-        userIdSet = true;
-    }
-
-    $(document).on('click', '.reset-password-btn', function() {
-        if (!userIdSet) {
-            userId = $(this).data('id');
-            console.log('User ID retrieved from button:', userId);
-            $('#user_id').val(userId);
-            console.log('User ID set in hidden input:', $('#user_id').val());
-            userIdSet = true;
-        }
-        console.log('User ID set:', userIdSet);
-    });
-
-    $('#resetPasswordForm').submit(function(e) {
-        e.preventDefault();
-
-        console.log('Submitting form with User ID:', userId); // Debug log
-        $('#user_id').val(userId); // Set user ID in hidden input
-
-        let newPassword = $('#new-password').val();
-        let confirmPassword = $('#confirm-password').val();
-
-        if (newPassword !== confirmPassword) {
-            Swal.fire({
-                position: 'center',
-                icon: 'error',
-                title: 'รหัสผ่านไม่ตรงกัน',
-                showConfirmButton: false,
-                timer: 1500
+        $(document).ready(function() {
+            // Trigger editCustomerIDModal on click
+            $(document).on('click', '.editCustomerID', function() {
+                var userId = $(this).data('user-id');
+                $('#edit_user_id').val(userId);
+                $('#editCustomerIDModal').modal('show');
             });
-            return;
-        }
-        console.log('New Password');
-        $.ajax({
-            url: 'function/action_edituser/reset_password.php',
-            type: 'post',
-            dataType: 'json', // Expect JSON response
-            data: {
-                newPassword: newPassword,
-                user_id: userId
-            },
-            success: function(response) {
-                console.log('Response from server:', response); // Debug log
-                if (response.status === 'success') {
-                    $('#resetPasswordModal').modal('hide');
-                    Swal.fire({
-                        position: 'center',
-                        icon: 'success',
-                        title: 'เปลี่ยนรหัสผ่านสำเร็จ',
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                } else {
+
+            // Submit the form to save the Customer ID
+            $('#editCustomerIDForm').on('submit', function(e) {
+                e.preventDefault();
+                var formData = $(this).serialize();
+
+                $.ajax({
+                    type: 'POST',
+                    url: 'function/action_edituser/edit_user.php',
+                    data: formData,
+                    success: function(response) {
+                        $('#editCustomerIDModal').modal('hide');
+
+                        // Use SweetAlert to show success message
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Customer ID saved successfully!',
+                            confirmButtonText: 'OK'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                location.reload(); // Reload the page to reflect changes
+                            }
+                        });
+                    },
+                    error: function() {
+                        // Use SweetAlert to show error message
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Failed to save Customer ID. Please try again.',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            let userId = null;
+            let userIdSet = false;
+
+            if ($('#user_id').val()) {
+                userId = $('#user_id').val();
+                userIdSet = true;
+            }
+
+            $(document).on('click', '.reset-password-btn', function() {
+                if (!userIdSet) {
+                    userId = $(this).data('id');
+                    console.log('User ID retrieved from button:', userId);
+                    $('#user_id').val(userId);
+                    console.log('User ID set in hidden input:', $('#user_id').val());
+                    userIdSet = true;
+                }
+                console.log('User ID set:', userIdSet);
+            });
+
+            $('#resetPasswordForm').submit(function(e) {
+                e.preventDefault();
+
+                console.log('Submitting form with User ID:', userId); // Debug log
+                $('#user_id').val(userId); // Set user ID in hidden input
+
+                let newPassword = $('#new-password').val();
+                let confirmPassword = $('#confirm-password').val();
+
+                if (newPassword !== confirmPassword) {
                     Swal.fire({
                         position: 'center',
                         icon: 'error',
-                        title: response.message || 'เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน',
+                        title: 'รหัสผ่านไม่ตรงกัน',
                         showConfirmButton: false,
                         timer: 1500
                     });
+                    return;
                 }
-            },
-            error: function(xhr, status, error) {
-                console.error('AJAX Error:', error);
-                Swal.fire({
-                    position: 'center',
-                    icon: 'error',
-                    title: 'เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน',
-                    showConfirmButton: false,
-                    timer: 1500
+                console.log('New Password');
+                $.ajax({
+                    url: 'function/action_edituser/reset_password.php',
+                    type: 'post',
+                    dataType: 'json', // Expect JSON response
+                    data: {
+                        newPassword: newPassword,
+                        user_id: userId
+                    },
+                    success: function(response) {
+                        console.log('Response from server:', response); // Debug log
+                        if (response.status === 'success') {
+                            $('#resetPasswordModal').modal('hide');
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: 'เปลี่ยนรหัสผ่านสำเร็จ',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        } else {
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'error',
+                                title: response.message || 'เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('AJAX Error:', error);
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'error',
+                            title: 'เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    }
                 });
-            }
+            });
         });
-    });
-});
-
     </script>
 
     <!-- Reset Password Modal -->
