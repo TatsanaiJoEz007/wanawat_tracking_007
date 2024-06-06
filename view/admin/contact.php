@@ -13,7 +13,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* Custom CSS for styling */
-        /* You can add your own styles here */
+
         .container {
             margin-top: 50px;
         }
@@ -80,7 +80,9 @@
                 while ($row = $result->fetch_assoc()) {
                     echo '<div class="bug-report">';
                     echo '<h3>' . $row["question_sender_name"] . '</h3>';
-                    echo '<p><strong>อีเมลล์:</strong> ' . $row["question_sender_email"] . '</p>';
+                    echo '<hr>';
+                    echo '<p><strong>อีเมลล์ :</strong> ' . $row["question_sender_email"] . '</p>';
+                    echo '<p><strong>คำถามเมื่อ :</strong> ' . $row["question_create_at"] .'</p>';
                     echo '<form id="sendEmailForm_' . $row["question_id"] . '" method="post" action="mailto:' . $row["question_sender_email"] . '">'; // Form for sending email
                     echo '<button type="button" class="btn btn-primary send-email-btn" onclick="sendEmail(' . $row["question_id"] . ')">Send Email</button>'; // Submit button
                     echo '</form>';
@@ -90,8 +92,7 @@
             } else {
                 echo "<p>No unanswered bug reports found.</p>";
             }
-
-            ?>
+        ?>
         </div>
         <!-- Display History bug reports -->
         <div>
@@ -113,6 +114,7 @@
                     echo '<div class="bug-report">';
                     echo '<h3>' . $row["question_sender_name"] . '</h3>';
                     echo '<p><strong>อีเมลล์:</strong> ' . $row["question_sender_email"] . '</p>';
+                    echo '<p><strong>คำถามเมื่อ :</strong> ' . $row["question_create_at"] .'</p>';
                     echo '<form method="post" action="mailto:' . $row["question_sender_email"] . '">'; // Form for sending email
                     echo '</form>';
                     echo '<p><strong>รายละเอียด:</strong> ' . $row["question_content"] . '</p>';
