@@ -1,5 +1,8 @@
 <?php
 include '../../config/connect.php';
+require_once('../function/action_activity_log/log_activity.php'); // Include log_activity.php
+
+session_start(); // Ensure session is started
 
 // Ensure the request method is POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -15,6 +18,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bind_param('ssi', $header, $content, $faq_id);
 
         if ($stmt->execute()) {
+            // Log admin activity
+            if (isset($_SESSION['user_id'])) {
+                $user_id = $_SESSION['user_id'];
+                $action = "edit faq";
+                $entity = "faq";
+                $entity_id = $faq_id;
+                $additional_info = "Edited FAQ with header: $header";
+
+                logAdminActivity($user_id, $action, $entity, $entity_id, $additional_info);
+            }
+
             // FAQ updated successfully
             http_response_code(200); // OK
             echo json_encode(array("message" => "FAQ updated successfully."));
@@ -23,6 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             http_response_code(500); // Internal Server Error
             echo json_encode(array("message" => "Failed to update FAQ."));
         }
+        $stmt->close();
     } else {
         // Missing parameters
         http_response_code(400); // Bad Request
@@ -35,6 +50,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Close database connection
-$stmt->close();
 $conn->close();
 ?>
