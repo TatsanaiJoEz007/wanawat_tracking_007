@@ -18,7 +18,7 @@
         border: none;
         outline: none;
         transition: 0.4s;
-        font-size: 18px;
+        font-size: 22px;
         background-color: transparent;
         width: 100%;
         text-align: left;

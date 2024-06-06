@@ -53,6 +53,10 @@
                             <button type="button" class="btn btn-primary">
                                 <a href="importCSV" style="color:white;">เพิ่มบิล</a>
                             </button>
+                            <p>&nbsp; &nbsp;</p>
+                            <button type="button" class="btn btn-primary">
+                                <a href="table_line.php" style="color:white;">ตาราง Line</a>
+                            </button>
                         </div>
                         <!-- Table of Users -->
                         <div class="table-container">

@@ -152,36 +152,37 @@
                                 </thead>
                                 <tbody class="text-center">
                                     <?php
-                                    $i = 1;
-                                    $sql = "SELECT * FROM tb_user WHERE user_type = 1 ";
-                                    $query = $conn->query($sql);
-                                    while ($row = $query->fetch_assoc()) {
-                                        // Get user profile picture
-                                        $myprofile = Profilepic($conn, $row['user_id']);
-                                        // Set default avatar path
-                                        $defaultAvatarPath = '../../view/assets/img/logo/mascot.png';
-                                        // Check if user image is set
-                                        if (!empty($myprofile['user_img'])) {
-                                            $imageBase64 = base64img($myprofile['user_img']);
-                                        } else {
-                                            $imageBase64 = $defaultAvatarPath;
-                                        
-                                    
+                                    if (isset($_SESSION['user_id'])) {
+                                        $i = 1;
+                                        $sql = "SELECT * FROM tb_user WHERE user_type = 1 ";
+                                        $query = $conn->query($sql);
+                                        while ($row = $query->fetch_assoc()) {
+                                            // Get user profile picture
+                                            $myprofile = Profilepic($conn, $row['user_id']);
+                                            // Set default avatar path
+                                            $defaultAvatarPath = '../../view/assets/img/logo/mascot.png';
+                                            // Check if user image is set
+                                            if (!empty($myprofile['user_img'])) {
+                                                $imageBase64 = base64img($myprofile['user_img']);
+                                            } else {
+                                                $imageBase64 = $defaultAvatarPath;
+                                            }
+
                                     ?>
-                                        <tr>
-                                            <td><?php echo $i++; ?></td>
-                                            <td class="align-middle"><img src="<?php echo $imageBase64; ?>" alt="User Image" style="width: 50px; height: 50px;"></td>
-                                            <td class="align-middle"><?php echo $row['user_firstname'] ?></td>
-                                            <td class="align-middle"><?php echo $row['user_lastname'] ?></td>
-                                            <td class="align-middle"><?php echo $row['user_email'] ?></td>
-                                            <td class="align-middle"><?php echo md5($row['user_pass']); ?></td>
-                                            <td class="align-middle"><?php echo ($row['user_status'] == 1) ? "อยู่ในระบบ" : "ไม่อยู่ในระบบ"; ?></td>
-                                            <td class="align-middle">
-                                                <a href="#" class="btn btn-sm btn-secondary reset-password-btn" data-bs-toggle="modal" data-bs-target="#resetPasswordModal" data-id="<?php echo $row['user_id']; ?>">Reset Password</a>
-                                                <a href="#" onclick="delUser('<?php echo $row['user_id']; ?>')" class="btn btn-sm btn-danger">Delete</a>
-                                            </td>
-                                        </tr>
-                                        <?php
+                                            <tr>
+                                                <td><?php echo $i++; ?></td>
+                                                <td class="align-middle"><img src="<?php echo $imageBase64; ?>" alt="User Image" style="width: 50px; height: 50px;"></td>
+                                                <td class="align-middle"><?php echo $row['user_firstname'] ?></td>
+                                                <td class="align-middle"><?php echo $row['user_lastname'] ?></td>
+                                                <td class="align-middle"><?php echo $row['user_email'] ?></td>
+                                                <td class="align-middle"><?php echo md5($row['user_pass']); ?></td>
+                                                <td class="align-middle"><?php echo ($row['user_status'] == 1) ? "อยู่ในระบบ" : "ไม่อยู่ในระบบ"; ?></td>
+                                                <td class="align-middle">
+                                                    <a href="#" class="btn btn-sm btn-secondary reset-password-btn" data-bs-toggle="modal" data-bs-target="#resetPasswordModal" data-id="<?php echo $row['user_id']; ?>">Reset Password</a>
+                                                    <a href="#" onclick="delUser('<?php echo $row['user_id']; ?>')" class="btn btn-sm btn-danger">Delete</a>
+                                                </td>
+                                            </tr>
+                                    <?php
                                         }
                                     }
                                     ?>

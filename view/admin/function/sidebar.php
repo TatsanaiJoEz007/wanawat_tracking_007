@@ -2,6 +2,43 @@
 <!-- Designined by CodingLab | www.youtube.com/codinglabyt -->
 <html lang="en" dir="ltr">
 
+<?php
+require_once('../../view/config/connect.php');
+session_start();
+
+
+if (!isset($_SESSION['login'])) {
+  //echo '<script>location.href="login"</script>';
+}
+
+function fetchUserProfile($conn, $userId)
+{
+  $sql = "SELECT tb_user.*, 
+            provinces.name_th AS province_name, 
+            amphures.name_th AS amphure_name, 
+            districts.name_th AS district_name,
+            districts.zip_code AS zipcode 
+            FROM tb_user
+            LEFT JOIN provinces ON tb_user.province_id = provinces.id 
+            LEFT JOIN amphures ON tb_user.amphure_id = amphures.id 
+            LEFT JOIN districts ON tb_user.district_id = districts.id 
+            WHERE user_id = ?";
+  $stmt = $conn->prepare($sql);
+  $stmt->bind_param("i", $userId);
+  $stmt->execute();
+  return $stmt->get_result()->fetch_array(MYSQLI_ASSOC);
+}
+
+function getImageBase64($imageData)
+{
+  return 'data:image/jpeg;base64,' . base64_encode($imageData);
+}
+
+$userId = $_SESSION['user_id'];
+$myprofile = fetchUserProfile($conn, $userId);
+$imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_img']) : '../../view/assets/img/logo/mascot.png'; // Set your default image path here
+?>
+
 <head>
   <meta charset="UTF-8">
   <title> Drop Down Sidebar Menu | CodingLab </title>
@@ -187,7 +224,7 @@
   }
 
   .sidebar .nav-links li .sub-menu .link_name {
-    display: none;
+   display: none;
   }
 
   .sidebar.close .nav-links li .sub-menu .link_name {
@@ -339,15 +376,14 @@
 <body>
   <div class="sidebar close">
     <div class="logo-details">
-      <img src="../../view/assets/img/logo/logo.png" alt="logo of wehome" weight="50px" height="50px"
-        style="padding-left:8px; padding-right:10px;" />
+      <img src="../../view/assets/img/logo/logo.png" alt="logo of wehome" weight="50px" height="50px" style="padding-left:8px; padding-right:10px;" />
       <span class="logo_name">Admin</span>
     </div>
     <ul class="nav-links">
       <li>
         <a href="../admin/Dashboard">
           <i class="bx bx-grid-alt nav_icon"></i>
-          <span class="link_name">Dashboard</span>
+          <span class="link_name">หน้าหลัก</span>
         </a>
         <ul class="sub-menu blank">
           <li><a class="link_name" href="../admin/Dashboard.php">Dashboard</a></li>
@@ -357,14 +393,14 @@
         <div class="iocn-link">
           <a href="#">
             <i class="bx bx-user nav_icon"></i>
-            <span class="link_name">Permission</span>
+            <span class="link_name">ควบคุมสิทธิ์การเข้าถึง</span>
           </a>
           <i class='bx bxs-chevron-down arrow'></i>
         </div>
         <ul class="sub-menu">
-          <li><a href="../admin/permission_admin">Admin</a></li>
-          <li><a href="../admin/permission_user">User</a></li>
-          <li><a href="../admin/permission_employee">Employee</a></li>
+          <li><a href="../admin/permission_admin">แอดมิน</a></li>
+          <li><a href="../admin/permission_user">ลูกค้า</a></li>
+          <li><a href="../admin/permission_employee">พนักงาน</a></li>
 
         </ul>
       </li>
@@ -372,49 +408,49 @@
         <div class="iocn-link">
           <a href="#">
             <i class="bx bx-cloud-upload nav_icon"></i>
-            <span class="link_name">Bill & CSV</span>
+            <span class="link_name">เพิ่ม บิล จาก CSV</span>
           </a>
           <i class='bx bxs-chevron-down arrow'></i>
         </div>
         <ul class="sub-menu">
-          <li><a href="../admin/importCSV.php">Import CSV</a></li>
-          <li><a href="../admin/table_header.php">Uploaded Header Bill</a></li>
-          <li><a href="../admin/table_line.php">Uploaded Line Bill</a></li>
+          <li><a href="../admin/importCSV.php">เพิ่ม CSV</a></li>
+          <li><a href="../admin/table_header.php">เพิ่มหัวบิล </a></li>
+          <li><a href="../admin/table_line.php">เพิ่มรายละเอียดบิล</a></li>
         </ul>
       </li>
       <li>
         <div class="iocn-link">
           <a href="#">
             <i class="bx bx-cog nav_icon"></i>
-            <span class="link_name">Manage Web</span>
+            <span class="link_name">จัดการหน้าเว็บไซต์</span>
           </a>
           <i class='bx bxs-chevron-down arrow'></i>
         </div>
         <ul class="sub-menu">
-          <li><a class="link_name" href="#">Manage Web</a></li>
-          <li><a href="../admin/banner">Banner</a></li>
-          <li><a href="../admin/contact.php">Contact</a></li>
-          <li><a href="../admin/question.php">Question</a></li>
+          <li><a class="link_name" href="#">จัดการหน้าเว็บไซต์</a></li>
+          <li><a href="../admin/banner">หน้าแบนเนอร์</a></li>
+          <li><a href="../admin/contact.php">หน้าติดต่อ</a></li>
+          <li><a href="../admin/question.php">หน้าคำถามที่พบบ่อย</a></li>
         </ul>
       </li>
-      
+
       <li>
         <a href="../admin/activity.php">
           <i class="bi bi-activity nav_icon"></i>
-          <span class="link_name" >Activity Logs </span>
+          <span class="link_name">ประวัติกิจกรรม</span>
         </a>
         <ul class="sub-menu blank">
-          <li><a class="link_name" href="../admin/activity">Activity Logs</a></li>
+          <li><a class="link_name" href="../admin/activity">ประวัติกิจกรรม</a></li>
         </ul>
       </li>
       <li>
         <div class="profile-details">
           <div class="profile-content">
-            <img src="../../view/admin/assets/img/adminpic/admin.jpg" alt="profileImg">
+            <img src=<?php echo $imageBase64; ?> alt="profileImg">
           </div>
           <div class="name-job">
-            <div class="profile_name">Jonh Doe</div>
-            <div class="job">Web Desginer</div>
+            <div class="profile_name"><?php echo $myprofile['user_firstname']?> &nbsp; <?php echo $myprofile['user_lastname']?></div>
+            <div class="job"><?php echo $myprofile['user_email'] ?></div>
           </div>
           <?php require_once "../../view/admin/function/function_logout.php" ?>
           <i class='bx bx-log-out' onclick="logout()"></i>
@@ -435,7 +471,7 @@
       let arrow = document.querySelectorAll(".arrow");
       for (var i = 0; i < arrow.length; i++) {
         arrow[i].addEventListener("click", (e) => {
-          let arrowParent = e.target.parentElement.parentElement;//selecting main parent of arrow
+          let arrowParent = e.target.parentElement.parentElement; //selecting main parent of arrow
           arrowParent.classList.toggle("showMenu");
         });
       }

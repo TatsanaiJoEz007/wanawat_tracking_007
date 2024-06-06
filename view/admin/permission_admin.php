@@ -1,4 +1,21 @@
-<?php require_once('../config/connect.php'); ?>
+<?php require_once('../config/connect.php'); 
+
+
+function Profilepic($conn, $userId)
+{
+    $sql = "SELECT user_img FROM tb_user WHERE user_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    return $stmt->get_result()->fetch_array(MYSQLI_ASSOC);
+}
+
+// Function to convert image data to base64
+function base64img($imageData)
+{
+    return 'data:image/jpeg;base64,' . base64_encode($imageData);
+}
+?>
 
 <!DOCTYPE html>
 <html lang="th">
@@ -131,14 +148,25 @@
                                 </thead>
                                 <tbody class="text-center">
                                     <?php
-                                    $i = 1;
-                                    $sql = "SELECT * FROM tb_user WHERE user_type = 999 ";
-                                    $query = $conn->query($sql);
-                                    foreach ($query as $row) :
-                                    ?>
+                                    if (isset($_SESSION['user_id'])) {
+                                        $i = 1;
+                                        $sql = "SELECT * FROM tb_user WHERE user_type = 999 ";
+                                        $query = $conn->query($sql);
+                                        while ($row = $query->fetch_assoc()) {
+                                            // Get user profile picture
+                                            $myprofile = Profilepic($conn, $row['user_id']);
+                                            // Set default avatar path
+                                            $defaultAvatarPath = '../../view/assets/img/logo/mascot.png';
+                                            // Check if user image is set
+                                            if (!empty($myprofile['user_img'])) {
+                                                $imageBase64 = base64img($myprofile['user_img']);
+                                            } else {
+                                                $imageBase64 = $defaultAvatarPath;
+                                            }
+                                ?>
                                         <tr>
                                             <td><?php echo $i++; ?></td>
-                                            <td class="align-middle"><img src="<?php echo $row['user_img']; ?>" alt="admin Image" style="width: 50px; height: auto;"></td>
+                                            <td class="align-middle"><img src="<?php echo $imageBase64; ?>" alt="admin Image" style="width: 50px; height: auto;"></td>
                                             <td class="align-middle"><?php echo $row['user_firstname'] ?></td>
                                             <td class="align-middle"><?php echo $row['user_lastname'] ?></td>
                                             <td class="align-middle"><?php echo $row['user_email'] ?></td>
@@ -149,7 +177,10 @@
                                                 <a href="#" onclick="delUser('<?php echo $row['user_id']; ?>')" class="btn btn-sm btn-danger">Delete</a>
                                             </td>
                                         </tr>
-                                    <?php endforeach; ?>
+                                        <?php
+                                        }
+                                    }
+                                    ?>
                                 </tbody>
                             </table>
                         </div>

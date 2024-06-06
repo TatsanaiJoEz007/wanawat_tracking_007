@@ -115,25 +115,49 @@
         }
 
         /* Scrollbar Styling */
-::-webkit-scrollbar {
-    width: 12px; /* Adjust width for vertical scrollbar */
-}
+        ::-webkit-scrollbar {
+            width: 12px; /* Adjust width for vertical scrollbar */
+        }
 
-::-webkit-scrollbar-thumb {
-    background-color: #FF5722; /* Color for scrollbar thumb */
-    border-radius: 10px; /* Rounded corners for scrollbar thumb */
-}
+        ::-webkit-scrollbar-thumb {
+            background-color: #FF5722; /* Color for scrollbar thumb */
+            border-radius: 10px; /* Rounded corners for scrollbar thumb */
+        }
 
-/* Container Styling */
-.home-section {
-    max-height: 100vh; /* Adjust height as needed */
-    overflow-y: auto; /* Allow vertical scroll */
-    overflow-x: hidden; /* Prevent horizontal scroll */
-    padding: 20px;
-    background-color: #f9f9f9;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-}
+        /* Container Styling */
+        .home-section {
+            max-height: 100vh; /* Adjust height as needed */
+            overflow-y: auto; /* Allow vertical scroll */
+            overflow-x: hidden; /* Prevent horizontal scroll */
+            padding: 20px;
+            background-color: #f9f9f9;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .instruction-box {
+            background-color: #e9ecef;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .instruction-box h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .instruction-box ol {
+            padding-left: 20px;
+        }
+
+        .instruction-box li {
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #555;
+        }
     </style>
 </head>
 
@@ -143,6 +167,14 @@
 
     <div class="container">
         <h1 class="heading">Import Head CSV</h1>
+        <div class="instruction-box">
+            <h2>วิธีการใช้งาน</h2>
+            <ol>
+                <li>กด <b>Choose Head CSV File</b> เพื่อเลือกไฟล์ CSV ที่ต้องการอัปโหลด</li>
+                <li>กด <b>Convert</b> เพื่อแปลงไฟล์ CSV เป็น UTF-8</li>
+                <li>กด <b>Import to Database</b> เพื่ออัปโหลดข้อมูลเข้าสู่ฐานข้อมูล</li>
+            </ol>
+        </div>
         <div class="section">
             <h3 class="sub-heading">Upload and convert your Head CSV File</h3>
             <div class="buttons">
@@ -166,6 +198,14 @@
 
     <div class="container">
         <h1 class="heading">Import Line CSV</h1>
+        <div class="instruction-box">
+            <h2>วิธีการใช้งาน</h2>
+            <ol>
+                <li>กด <b>Choose Line CSV File</b> เพื่อเลือกไฟล์ CSV ที่ต้องการอัปโหลด</li>
+                <li>กด <b>Convert</b> เพื่อแปลงไฟล์ CSV เป็น UTF-8</li>
+                <li>กด <b>Import to Database</b> เพื่ออัปโหลดข้อมูลเข้าสู่ฐานข้อมูล</li>
+            </ol>
+        </div>
         <div class="section">
             <h3 class="sub-heading">Upload and convert your Line CSV File</h3>
             <div class="buttons">
@@ -188,7 +228,7 @@
     </div>
 
     <!-- Add SweetAlert2 library -->
-   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script>
         let convertedCSVData; // Store converted CSV data globally
@@ -207,95 +247,43 @@
                             const filteredData = results.data.filter(row => row.some(cell => cell.trim() !== ''));
                             convertedCSVData = Papa.unparse(filteredData);
                             document.getElementById('output1').innerText = convertedCSVData;
-                        }
+                            Swal.fire('Success', 'CSV file converted successfully!', 'success');
+                        },
+                        encoding: 'windows-874'
                     });
                 };
-                reader.readAsText(file, 'windows-874');
+                reader.readAsText(file);
             } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Please select a CSV file.'
-                });
+                Swal.fire('Error', 'Please choose a CSV file first.', 'error');
             }
         }
 
         function importToDatabase() {
-            if (convertedCSVData) {
-                const formData = new FormData();
-                formData.append('csvData', convertedCSVData); // Pass converted CSV data
-
-                fetch('', { // Use current file path
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => response.text())
-                    .then(message => {
-                        const output = document.getElementById('output1');
-                        output.innerText = '';
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text: "Importing data successfully!"
-                        });
-                    })
-                    .catch(error => console.error('Error:', error));
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Please convert a CSV file first.'
-                });
+            if (!convertedCSVData) {
+                Swal.fire('Error', 'Please convert the CSV file first.', 'error');
+                return;
             }
-        }
-    </script>
 
-    <?php
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['csvData'])) {
-        $csvData = $_POST['csvData'];
-        $rows = str_getcsv($csvData, "\n");
+            const formData = new FormData();
+            formData.append('csvData', convertedCSVData);
 
-        // Database connection settings
-        $dbHost = 'localhost';
-        $dbName = 'wanawat_tracking';
-        $dbUser = 'root';
-        $dbPass = '';
-
-        try {
-            // Connect to the database
-            $pdo = new PDO("mysql:host=$dbHost;dbname=$dbName", $dbUser, $dbPass);
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-            // Start a transaction
-            $pdo->beginTransaction();
-
-            foreach ($rows as $row) {
-                $data = str_getcsv($row);
-                if (count($data) === 6) { // Check if the row has all 6 columns
-                    $stmt = $pdo->prepare("INSERT INTO tb_header (bill_date, bill_number, bill_customer_id, bill_customer_name, bill_total, bill_isCanceled) VALUES (?, ?, ?, ?, ?, ?)");
-                    $stmt->execute($data);
+            fetch('save_csv.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire('Success', 'Data imported to database successfully!', 'success');
+                } else {
+                    Swal.fire('Error', 'Failed to import data to database.', 'error');
                 }
-            }
-
-            // Commit the transaction
-            $pdo->commit();
-        } catch (PDOException $e) {
-            // Rollback the transaction on error
-            $pdo->rollBack();
-            // Display an error message using SweetAlert2
-            echo '<script>
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: "' . $e->getMessage() . '"
-                    });
-                  </script>';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Error', 'An error occurred while importing data.', 'error');
+            });
         }
-    }
-    ?>
-
-    <script>
-        let convertedCSVData2; // Store converted CSV data globally
 
         function convertCSV2() {
             const fileInput = document.getElementById('csvFileInput2');
@@ -309,94 +297,68 @@
                         complete: function(results) {
                             // Filter out blank rows
                             const filteredData = results.data.filter(row => row.some(cell => cell.trim() !== ''));
-                            convertedCSVData2 = Papa.unparse(filteredData);
-                            document.getElementById('output2').innerText = convertedCSVData2;
-                        }
+                            convertedCSVData = Papa.unparse(filteredData);
+                            document.getElementById('output2').innerText = convertedCSVData;
+                            Swal.fire('Success', 'CSV file converted successfully!', 'success');
+                        },
+                        encoding: 'windows-874'
                     });
                 };
-                reader.readAsText(file, 'windows-874');
+                reader.readAsText(file);
             } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Please select a CSV file.'
-                });
+                Swal.fire('Error', 'Please choose a CSV file first.', 'error');
             }
         }
 
         function importToDatabase2() {
-            if (convertedCSVData2) {
-                const formData = new FormData();
-                formData.append('csvData2', convertedCSVData2); // Pass converted CSV data
-
-                fetch('', { // Use current file path
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => response.text())
-                    .then(message => {
-                        const output = document.getElementById('output2');
-                        output.innerText = '';
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text: "Importing data successfully!"
-                        });
-                    })
-                    .catch(error => console.error('Error:', error));
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Please convert a CSV file first.'
-                });
+            if (!convertedCSVData) {
+                Swal.fire('Error', 'Please convert the CSV file first.', 'error');
+                return;
             }
-        }
-    </script>
 
-    <?php
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['csvData2'])) {
-        $csvData2 = $_POST['csvData2'];
-        $rows = str_getcsv($csvData2, "\n");
+            const formData = new FormData();
+            formData.append('csvData', convertedCSVData);
 
-        // Database connection settings
-        $dbHost = 'localhost';
-        $dbName = 'wanawat_tracking';
-        $dbUser = 'root';
-        $dbPass = '';
-
-        try {
-            // Connect to the database
-            $pdo = new PDO("mysql:host=$dbHost;dbname=$dbName", $dbUser, $dbPass);
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-            // Start a transaction
-            $pdo->beginTransaction();
-
-            foreach ($rows as $row) {
-                $data2 = str_getcsv($row);
-                if (count($data2) === 8) { // Check if the row has all 8 columns
-                    $stmt = $pdo->prepare("INSERT INTO tb_line (line_bill_number, item_sequence, item_code, item_desc, item_quantity, item_unit, item_price, line_total) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-                    $stmt->execute($data2);
+            fetch('save_csv.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire('Success', 'Data imported to database successfully!', 'success');
+                } else {
+                    Swal.fire('Error', 'Failed to import data to database.', 'error');
                 }
-            }
-
-            // Commit the transaction
-            $pdo->commit();
-        } catch (PDOException $e) {
-            // Rollback the transaction on error
-            $pdo->rollBack();
-            // Display an error message using SweetAlert2
-            echo '<script>
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: "' . $e->getMessage() . '"
-                    });
-                  </script>';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Error', 'An error occurred while importing data.', 'error');
+            });
         }
-    }
-    ?>
+
+        document.getElementById('csvFileInput1').addEventListener('change', function() {
+            const fileInputText1 = document.getElementById('fileInputText1');
+            const fileName = this.files[0] ? this.files[0].name : '&nbsp;Choose Head CSV File';
+            fileInputText1.textContent = fileName;
+            if (fileName !== '&nbsp;Choose Head CSV File') {
+                fileInputText1.classList.add('file-selected');
+            } else {
+                fileInputText1.classList.remove('file-selected');
+            }
+        });
+
+        document.getElementById('csvFileInput2').addEventListener('change', function() {
+            const fileInputText2 = document.getElementById('fileInputText2');
+            const fileName = this.files[0] ? this.files[0].name : '&nbsp;Choose Line CSV File';
+            fileInputText2.textContent = fileName;
+            if (fileName !== '&nbsp;Choose Line CSV File') {
+                fileInputText2.classList.add('file-selected');
+            } else {
+                fileInputText2.classList.remove('file-selected');
+            }
+        });
+    </script>
 </body>
 
 </html>

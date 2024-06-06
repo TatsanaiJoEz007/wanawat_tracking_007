@@ -1,4 +1,21 @@
-<?php require_once ('../config/connect.php'); ?>
+<?php require_once('../config/connect.php'); ?>
+
+<?php
+function BannerImage($conn, $bannerId)
+{
+    $sql = "SELECT banner_img FROM tb_banner WHERE banner_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $bannerId);
+    $stmt->execute();
+    return $stmt->get_result()->fetch_array(MYSQLI_ASSOC);
+}
+
+// Function to convert image data to base64
+function base64img($imageData)
+{
+    return 'data:image/jpeg;base64,' . base64_encode($imageData);
+}
+?>
 <!DOCTYPE html>
 <html lang="th">
 
@@ -47,24 +64,30 @@
         }
 
         ::-webkit-scrollbar {
-    width: 12px; /* Adjust width for vertical scrollbar */
-}
+            width: 12px;
+            /* Adjust width for vertical scrollbar */
+        }
 
-::-webkit-scrollbar-thumb {
-    background-color: #FF5722; /* Color for scrollbar thumb */
-    border-radius: 10px; /* Rounded corners for scrollbar thumb */
-}
+        ::-webkit-scrollbar-thumb {
+            background-color: #FF5722;
+            /* Color for scrollbar thumb */
+            border-radius: 10px;
+            /* Rounded corners for scrollbar thumb */
+        }
 
-/* Container Styling */
-.home-section {
-    max-height: 100vh; /* Adjust height as needed */
-    overflow-y: auto; /* Allow vertical scroll */
-    overflow-x: hidden; /* Prevent horizontal scroll */
-    padding: 20px;
-    background-color: #f9f9f9;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-}
+        /* Container Styling */
+        .home-section {
+            max-height: 100vh;
+            /* Adjust height as needed */
+            overflow-y: auto;
+            /* Allow vertical scroll */
+            overflow-x: hidden;
+            /* Prevent horizontal scroll */
+            padding: 20px;
+            background-color: #f9f9f9;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
     </style>
 
 
@@ -72,7 +95,7 @@
 </head>
 
 <body>
-    <?php require_once ('function/sidebar.php'); ?>
+    <?php require_once('function/sidebar.php'); ?>
 
     <h1 class="app-page-title">Banner</h1>
     <hr class="mb-4">
@@ -82,44 +105,38 @@
                 <div class="app-card app-card-settings shadow-sm p-4">
                     <div class="app-card-body">
                         <!-- Button to trigger modal -->
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                            data-bs-target="#exampleModal">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
                             เพิ่ม Banner
                         </button>
 
                         <!-- Modal -->
-                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                            aria-hidden="true">
+                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered modal-lg">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h5 class="modal-title" id="exampleModalLabel">เพิ่ม Banner</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
                                         <form id="upload_banner" method="post" enctype="multipart/form-data">
                                             <div class="mb-3">
                                                 <label for="user_firstname" class="form-label">ชื่อ</label>
-                                                <input type="text" class="form-control" id="user_firstname"
-                                                    name="user_firstname" required>
+                                                <input type="text" class="form-control" id="user_firstname" name="user_firstname" required>
                                             </div>
                                             <div class="mb-3">
                                                 <label for="user_img" class="form-label">รูปภาพ</label>
-                                                <input type="file" class="form-control" id="user_img" name="user_img"
-                                                    required>
+                                                <input type="file" class="form-control" id="user_img" name="user_img" required>
                                             </div>
                                         </form>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">ปิด</button>
-                                        <button type="button" class="btn btn-primary"
-                                            onclick="submitBannerForm()">บันทึกข้อมูล</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+                                        <button type="button" class="btn btn-primary" onclick="submitBannerForm()">บันทึกข้อมูล</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
 
                         <!-- Table of Banners -->
                         <div class="table-responsive">
@@ -134,25 +151,42 @@
                                 </thead>
                                 <tbody class="text-center">
                                     <?php
-                                    include ('../config/connect.php');
-                                    $i = 1;
-                                    $sql = "SELECT * FROM tb_banner";
-                                    $query = $conn->query($sql);
-                                    while ($row = $query->fetch_assoc()):
-                                        ?>
-                                        <tr>
-                                            <td class="align-middle"><?php echo $i++; ?></td>
-                                            <td class="align-middle"><?php echo $row['banner_name']; ?></td>
-                                            <td class="align-middle"><img src="assets/<?php echo $row['banner_img']; ?>"
-                                                    alt="Banner Image" style="object-fit: cover;" width="100%" height="140">
-                                            </td>
-                                            <td class="align-middle">
+                                    // Check if session variable is set
+                                    if (isset($_SESSION['user_id'])) {
+                                        $i = 1;
+                                        $sql = "SELECT * FROM tb_banner";
+                                        $query = $conn->query($sql);
+                                        while ($row = $query->fetch_assoc()) {
+                                            // Get banner image
+                                            $bannerImg = BannerImage($conn, $row['banner_id']);
+                                            // Set default image path
+                                            $defaultImagePath = '../../view/assets/img/logo/mascot.png';
+                                            // Check if banner image is set
+                                            if (!empty($bannerImg['banner_img'])) {
+                                                $imageBase64 = base64img($bannerImg['banner_img']);
+                                            } else {
+                                                $imageBase64 = $defaultImagePath;
+                                            }
+                                    ?>
+                                            <tr>
+                                                <td class="align-middle"><?php echo $i++; ?></td>
+                                                <td class="align-middle"><?php echo $row['banner_name']; ?></td>
+                                                <td class="align-middle">
+                                                    <?php if (!empty($imageBase64)) : ?>
+                                                        <img src="<?php echo $imageBase64; ?>" alt="Banner Image" style="object-fit: cover; width: 100%; height: 140px;">
+                                                    <?php else : ?>
+                                                        <span>No Image</span>
+                                                    <?php endif; ?>
+                                                </td>
 
-
-                                                <button type="button" class="btn btn-sm btn-danger" onclick="delBanner('<?php echo $row['banner_id']; ?>')">Delete</button>
-                                            </td>
-                                        </tr>
-                                    <?php endwhile; ?>
+                                                <td class="align-middle">
+                                                    <button type="button" class="btn btn-sm btn-danger" onclick="delBanner('<?php echo $row['banner_id']; ?>')">Delete</button>
+                                                </td>
+                                            </tr>
+                                    <?php
+                                        }
+                                    }
+                                    ?>
                                 </tbody>
                             </table>
                         </div>
@@ -166,9 +200,9 @@
         function submitBannerForm() {
             var formData = new FormData(document.getElementById('upload_banner'));
             fetch('function/action_uploadbanner.php', {
-                method: 'POST',
-                body: formData
-            })
+                    method: 'POST',
+                    body: formData
+                })
                 .then(response => response.json())
                 .then(data => {
                     handleResponse(data, 'เพิ่ม');
@@ -185,7 +219,7 @@
                     id: id,
                     delBanner: 1
                 },
-                success: function (res) {
+                success: function(res) {
                     // Display success message using Swal.fire
                     Swal.fire({
                         title: 'Success!',
@@ -198,7 +232,7 @@
                         }
                     });
                 },
-                error: function (xhr, status, error) {
+                error: function(xhr, status, error) {
                     // Display error message using Swal.fire
                     Swal.fire({
                         title: 'Error!',
@@ -262,9 +296,6 @@
                 confirmButtonText: 'ตกลง'
             });
         }
-
-
-
     </script>
 
 

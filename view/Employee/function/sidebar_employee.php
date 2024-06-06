@@ -2,9 +2,41 @@
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-require_once ('../config/connect.php');
+require_once('../config/connect.php');
 ?>
 
+<?php
+if (!isset($_SESSION['login'])) {
+    //echo '<script>location.href="login"</script>';
+}
+
+function fetchUserProfile($conn, $userId)
+{
+    $sql = "SELECT tb_user.*, 
+            provinces.name_th AS province_name, 
+            amphures.name_th AS amphure_name, 
+            districts.name_th AS district_name,
+            districts.zip_code AS zipcode 
+            FROM tb_user
+            LEFT JOIN provinces ON tb_user.province_id = provinces.id 
+            LEFT JOIN amphures ON tb_user.amphure_id = amphures.id 
+            LEFT JOIN districts ON tb_user.district_id = districts.id 
+            WHERE user_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    return $stmt->get_result()->fetch_array(MYSQLI_ASSOC);
+}
+
+function getImageBase64($imageData)
+{
+    return 'data:image/jpeg;base64,' . base64_encode($imageData);
+}
+
+$userId = $_SESSION['user_id'];
+$myprofile = fetchUserProfile($conn, $userId);
+$imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_img']) : '../../view/assets/img/logo/mascot.png'; // Set your default image path here
+?>
 
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -346,8 +378,7 @@ require_once ('../config/connect.php');
 <body>
     <div class="sidebar close">
         <div class="logo-details">
-            <img src="../../view/assets/img/logo/logo.png" alt="logo of wehome" weight="50px" height="50px"
-                style="padding-left:8px; padding-right:10px;" />
+            <img src="../../view/assets/img/logo/logo.png" alt="logo of wehome" weight="50px" height="50px" style="padding-left:8px; padding-right:10px;" />
             <span class="logo_name">Employee</span>
         </div>
         <ul class="nav-links">
@@ -355,7 +386,7 @@ require_once ('../config/connect.php');
             <li>
                 <a href="../employee/statusbill.php">
                     <i class="bx bx-send nav_icon"></i>
-                    <span class="link_name">Status Bill</span>
+                    <span class="link_name">สถานะบิล</span>
                 </a>
 
             </li>
@@ -363,49 +394,49 @@ require_once ('../config/connect.php');
             <li>
                 <a href="../employee/preparing.php">
                     <i class="bi bi-archive nav_icon"></i>
-                    <span class="link_name">Preparing</span>
+                    <span class="link_name">กำลังจัดเตรียม</span>
                 </a>
                 <ul class="sub-menu blank">
-                    <li><a class="link_name" href="preparing.php">Preparing</a></li>
+                    <li><a class="link_name" href="preparing.php">กำลังจัดเตรียม</a></li>
                 </ul>
             </li>
 
             <li>
                 <a href="../employee/sending.php">
                     <i class="bi bi-truck nav_icon"></i>
-                    <span class="link_name">Sending</span>
+                    <span class="link_name">กำลังส่ง</span>
                 </a>
                 <ul class="sub-menu blank">
-                    <li><a class="link_name" href="../employee/sending.php">Sending</a></li>
+                    <li><a class="link_name" href="../employee/sending.php">กำลังส่ง</a></li>
                 </ul>
             </li>
 
             <li>
                 <a href="../employee/history.php">
                     <i class="bi bi-clock-history nav_icon"></i>
-                    <span class="link_name">History</span>
+                    <span class="link_name">ประวัติการใช้งาน</span>
                 </a>
                 <ul class="sub-menu blank">
-                    <li><a class="link_name" href="../employee/history.php">History</a></li>
+                    <li><a class="link_name" href="../employee/history.php">ประวัติการใช้งาน</a></li>
                 </ul>
             </li>
 
             <li>
                 <a href="../employee/problem.php">
                     <i class="bi bi-bag-x nav_icon"></i>
-                    <span class="link_name">Problem</span>
+                    <span class="link_name">ปัญหาที่พบ</span>
                 </a>
                 <ul class="sub-menu blank">
-                    <li><a class="link_name" href="../employee/problem.php">Problem</a></li>
+                    <li><a class="link_name" href="../employee/problem.php">ปัญหาที่พบ</a></li>
                 </ul>
             </li>
             <li>
                 <a href="../employee/delivery_bill.php">
-                <i class="bi bi-basket nav_icon"></i>
-                    <span class="link_name">DeliveryBill</span>
+                    <i class="bi bi-basket nav_icon"></i>
+                    <span class="link_name">รายละเอียดบิลสินค้า</span>
                 </a>
                 <ul class="sub-menu blank">
-                    <li><a class="link_name" href="../employee/delivery_bill.php">DeliveryBill</a></li>
+                    <li><a class="link_name" href="../employee/delivery_bill.php">รายละเอียดบิลสินค้า</a></li>
                 </ul>
             </li>
 
@@ -420,13 +451,13 @@ require_once ('../config/connect.php');
             <li>
                 <div class="profile-details">
                     <div class="profile-content">
-                        <img src="../../view/admin/assets/img/adminpic/admin.jpg" alt="profileImg">
+                        <img src="<?php echo $imageBase64 ?>" alt="profileImg">
                     </div>
                     <div class="name-job">
                         <div class="profile_name">
                             <?php echo $myprofile['user_firstname'] ?>
                         </div>
-                        <div class="job">คนเก็บขี้ปืน</div>
+
                     </div>
                     <i class='bx bx-log-out' onclick="logout()"></i>
                 </div>
@@ -447,7 +478,7 @@ require_once ('../config/connect.php');
                     data: {
                         logout: 1
                     },
-                    success: function (res) {
+                    success: function(res) {
                         Swal.fire({
                             position: 'center',
                             icon: 'success',

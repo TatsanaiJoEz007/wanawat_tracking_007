@@ -1,39 +1,66 @@
 <?php
 require_once('../view/config/connect.php');
+
+function imageToBase64($image_data)
+{
+    // Get image mime type
+    $finfo = finfo_open();
+    $mime_type = finfo_buffer($finfo, $image_data, FILEINFO_MIME_TYPE);
+    finfo_close($finfo);
+
+    // Determine file extension based on mime type
+    switch ($mime_type) {
+        case 'image/jpeg':
+            $extension = 'jpg';
+            break;
+        case 'image/png':
+            $extension = 'png';
+            break;
+        case 'image/gif':
+            $extension = 'gif';
+            break;
+        default:
+            $extension = 'jpg'; // Default to jpg if mime type is unknown
+            break;
+    }
+
+    // Encode image data to base64
+    $base64_image = 'data:image/' . $extension . ';base64,' . base64_encode($image_data);
+    return $base64_image;
+}
+
 ?>
 
 <link href="https://fastly.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="../view/assets/css/style.css">
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap" rel="stylesheet">
 <style>
-.carousel-inner img {
-    width: 100%;
-    height: 500px;
-    object-fit: cover;
-}
-
-
-
-@media (max-width: 768px) {
     .carousel-inner img {
-        width: 1000px;
-        height: 250px;
+        width: 100%;
+        height: 600px;
+        object-fit: fit;
     }
-}
-</style>
 
+    @media (max-width: 768px) {
+        .carousel-inner img {
+            width: 1000px;
+            height: 250px;
+        }
+    }
+</style>
 <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
     <div class="carousel-inner">
         <?php
         $sql = "SELECT * FROM tb_banner";
         $result = $conn->query($sql);
-        $active = 'active'; // ตัวแปรสำหรับกำหนดไอเทมแรกเป็น active
+        $active = 'active'; // Set the first item as active
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
                 echo '<div class="carousel-item ' . $active . '">';
-                echo '<img src="admin' . $row['banner_img'] . '" class="d-block w-100" alt="Banner" style="object-fit: cover;" width="1000" height="700">';
+                $base64_image = imageToBase64($row['banner_img']);
+                echo '<img src="' . $base64_image . '" class="d-block w-100" alt="Banner" style="object-fit: fit;">';
                 echo '</div>';
-                $active = ''; // ล้างค่าตัวแปร active หลังจากไอเทมแรก
+                $active = ''; // Clear the active class after the first item
             }
         } else {
             echo '<p>No banners found</p>';
