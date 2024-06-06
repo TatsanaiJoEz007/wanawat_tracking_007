@@ -25,9 +25,9 @@ if (session_status() == PHP_SESSION_NONE) {
 
     /* New style for fixed navbar */
     .navbar.fixed-top {
-      background-color: #f9a825;
+      background-color: #F0592E;
       /* Change background color for fixed state */
-      transition: background 0.3s ease-in-out;
+  
     }
 
     .navbar-brand img {
@@ -89,7 +89,7 @@ if (session_status() == PHP_SESSION_NONE) {
 
   <nav id="navbar" class="navbar navbar-expand-lg navbar-light bg-orange">
     <div class="container-fluid">
-      <a class="navbar-brand" href="../view/index">
+      <a class="navbar-brand" href="../../view/index">
         <img src="../view/assets/img/logo/logo.png" width="65" height="52" alt="Logo">
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"

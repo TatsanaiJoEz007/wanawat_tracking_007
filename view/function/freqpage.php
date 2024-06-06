@@ -55,6 +55,7 @@
     .panel-content {
         border-top: 2px solid #F0592E;
         padding-top: 10px;
+        font-size: 18px;
     }
 </style>
 

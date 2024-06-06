@@ -10,15 +10,18 @@ session_start();
 </head>
 <style>
     ::-webkit-scrollbar {
-    width: 9px; /* Adjust width for vertical scrollbar */
-}
+        width: 9px;
+        /* Adjust width for vertical scrollbar */
+    }
 
-::-webkit-scrollbar-thumb {
-    background-color: #FF5722; /* Color for scrollbar thumb */
-    border-radius: 10px; /* Rounded corners for scrollbar thumb */
-}
-
+    ::-webkit-scrollbar-thumb {
+        background-color: #FF5722;
+        /* Color for scrollbar thumb */
+        border-radius: 10px;
+        /* Rounded corners for scrollbar thumb */
+    }
 </style>
+
 <body>
     <?php require_once('function/navbar.php'); ?>
 
@@ -37,7 +40,7 @@ session_start();
 <br>
 <br>
 <footer>
-        <?php require_once('function/footer.php'); ?>
+    <?php require_once('function/footer.php'); ?>
 </footer>
 
 </html>
