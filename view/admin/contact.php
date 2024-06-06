@@ -1,8 +1,5 @@
 <!DOCTYPE html>
 <html lang="th">
-<?php require_once('function/action_activity_log/log_activity.php');  
-$adminId = 123;
-?>
 
 <head>
     <title>Dashboard</title>
@@ -39,80 +36,29 @@ $adminId = 123;
         }
 
         ::-webkit-scrollbar {
-            width: 12px;
-            /* Adjust width for vertical scrollbar */
-        }
+    width: 12px; /* Adjust width for vertical scrollbar */
+}
 
-        ::-webkit-scrollbar-thumb {
-            background-color: #FF5722;
-            /* Color for scrollbar thumb */
-            border-radius: 10px;
-            /* Rounded corners for scrollbar thumb */
-        }
+::-webkit-scrollbar-thumb {
+    background-color: #FF5722; /* Color for scrollbar thumb */
+    border-radius: 10px; /* Rounded corners for scrollbar thumb */
+}
 
-        /* Container Styling */
-        .home-section {
-            max-height: 100vh;
-            /* Adjust height as needed */
-            overflow-y: auto;
-            /* Allow vertical scroll */
-            overflow-x: hidden;
-            /* Prevent horizontal scroll */
-            padding: 20px;
-            background-color: #f9f9f9;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-        }
+/* Container Styling */
+.home-section {
+    max-height: 100vh; /* Adjust height as needed */
+    overflow-y: auto; /* Allow vertical scroll */
+    overflow-x: hidden; /* Prevent horizontal scroll */
+    padding: 20px;
+    background-color: #f9f9f9;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
     </style>
 </head>
 
 <body>
-
-    <script>
-        function sendEmail(question_id) {
-            // Display SweetAlert confirmation dialog
-            Swal.fire({
-                title: 'คุณแน่ใจหรือไม่?',
-                text: "ต้องการส่งอีเมลล์ให้ผู้ใช้งานหรือไม่ ถ้าหากกดส่งแล้ว จะไม่สามารถส่งอีกครั้งได้",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes',
-                cancelButtonText: 'No'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // If user confirms, submit the form to send the email
-                    $('#sendEmailForm_' + question_id).submit();
-                    // Log admin activity
-                    logAdminActivity(<?php echo $adminId; ?>, 'Email Sent', 'Question', question_id, 'Email sent to user');
-                    // Make AJAX request to update question_status
-                    $.ajax({
-                        type: "POST",
-                        url: "function/update_questionstatus.php", // Update with the actual PHP script path
-                        data: {
-                            question_id: question_id
-                        },
-                        success: function(response) {
-                            if (response === "success") {
-                                // If update successful, remove the bug report from the page
-                                $('#sendEmailForm_' + question_id).closest('.bug-report').remove();
-                                location.reload();
-                            } else {
-                                // Handle error
-                                alert("Failed to update status.");
-                            }
-                        },
-                        error: function() {
-                            // Handle error
-                            alert("Error occurred while updating status.");
-                        }
-                    });
-                }
-            });
-        }
-    </script>
-    <?php require_once('function/sidebar.php'); ?>
+    <?php require_once ('function/sidebar.php'); ?>
 
     <div class="container">
         <br>
@@ -122,7 +68,7 @@ $adminId = 123;
         <div>
             <?php
             // Include database connection file
-            require_once('../config/connect.php');
+            require_once ('../config/connect.php');
 
             // Fetch bug reports from database
             $sql = "SELECT * FROM tb_question WHERE question_status = 1"; // Only select unanswered questions
@@ -154,7 +100,7 @@ $adminId = 123;
             <h2>ประวัติคำถาม</h2>
             <?php
             // Include database connection file
-            require_once('../config/connect.php');
+            require_once ('../config/connect.php');
 
             // Fetch bug reports from database
             $sql = "SELECT * FROM tb_question WHERE question_status = 0"; // Only select unanswered questions
@@ -183,6 +129,46 @@ $adminId = 123;
     <!-- jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
+    <script>
+        function sendEmail(question_id) {
+            // Display SweetAlert confirmation dialog
+            Swal.fire({
+                title: 'คุณแน่ใจหรือไม่?',
+                text: "ต้องการส่งอีเมลล์ให้ผู้ใช้งานหรือไม่ ถ้าหากกดส่งแล้ว จะไม่สามารถส่งอีกครั้งได้",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If user confirms, submit the form to send the email
+                    $('#sendEmailForm_' + question_id).submit();
+                    // Make AJAX request to update question_status
+                    $.ajax({
+                        type: "POST",
+                        url: "function/update_questionstatus.php", // Update with the actual PHP script path
+                        data: { question_id: question_id },
+                        success: function (response) {
+                            if (response === "success") {
+                                // If update successful, remove the bug report from the page
+                                $('#sendEmailForm_' + question_id).closest('.bug-report').remove();
+                                location.reload();
+                            } else {
+                                // Handle error
+                                alert("Failed to update status.");
+                            }
+                        },
+                        error: function () {
+                            // Handle error
+                            alert("Error occurred while updating status.");
+                        }
+                    });
+                }
+            });
+        }
+    </script>
 
 
 </body>
