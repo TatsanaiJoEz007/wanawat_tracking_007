@@ -191,7 +191,6 @@ if (!empty($myprofile['user_img'])) {
         </div>
     </nav>
 
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-beta1/js/bootstrap.min.js"></script>
     <script>
         window.addEventListener('scroll', function () {
             const navbar = document.getElementById('navbar');
