@@ -49,6 +49,7 @@ if (!empty($myprofile['user_img'])) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -104,6 +105,22 @@ if (!empty($myprofile['user_img'])) {
             top: 8px;
         }
 
+        .navbar-right .dropdown-menu {
+            position: absolute;
+            right: 100px;
+            top: calc(100% + 10px);
+            transform: translateX(-50%);
+        }
+
+        @media (max-width: 991px) {
+            .navbar-brand img {
+                left: 60px;
+                margin-top: 20px;
+                width: 70px;
+                transform: translate(-50%, 0);
+            }
+        }
+
         @media (max-width: 991px) {
             .navbar-right {
                 position: static;
@@ -121,6 +138,8 @@ if (!empty($myprofile['user_img'])) {
             .dropdown-menu {
                 position: absolute;
             }
+
+
         }
 
         @media (min-width: 992px) {
@@ -149,7 +168,9 @@ if (!empty($myprofile['user_img'])) {
             transform: translateX(-50%);
         }
     </style>
+
 </head>
+
 <body>
     <nav id="navbar" class="navbar navbar-expand-lg navbar-light bg-orange">
         <div class="container-fluid">
@@ -157,34 +178,29 @@ if (!empty($myprofile['user_img'])) {
                 <img src="../view/assets/img/logo/logo.png" width="65" height="52" alt="Logo">
             </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
-                aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page"
-                            href="../view/freqquestion"><?php echo $lang_question ?> </a>
+                        <a class="nav-link active" aria-current="page" href="../view/freqquestion"><?php echo $lang_question ?> </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="../view/contact"><?php echo $lang_contact ?></a>
                     </li>
                 </ul>
                 <div class="language-switcher">
-                    <a href="?lang=th"><img src="../view/assets/img/logo/thai.png"
-                            alt="<?php echo $lang_th_language ?>"></a>
-                    <a href="?lang=en"><img src="../view/assets/img/logo/eng.png"
-                            alt="<?php echo $lang_en_language ?>"></a>
+                    <a href="?lang=th"><img src="../view/assets/img/logo/thai.png" alt="<?php echo $lang_th_language ?>"></a>
+                    <a href="?lang=en"><img src="../view/assets/img/logo/eng.png" alt="<?php echo $lang_en_language ?>"></a>
                 </div>
                 <div class="navbar-right">
-                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown"
-                        aria-expanded="false">
+                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                         <img src="<?php echo $imageBase64; ?>" alt="Profile Image" class="profile-image">
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                         <li><a class="dropdown-item" href="../view/profile"><?php echo $lang_profile ?></a></li>
-                        <li><a class="dropdown-item" onclick="logout()" ><?php echo $lang_logout ?></a></li>
+                        <li><a class="dropdown-item" onclick="logout()"><?php echo $lang_logout ?></a></li>
                     </ul>
                 </div>
             </div>
@@ -192,7 +208,7 @@ if (!empty($myprofile['user_img'])) {
     </nav>
 
     <script>
-        window.addEventListener('scroll', function () {
+        window.addEventListener('scroll', function() {
             const navbar = document.getElementById('navbar');
             const scrollY = window.scrollY;
 
@@ -205,4 +221,5 @@ if (!empty($myprofile['user_img'])) {
     </script>
     <?php require_once('function/function_logout.php'); ?>
 </body>
+
 </html>
