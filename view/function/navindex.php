@@ -2,7 +2,7 @@
 require_once('language.php');
 session_start();
 
-require_once('../../config/connect.php');
+require_once('../view/config/connect.php');
 
 if (!isset($_SESSION['login'])) {
     // Uncomment the next line to enable redirection to the login page

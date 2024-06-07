@@ -116,19 +116,25 @@
 
         /* Scrollbar Styling */
         ::-webkit-scrollbar {
-            width: 12px; /* Adjust width for vertical scrollbar */
+            width: 12px;
+            /* Adjust width for vertical scrollbar */
         }
 
         ::-webkit-scrollbar-thumb {
-            background-color: #FF5722; /* Color for scrollbar thumb */
-            border-radius: 10px; /* Rounded corners for scrollbar thumb */
+            background-color: #FF5722;
+            /* Color for scrollbar thumb */
+            border-radius: 10px;
+            /* Rounded corners for scrollbar thumb */
         }
 
         /* Container Styling */
         .home-section {
-            max-height: 100vh; /* Adjust height as needed */
-            overflow-y: auto; /* Allow vertical scroll */
-            overflow-x: hidden; /* Prevent horizontal scroll */
+            max-height: 100vh;
+            /* Adjust height as needed */
+            overflow-y: auto;
+            /* Allow vertical scroll */
+            overflow-x: hidden;
+            /* Prevent horizontal scroll */
             padding: 20px;
             background-color: #f9f9f9;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -247,43 +253,95 @@
                             const filteredData = results.data.filter(row => row.some(cell => cell.trim() !== ''));
                             convertedCSVData = Papa.unparse(filteredData);
                             document.getElementById('output1').innerText = convertedCSVData;
-                            Swal.fire('Success', 'CSV file converted successfully!', 'success');
-                        },
-                        encoding: 'windows-874'
+                        }
                     });
                 };
-                reader.readAsText(file);
+                reader.readAsText(file, 'windows-874');
             } else {
-                Swal.fire('Error', 'Please choose a CSV file first.', 'error');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please select a CSV file.'
+                });
             }
         }
 
         function importToDatabase() {
-            if (!convertedCSVData) {
-                Swal.fire('Error', 'Please convert the CSV file first.', 'error');
-                return;
+            if (convertedCSVData) {
+                const formData = new FormData();
+                formData.append('csvData', convertedCSVData); // Pass converted CSV data
+
+                fetch('', { // Use current file path
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.text())
+                    .then(message => {
+                        const output = document.getElementById('output1');
+                        output.innerText = '';
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: "Importing data successfully!"
+                        });
+                    })
+                    .catch(error => console.error('Error:', error));
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please convert a CSV file first.'
+                });
+            }
+        }
+    </script>
+
+    <?php
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['csvData'])) {
+        $csvData = $_POST['csvData'];
+        $rows = str_getcsv($csvData, "\n");
+
+        // Database connection settings
+        $dbHost = 'localhost';
+        $dbName = 'wanawat_tracking';
+        $dbUser = 'root';
+        $dbPass = '';
+
+        try {
+            // Connect to the database
+            $pdo = new PDO("mysql:host=$dbHost;dbname=$dbName", $dbUser, $dbPass);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+            // Start a transaction
+            $pdo->beginTransaction();
+
+            foreach ($rows as $row) {
+                $data = str_getcsv($row);
+                if (count($data) === 6) { // Check if the row has all 6 columns
+                    $stmt = $pdo->prepare("INSERT INTO tb_header (bill_date, bill_number, bill_customer_id, bill_customer_name, bill_total, bill_isCanceled) VALUES (?, ?, ?, ?, ?, ?)");
+                    $stmt->execute($data);
+                }
             }
 
-            const formData = new FormData();
-            formData.append('csvData', convertedCSVData);
-
-            fetch('save_csv.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire('Success', 'Data imported to database successfully!', 'success');
-                } else {
-                    Swal.fire('Error', 'Failed to import data to database.', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                Swal.fire('Error', 'An error occurred while importing data.', 'error');
-            });
+            // Commit the transaction
+            $pdo->commit();
+        } catch (PDOException $e) {
+            // Rollback the transaction on error
+            $pdo->rollBack();
+            // Display an error message using SweetAlert2
+            echo '<script>
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "' . $e->getMessage() . '"
+                    });
+                  </script>';
         }
+    }
+    ?>
+
+    <script>
+        let convertedCSVData2; // Store converted CSV data globally
 
         function convertCSV2() {
             const fileInput = document.getElementById('csvFileInput2');
@@ -297,68 +355,94 @@
                         complete: function(results) {
                             // Filter out blank rows
                             const filteredData = results.data.filter(row => row.some(cell => cell.trim() !== ''));
-                            convertedCSVData = Papa.unparse(filteredData);
-                            document.getElementById('output2').innerText = convertedCSVData;
-                            Swal.fire('Success', 'CSV file converted successfully!', 'success');
-                        },
-                        encoding: 'windows-874'
+                            convertedCSVData2 = Papa.unparse(filteredData);
+                            document.getElementById('output2').innerText = convertedCSVData2;
+                        }
                     });
                 };
-                reader.readAsText(file);
+                reader.readAsText(file, 'windows-874');
             } else {
-                Swal.fire('Error', 'Please choose a CSV file first.', 'error');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please select a CSV file.'
+                });
             }
         }
 
         function importToDatabase2() {
-            if (!convertedCSVData) {
-                Swal.fire('Error', 'Please convert the CSV file first.', 'error');
-                return;
+            if (convertedCSVData2) {
+                const formData = new FormData();
+                formData.append('csvData2', convertedCSVData2); // Pass converted CSV data
+
+                fetch('', { // Use current file path
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.text())
+                    .then(message => {
+                        const output = document.getElementById('output2');
+                        output.innerText = '';
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: "Importing data successfully!"
+                        });
+                    })
+                    .catch(error => console.error('Error:', error));
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please convert a CSV file first.'
+                });
             }
-
-            const formData = new FormData();
-            formData.append('csvData', convertedCSVData);
-
-            fetch('save_csv.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire('Success', 'Data imported to database successfully!', 'success');
-                } else {
-                    Swal.fire('Error', 'Failed to import data to database.', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                Swal.fire('Error', 'An error occurred while importing data.', 'error');
-            });
         }
-
-        document.getElementById('csvFileInput1').addEventListener('change', function() {
-            const fileInputText1 = document.getElementById('fileInputText1');
-            const fileName = this.files[0] ? this.files[0].name : '&nbsp;Choose Head CSV File';
-            fileInputText1.textContent = fileName;
-            if (fileName !== '&nbsp;Choose Head CSV File') {
-                fileInputText1.classList.add('file-selected');
-            } else {
-                fileInputText1.classList.remove('file-selected');
-            }
-        });
-
-        document.getElementById('csvFileInput2').addEventListener('change', function() {
-            const fileInputText2 = document.getElementById('fileInputText2');
-            const fileName = this.files[0] ? this.files[0].name : '&nbsp;Choose Line CSV File';
-            fileInputText2.textContent = fileName;
-            if (fileName !== '&nbsp;Choose Line CSV File') {
-                fileInputText2.classList.add('file-selected');
-            } else {
-                fileInputText2.classList.remove('file-selected');
-            }
-        });
     </script>
+
+    <?php
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['csvData2'])) {
+        $csvData2 = $_POST['csvData2'];
+        $rows = str_getcsv($csvData2, "\n");
+
+        // Database connection settings
+        $dbHost = 'localhost';
+        $dbName = 'wanawat_tracking';
+        $dbUser = 'root';
+        $dbPass = '';
+
+        try {
+            // Connect to the database
+            $pdo = new PDO("mysql:host=$dbHost;dbname=$dbName", $dbUser, $dbPass);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+            // Start a transaction
+            $pdo->beginTransaction();
+
+            foreach ($rows as $row) {
+                $data2 = str_getcsv($row);
+                if (count($data2) === 8) { // Check if the row has all 8 columns
+                    $stmt = $pdo->prepare("INSERT INTO tb_line (line_bill_number, item_sequence, item_code, item_desc, item_quantity, item_unit, item_price, line_total) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                    $stmt->execute($data2);
+                }
+            }
+
+            // Commit the transaction
+            $pdo->commit();
+        } catch (PDOException $e) {
+            // Rollback the transaction on error
+            $pdo->rollBack();
+            // Display an error message using SweetAlert2
+            echo '<script>
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "' . $e->getMessage() . '"
+                    });
+                  </script>';
+        }
+    }
+    ?>
 </body>
 
 </html>

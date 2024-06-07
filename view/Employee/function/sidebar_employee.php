@@ -70,7 +70,8 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
         top: 0;
         left: 0;
         height: 100%;
-        width: 260px;
+        width: 300px;
+        /* Increased width */
         background: #F0592E;
         z-index: 100;
         transition: all 0.5s ease;
@@ -141,7 +142,7 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
     }
 
     .sidebar.close .nav-links li .iocn-link {
-        display: block
+        display: block;
     }
 
     .sidebar .nav-links li i {
@@ -251,7 +252,8 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
     .sidebar .profile-details {
         position: fixed;
         bottom: 0;
-        width: 260px;
+        width: 300px;
+        /* Increased width */
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -309,8 +311,10 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
         position: relative;
         background: #fff;
         height: 100vh;
-        left: 260px;
-        width: calc(100% - 260px);
+        left: 300px;
+        /* Adjusted to new sidebar width */
+        width: calc(100% - 300px);
+        /* Adjusted to new sidebar width */
         transition: all 0.5s ease;
         padding: 12px;
     }
@@ -369,6 +373,72 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
         }
 
         .sidebar.close~.home-section {
+            left: 78px;
+            width: calc(100% - 78px);
+        }
+    }
+
+    /* Adjustments for sidebar collapse */
+    .sidebar .logo-details .logo_name,
+    .sidebar .nav-links li .link_name,
+    .sidebar .profile-details .profile_name,
+    .sidebar .profile-details .job {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        transition: all 0.3s ease;
+    }
+
+    .sidebar .nav-links li .sub-menu {
+        padding: 6px 6px 14px 78px;
+    }
+
+    .sidebar .profile-details img {
+        height: 50px;
+        width: 50px;
+        border-radius: 50%;
+        margin: 0 10px;
+        transition: all 0.5s ease;
+    }
+
+    @media screen and (max-width: 768px) {
+        .sidebar {
+            width: 78px;
+        }
+
+        .sidebar .logo-details .logo_name,
+        .sidebar .nav-links li .link_name,
+        .sidebar .profile-details .profile_name,
+        .sidebar .profile-details .job {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .sidebar .profile-details img {
+            height: 40px;
+            width: 40px;
+            margin: 0;
+        }
+
+        .sidebar .nav-links li .sub-menu {
+            padding: 6px 6px 14px 65px;
+        }
+
+        .sidebar.close .logo-details .logo_name,
+        .sidebar.close .nav-links li .link_name,
+        .sidebar.close .profile-details .profile_name,
+        .sidebar.close .profile-details .job {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .sidebar.close .profile-details img {
+            height: 50px;
+            width: 50px;
+            margin: 0 14px 0 12px;
+        }
+
+        .home-section {
             left: 78px;
             width: calc(100% - 78px);
         }

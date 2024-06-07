@@ -1,3 +1,3 @@
 <?php 
-    header("Location: view/user/index");
+    header("Location: view/index");
 ?>
