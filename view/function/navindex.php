@@ -58,6 +58,7 @@ if (!empty($myprofile['user_img'])) {
     <style>
         .navbar.navbar-expand-lg.navbar-light .navbar-nav .nav-link {
             color: white !important;
+            font-weight: bold; /* เพิ่มความหนาของตัวอักษร */
         }
 
         .language-switcher {
@@ -138,8 +139,6 @@ if (!empty($myprofile['user_img'])) {
             .dropdown-menu {
                 position: absolute;
             }
-
-
         }
 
         @media (min-width: 992px) {

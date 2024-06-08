@@ -94,7 +94,7 @@ if (session_status() == PHP_SESSION_NONE) {
         top: 5px;
       }
       .language-switcher {
-        margin-left: 0;
+        margin-left: 10px;
       }
     }
   </style>
