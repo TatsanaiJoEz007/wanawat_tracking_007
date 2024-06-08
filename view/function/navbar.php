@@ -13,21 +13,26 @@ if (session_status() == PHP_SESSION_NONE) {
       from {
         transform: translateY(-100%);
       }
-
       to {
         transform: translateY(0);
       }
     }
 
-    .navbar.navbar-expand-lg.navbar-light .navbar-nav .nav-link {
+    .navbar {
+      background-color: #F0592E;
+    }
+
+    .navbar .navbar-nav .nav-link {
       color: white !important;
+      font-size: 16px;
+      font-weight: bold;
     }
 
     /* Style for language switcher icons */
     .language-switcher {
-      display: auto;
+      display: flex;
       align-items: center;
-      margin-left: 1250px;
+      margin-left: auto;
     }
 
     .language-switcher img {
@@ -41,38 +46,25 @@ if (session_status() == PHP_SESSION_NONE) {
     .navbar.fixed-top {
       animation: slideDown 0.5s forwards;
       background-color: #F0592E;
-      /* Change background color for fixed state */
-
     }
 
     .navbar-brand img {
       position: absolute;
-      /* Position the logo absolutely */
       left: 5%;
-
       margin-top: 10px;
-      /* Center the logo horizontally */
       transform: translate(-50%, 0);
-      /* Center the logo vertically */
       width: 120px;
-      /* Adjust the logo width as needed */
       height: auto;
-      /* Maintain aspect ratio */
       top: -10px;
-      /* Position the logo above the navbar */
       z-index: 9999;
-
       margin-right: 30px;
     }
 
     .navbar-nav {
       margin-left: 120px;
-      /* Make space for the logo */
     }
 
-
     /* Responsive logo width */
-    
     @media (max-width: 810px) {
       .navbar-brand img {
         width: 100px;
@@ -82,17 +74,14 @@ if (session_status() == PHP_SESSION_NONE) {
       .language-switcher {
         margin-left: 0;
       }
-      
     }
 
-    /* Responsive logo width */
     @media (max-width: 768px) {
       .navbar-brand img {
         width: 90px;
         left: 70px;
         top: 5px;
       }
-
       .language-switcher {
         margin-left: 0;
       }
@@ -104,7 +93,6 @@ if (session_status() == PHP_SESSION_NONE) {
         left: 70px;
         top: 5px;
       }
-
       .language-switcher {
         margin-left: 0;
       }
@@ -134,19 +122,17 @@ if (session_status() == PHP_SESSION_NONE) {
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               <?php echo $lang_login ?> / <?php echo $lang_register ?>
             </a>
-
             <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-              <li><a class="dropdown-item" href="../view/login"><?php echo $lang_login ?> </a></li>
-              <li><a class="dropdown-item" href="../view/register"><?php echo $lang_register ?></a></li>  
+              <li><a class="dropdown-item" href="../view/login"><?php echo $lang_login ?></a></li>
+              <li><a class="dropdown-item" href="../view/register"><?php echo $lang_register ?></a></li>
             </ul>
           </li>
-          <div class="language-switcher ">
-              <a href="?lang=th"><img src="../view/assets/img/logo/thai.png" alt="<?php echo $lang_th_language ?>"></a>
-              <a href="?lang=en"><img src="../view/assets/img/logo/eng.png" alt="<?php echo $lang_en_language ?>"></a>
-        </div>
         </ul>
+        <div class="language-switcher">
+          <a href="?lang=th"><img src="../view/assets/img/logo/thai.png" alt="<?php echo $lang_th_language ?>"></a>
+          <a href="?lang=en"><img src="../view/assets/img/logo/eng.png" alt="<?php echo $lang_en_language ?>"></a>
+        </div>
       </div>
-      
     </div>
   </nav>
 
@@ -155,7 +141,6 @@ if (session_status() == PHP_SESSION_NONE) {
     window.addEventListener('scroll', function() {
       const navbar = document.getElementById('navbar');
       const scrollY = window.scrollY;
-
       if (scrollY > 0) {
         navbar.classList.add('fixed-top');
       } else {
@@ -164,4 +149,4 @@ if (session_status() == PHP_SESSION_NONE) {
     });
   </script>
 
-  </body>
+</body>
