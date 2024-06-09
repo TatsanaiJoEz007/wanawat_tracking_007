@@ -9,10 +9,6 @@ if (!isset($_SESSION['login'])) {
     // echo '<script>location.href="login"</script>';
 }
 
-if (!isset($_SESSION['login'])) {
-    // echo '<script>location.href="login"</script>';
-}
-
 function Profilepic($conn, $userId)
 {
     $sql = "SELECT tb_user.*, 
@@ -113,6 +109,10 @@ if (!empty($myprofile['user_img'])) {
             transform: translateX(-50%);
         }
 
+        .navbar-right .dropdown-toggle::after {
+            color: #F0592E; /* เปลี่ยนสีของลูกศรใน dropdown */
+        }
+
         @media (max-width: 991px) {
             .navbar-brand img {
                 left: 60px;
@@ -165,6 +165,10 @@ if (!empty($myprofile['user_img'])) {
             right: 0;
             top: 100%;
             transform: translateX(-50%);
+        }
+
+        .navbar-right .dropdown-menu.show {
+            color: #F0592E; /* เปลี่ยนสีของ dropdown menu */
         }
     </style>
 
