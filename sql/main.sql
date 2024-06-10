@@ -87,3 +87,28 @@ CREATE TABLE IF NOT EXISTS tb_bill (
     
     PRIMARY KEY (bill_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS tb_delivery (
+    deli_id             INT                 AUTO_INCREMENT,
+    deli_item1         VARCHAR(255)                NOT NULL,
+    deli_item2         VARCHAR(255)                NOT NULL,
+    deli_item3         VARCHAR(255)                NOT NULL,
+    deli_item4         VARCHAR(255)                NOT NULL,
+    deli_item5         VARCHAR(255)                NOT NULL,
+    deli_item6         VARCHAR(255)                NOT NULL,
+    deli_item7         VARCHAR(255)                NOT NULL,
+    deli_item8         VARCHAR(255)                NOT NULL,
+    deli_item9         VARCHAR(255)                NOT NULL,
+    deli_item10        VARCHAR(255)                NOT NULL,
+    deli_item11        VARCHAR(255)                NOT NULL,
+    deli_item12        VARCHAR(255)                NOT NULL,
+    deli_item13        VARCHAR(255)                NOT NULL,
+    deli_item14        VARCHAR(255)                NOT NULL,
+    deli_item15        VARCHAR(255)                NOT NULL,
+    deli_status        VARCHAR(255)                NOT NULL,
+    item_status        VARCHAR(255)                NOT NULL,
+    create_at          TIMESTAMP           DEFAULT CURRENT_TIMESTAMP,
+   
+    PRIMARY KEY (deli_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

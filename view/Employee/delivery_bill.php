@@ -155,10 +155,13 @@
                         <?php
 
                         // Your SQL query
-                        $sql = "SELECT * 
-                        FROM tb_header
-                        INNER JOIN tb_line ON TRIM(tb_header.bill_number) = TRIM(tb_line.line_bill_number)
-                        WHERE tb_header.bill_status = 1 AND tb_line.line_status = 1"; // Added WHERE clause for filtering;
+                        $sql = "SELECT DISTINCT tb_header.bill_number, tb_header.bill_customer_name, 
+                                tb_line.item_code, tb_line.item_desc, tb_line.item_quantity, 
+                                tb_line.item_unit, tb_line.item_price, tb_line.line_total
+                                FROM tb_header
+                                INNER JOIN tb_line ON TRIM(tb_header.bill_number) = TRIM(tb_line.line_bill_number)
+                                WHERE tb_header.bill_status = 1 AND tb_line.line_status = 1";
+
 
                         $result = $conn->query($sql);
 
@@ -211,7 +214,6 @@
                         $conn->close();
                         ?>
 
-
                     </tbody>
                 </table>
             </div>
@@ -222,7 +224,7 @@
                 <!-- สินค้าที่เลือกจะปรากฏที่นี่ -->
             </ul>
             <hr>
-       
+
             <h7 class="cart-total">ราคารวม: <span id="total-price">฿0</span></h7>
             <button class="create-bill-btn" id="create-bill-btn">สร้างบิล</button>
         </div>
