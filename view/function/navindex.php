@@ -9,10 +9,6 @@ if (!isset($_SESSION['login'])) {
     // echo '<script>location.href="login"</script>';
 }
 
-if (!isset($_SESSION['login'])) {
-    // echo '<script>location.href="login"</script>';
-}
-
 function Profilepic($conn, $userId)
 {
     $sql = "SELECT tb_user.*, 
@@ -49,46 +45,81 @@ if (!empty($myprofile['user_img'])) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile Image</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        .navbar.navbar-expand-lg.navbar-light .navbar-nav .nav-link {
-            color: white !important;
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+            }
+
+            to {
+                transform: translateY(0);
+            }
         }
 
+        .navbar {
+            background-color: #F0592E;
+            padding: 10px 20px;
+            position: relative;
+            z-index: 1000;
+            /* High z-index to stay on top */
+        }
+
+        .navbar.navbar-expand-lg.navbar-light .navbar-nav .nav-link {
+            color: white !important;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .navbar .navbar-toggler {
+            border: none;
+        }
+
+        .navbar .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 1%29' stroke-width='2' linecap='round' linejoin='round' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+
+        /* Style for language switcher icons */
         .language-switcher {
             display: flex;
             align-items: center;
+            margin-left: auto;
         }
 
         .language-switcher img {
             width: 30px;
-            margin-left: 10px;
+            margin-left: 5px;
             cursor: pointer;
+            margin-top: 5px;
         }
 
+        /* New style for fixed navbar */
         .navbar.fixed-top {
-            background-color: #f9a825;
-            transition: background 0.3s ease-in-out;
+            animation: slideDown 0.5s forwards;
+            background-color: #F0592E;
         }
 
         .navbar-brand img {
-            position: absolute;
-            left: 5%;
-            transform: translate(-50%, 0);
-            width: 120px;
+            width: 90px;
             height: auto;
-            top: -10px;
-            z-index: 9999;
+            transition: width 0.3s;
+            position: absolute;
+            top: -1.9px;
+            left: 20px;
+            z-index: 1001;
+            /* Higher z-index than navbar */
         }
 
         .navbar-nav {
-            margin-left: 120px;
+            margin-left: 150px;
         }
 
+        /* Profile image style */
         .profile-image {
             width: 40px;
             height: 40px;
@@ -96,6 +127,7 @@ if (!empty($myprofile['user_img'])) {
             border: 1px solid white;
             margin-top: 8px;
             object-fit: fill;
+            cursor: pointer;
         }
 
         .navbar-right {
@@ -104,27 +136,129 @@ if (!empty($myprofile['user_img'])) {
             top: 8px;
         }
 
-        @media (max-width: 991px) {
+        .navbar-right .dropdown-menu {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 10px);
+            transform: translateX(-50%);
+        }
+
+        .navbar-right .dropdown-toggle::after {
+            color: #F0592E;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 810px) {
+            .navbar-brand img {
+                width: 100px;
+                top: 9px;
+                left: 10px;
+            }
+
+            .navbar-nav {
+                margin-left: 120px;
+            }
+
+            .dropdown-menu {
+                position: static;
+                /* Change to static for responsive view */
+                float: none;
+                margin: 0 auto;
+                /* Center align */
+                text-align: center;
+                /* Center align text */
+                top: auto;
+                /* Reset top */
+                transform: none;
+                /* Reset transform */
+                display: block;
+                /* Ensure dropdown is fully visible */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar-brand img {
+                width: 90px;
+                top: 9px;
+                left: 10px;
+            }
+
+            .navbar-nav {
+                margin-left: 100px;
+            }
+
+            .dropdown-menu {
+                position: static;
+                /* Change to static for responsive view */
+                float: none;
+                margin: 0 auto;
+                /* Center align */
+                text-align: center;
+                /* Center align text */
+                top: auto;
+                /* Reset top */
+                transform: none;
+                /* Reset transform */
+                display: block;
+                /* Ensure dropdown is fully visible */
+            }
+        }
+
+        @media (max-width: 576px) {
+            .navbar-brand img {
+                width: 70px;
+                top: 9px;
+                left: 5px;
+            }
+
+            .language-switcher {
+                margin-left: 0;
+                /* Reset margin-left */
+                margin-top: 10px;
+                /* Add margin-top to separate from other elements */
+                justify-content: center;
+                /* Center align the switcher */
+                width: 100%;
+                /* Full width to center align */
+                order: 1;
+                /* Ensure it appears first in flex order */
+            }
+
+            .navbar-nav {
+                margin-left: 0;
+                text-align: center;
+            }
+
             .navbar-right {
                 position: static;
                 margin-top: 10px;
                 display: flex;
                 justify-content: center;
                 align-items: center;
+                flex-direction: column;
+                width: 100%;
+                /* Full width to center align */
             }
 
-            .navbar-toggler {
-                clear: both;
-                margin-top: 10px;
+            .profile-image {
+                margin-bottom: 10px;
+                /* Separate profile image from dropdown */
             }
 
             .dropdown-menu {
-                position: absolute;
-            }
-            .navbar-brand img {
-                left: 65px;
-                margin-top: 1px;
-                transform: translate(-50%, 0);
+                position: static;
+                /* Change to static for responsive view */
+                float: none;
+                margin: 0 auto;
+                /* Center align */
+                text-align: center;
+                /* Center align text */
+                top: auto;
+                /* Reset top */
+                transform: none;
+                /* Reset transform */
+                display: block;
+                /* Ensure dropdown is fully visible */
             }
         }
 
@@ -153,8 +287,34 @@ if (!empty($myprofile['user_img'])) {
             top: 100%;
             transform: translateX(-50%);
         }
+
+        .navbar-right .dropdown-menu.show {
+            color: #F0592E;
+        }
+
+        .dropdown-menu {
+                position: static;
+                /* Change to static for responsive view */
+                float: none;
+                margin: 0 auto;
+                /* Center align */
+                text-align: center;
+                /* Center align text */
+                top: auto;
+                /* Reset top */
+                transform: none;
+                /* Reset transform */
+                display: block;
+                /* Ensure dropdown is fully visible */
+            }
     </style>
+
+
+
+
+
 </head>
+
 <body>
     <nav id="navbar" class="navbar navbar-expand-lg navbar-light bg-orange">
         <div class="container-fluid">
@@ -162,34 +322,29 @@ if (!empty($myprofile['user_img'])) {
                 <img src="../view/assets/img/logo/logo.png" width="65" height="52" alt="Logo">
             </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
-                aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page"
-                            href="../view/freqquestion"><?php echo $lang_question ?> </a>
+                        <a class="nav-link active" aria-current="page" href="../view/freqquestion"><?php echo $lang_question ?> </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="../view/contact"><?php echo $lang_contact ?></a>
                     </li>
                 </ul>
                 <div class="language-switcher">
-                    <a href="?lang=th"><img src="../view/assets/img/logo/thai.png"
-                            alt="<?php echo $lang_th_language ?>"></a>
-                    <a href="?lang=en"><img src="../view/assets/img/logo/eng.png"
-                            alt="<?php echo $lang_en_language ?>"></a>
+                    <a href="?lang=th"><img src="../view/assets/img/logo/thai.png" alt="<?php echo $lang_th_language ?>"></a>
+                    <a href="?lang=en"><img src="../view/assets/img/logo/eng.png" alt="<?php echo $lang_en_language ?>"></a>
                 </div>
                 <div class="navbar-right">
-                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown"
-                        aria-expanded="false">
+                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                         <img src="<?php echo $imageBase64; ?>" alt="Profile Image" class="profile-image">
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                         <li><a class="dropdown-item" href="../view/profile"><?php echo $lang_profile ?></a></li>
-                        <li><a class="dropdown-item" onclick="logout()" ><?php echo $lang_logout ?></a></li>
+                        <li><a class="dropdown-item" onclick="logout()"><?php echo $lang_logout ?></a></li>
                     </ul>
                 </div>
             </div>
@@ -197,7 +352,7 @@ if (!empty($myprofile['user_img'])) {
     </nav>
 
     <script>
-        window.addEventListener('scroll', function () {
+        window.addEventListener('scroll', function() {
             const navbar = document.getElementById('navbar');
             const scrollY = window.scrollY;
 
@@ -210,4 +365,5 @@ if (!empty($myprofile['user_img'])) {
     </script>
     <?php require_once('function/function_logout.php'); ?>
 </body>
+
 </html>

@@ -77,20 +77,16 @@
     }
 
     @media (max-width: 576px) {
-        .footer-content {
-            text-align: center;
-            flex-direction: column;
-        }
-
-        .social-icons {
-            margin-top: 20px;
-        }
-
-        .wedev-logo {
-            margin-top: 20px;
-            /* Adjust margin for smaller screens */
-        }
+    .footer-content {
+        text-align: center;
+        flex-direction: column;
     }
+
+    .wedev-logo {
+        margin: 20px auto; /* Center the logo horizontally */
+    }
+}
+
 </style>
 
 <body>
