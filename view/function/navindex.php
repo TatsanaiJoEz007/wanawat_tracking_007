@@ -121,6 +121,11 @@ if (!empty($myprofile['user_img'])) {
             .dropdown-menu {
                 position: absolute;
             }
+            .navbar-brand img {
+                left: 65px;
+                margin-top: 1px;
+                transform: translate(-50%, 0);
+            }
         }
 
         @media (min-width: 992px) {
