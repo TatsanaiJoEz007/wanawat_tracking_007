@@ -50,7 +50,7 @@ if (!empty($myprofile['user_img'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile Image</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
     <style>
         @keyframes slideDown {
             from {
@@ -98,224 +98,252 @@ if (!empty($myprofile['user_img'])) {
             margin-top: 5px;
         }
 
-        /* New style for fixed navbar */
-        .navbar.fixed-top {
-            animation: slideDown 0.5s forwards;
-            background-color: #F0592E;
-        }
+   /* New style for fixed navbar */
+.navbar.fixed-top {
+    animation: slideDown 0.5s forwards;
+    background-color: #F0592E;
+}
 
-        .navbar-brand img {
-            width: 90px;
-            height: auto;
-            transition: width 0.3s;
-            position: absolute;
-            top: -1.9px;
-            left: 20px;
-            z-index: 1001;
-            /* Higher z-index than navbar */
-        }
+.navbar-brand img {
+    width: 90px;
+    height: auto;
+    transition: width 0.3s;
+    position: absolute;
+    top: -1.9px;
+    left: 20px;
+    z-index: 1001;
+    /* Higher z-index than navbar */
+}
 
-        .navbar-nav {
-            margin-left: 150px;
-        }
+.navbar-nav {
+    margin-left: 150px;
+}
 
-        /* Profile image style */
-        .profile-image {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 1px solid white;
-            margin-top: 8px;
-            object-fit: fill;
-            cursor: pointer;
-        }
+/* Profile image style */
+.profile-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid white;
+    margin-top: 8px;
+    object-fit: fill;
+    cursor: pointer;
+}
 
-        .navbar-right {
-            position: absolute;
-            right: 20px;
-            top: 8px;
-        }
+.navbar-right {
+    position: absolute;
+    right: 20px;
+    top: 8px;
+}
 
-        .navbar-right .dropdown-menu {
-            position: absolute;
-            right: 0;
-            top: calc(100% + 10px);
-            transform: translateX(-50%);
-        }
+/* CSS-only dropdown menu */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
 
-        .navbar-right .dropdown-toggle::after {
-            color: #F0592E;
-        }
+.dropdown-toggle {
+    cursor: pointer;
+}
 
-        /* Responsive adjustments */
-        @media (max-width: 810px) {
-            .navbar-brand img {
-                width: 100px;
-                top: 9px;
-                left: 10px;
-            }
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 10px);
+    transform: translateX(-50%);
+    background-color: #F0592E;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
 
-            .navbar-nav {
-                margin-left: 120px;
-            }
+.dropdown-menu a {
+    color: white;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
 
-            .dropdown-menu {
-                position: static;
-                /* Change to static for responsive view */
-                float: none;
-                margin: 0 auto;
-                /* Center align */
-                text-align: center;
-                /* Center align text */
-                top: auto;
-                /* Reset top */
-                transform: none;
-                /* Reset transform */
-                display: block;
-                /* Ensure dropdown is fully visible */
-            }
-        }
+.dropdown-menu a:hover {
+    background-color: #ddd;
+    color: black;
+}
 
-        @media (max-width: 768px) {
-            .navbar-brand img {
-                width: 90px;
-                top: 9px;
-                left: 10px;
-            }
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
 
-            .navbar-nav {
-                margin-left: 100px;
-            }
+/* Responsive adjustments */
+@media (max-width: 810px) {
+    .navbar-brand img {
+        width: 100px;
+        top: 9px;
+        left: 10px;
+    }
 
-            .dropdown-menu {
-                position: static;
-                /* Change to static for responsive view */
-                float: none;
-                margin: 0 auto;
-                /* Center align */
-                text-align: center;
-                /* Center align text */
-                top: auto;
-                /* Reset top */
-                transform: none;
-                /* Reset transform */
-                display: block;
-                /* Ensure dropdown is fully visible */
-            }
-        }
+    .navbar-nav {
+        margin-left: 120px;
+    }
 
-        @media (max-width: 576px) {
-            .navbar-brand img {
-                width: 70px;
-                top: 9px;
-                left: 5px;
-            }
+    .dropdown-menu {
+        position: static;
+        /* Change to static for responsive view */
+        float: none;
+        margin: 0 auto;
+        /* Center align */
+        text-align: center;
+        /* Center align text */
+        top: auto;
+        /* Reset top */
+        transform: none;
+        /* Reset transform */
+        display: block;
+        /* Ensure dropdown is fully visible */
+        color: black !important;
+    }
+}
 
-            .language-switcher {
-                margin-left: 0;
-                /* Reset margin-left */
-                margin-top: 10px;
-                /* Add margin-top to separate from other elements */
-                justify-content: center;
-                /* Center align the switcher */
-                width: 100%;
-                /* Full width to center align */
-                order: 1;
-                /* Ensure it appears first in flex order */
-            }
+@media (max-width: 768px) {
+    .navbar-brand img {
+        width: 90px;
+        top: 9px;
+        left: 10px;
+    }
 
-            .navbar-nav {
-                margin-left: 0;
-                text-align: center;
-            }
+    .navbar-nav {
+        margin-left: 100px;
+    }
 
-            .navbar-right {
-                position: static;
-                margin-top: 10px;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                flex-direction: column;
-                width: 100%;
-                /* Full width to center align */
-            }
+    .dropdown-menu {
+        position: static;
+        /* Change to static for responsive view */
+        float: none;
+        margin: 0 auto;
+        /* Center align */
+        text-align: center;
+        /* Center align text */
+        top: auto;
+        /* Reset top */
+        transform: none;
+        /* Reset transform */
+        display: block;
+        /* Ensure dropdown is fully visible */
+        color: black !important; /* Set font color to black */
+    }
+}
 
-            .profile-image {
-                margin-bottom: 10px;
-                /* Separate profile image from dropdown */
-            }
+@media (max-width: 576px) {
+    .navbar-brand img {
+        width: 70px;
+        top: 9px;
+        left: 5px;
+    }
 
-            .dropdown-menu {
-                position: static;
-                /* Change to static for responsive view */
-                float: none;
-                margin: 0 auto;
-                /* Center align */
-                text-align: center;
-                /* Center align text */
-                top: auto;
-                /* Reset top */
-                transform: none;
-                /* Reset transform */
-                display: block;
-                /* Ensure dropdown is fully visible */
-            }
-        }
+    .language-switcher {
+        margin-left: 0;
+        /* Reset margin-left */
+        margin-top: 10px;
+        /* Add margin-top to separate from other elements */
+        justify-content: center;
+        /* Center align the switcher */
+        width: 100%;
+        /* Full width to center align */
+        order: 1;
+        /* Ensure it appears first in flex order */
+    }
 
-        @media (min-width: 992px) {
-            .navbar-right {
-                position: absolute;
-                right: 20px;
-                top: 0px;
-            }
-        }
+    .navbar-nav {
+        margin-left: 0;
+        text-align: center;
+    }
 
-        .language-switcher {
-            display: flex;
-            align-items: center;
-            margin-right: 75px;
-        }
+    .navbar-right {
+        position: static;
+        margin-top: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        width: 100%;
+        /* Full width to center align */
+    }
 
-        .language-switcher img {
-            width: 30px;
-            cursor: pointer;
-        }
+    .profile-image {
+        margin-bottom: 10px;
+        /* Separate profile image from dropdown */
+    }
 
-        .navbar-right .dropdown-menu {
-            position: absolute;
-            right: 0;
-            top: 100%;
-            transform: translateX(-50%);
-        }
+    .dropdown-menu {
+        position: static;
+        /* Change to static for responsive view */
+        float: none;
+        margin: 0 auto;
+        /* Center align */
+        text-align: center;
+        /* Center align text */
+        top: auto;
+        /* Reset top */
+        transform: none;
+        /* Reset transform */
+        display: block;
+        /* Ensure dropdown is fully visible */
+        color: black !important; /* Set font color to black */
+    }
+}
 
-        .navbar-right .dropdown-menu.show {
-            color: #F0592E;
-        }
+@media (min-width: 992px) {
+    .navbar-right {
+        position: absolute;
+        right: 20px;
+        top: 0px;
+    }
+}
 
-        .dropdown-menu {
-                position: static;
-                /* Change to static for responsive view */
-                float: none;
-                margin: 0 auto;
-                /* Center align */
-                text-align: center;
-                /* Center align text */
-                top: auto;
-                /* Reset top */
-                transform: none;
-                /* Reset transform */
-                display: block;
-                /* Ensure dropdown is fully visible */
-            }
+.language-switcher {
+    display: flex;
+    align-items: center;
+    margin-right: 75px;
+}
+
+.language-switcher img {
+    width: 30px;
+    cursor: pointer;
+}
+
+.navbar-right .dropdown-menu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    transform: translateX(-50%);
+}
+
+.navbar-right .dropdown-menu.show {
+    color: #F0592E;
+}
+
+.dropdown-menu {
+    position: static;
+    /* Change to static for responsive view */
+    float: none;
+    margin: 0 auto;
+    /* Center align */
+    text-align: center;
+    /* Center align text */
+    top: auto;
+    /* Reset top */
+    transform: none;
+    /* Reset transform */
+    display: block;
+    /* Ensure dropdown is fully visible */
+    color: black !important;
+}
     </style>
-
-
-
-
 
 </head>
 
 <body>
+    
     <nav id="navbar" class="navbar navbar-expand-lg navbar-light bg-orange">
         <div class="container-fluid">
             <a class="navbar-brand" href="../view/mainpage">
@@ -339,13 +367,13 @@ if (!empty($myprofile['user_img'])) {
                     <a href="?lang=en"><img src="../view/assets/img/logo/eng.png" alt="<?php echo $lang_en_language ?>"></a>
                 </div>
                 <div class="navbar-right">
-                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="<?php echo $imageBase64; ?>" alt="Profile Image" class="profile-image">
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                        <li><a class="dropdown-item" href="../view/profile"><?php echo $lang_profile ?></a></li>
-                        <li><a class="dropdown-item" onclick="logout()"><?php echo $lang_logout ?></a></li>
-                    </ul>
+                    <div class="dropdown">
+                        <img src="<?php echo $imageBase64; ?>" alt="Profile Image" class="profile-image dropdown-toggle">
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="../view/profile"><?php echo $lang_profile ?></a></li>
+                            <li><a class="dropdown-item" onclick="logout()"><?php echo $lang_logout ?></a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -363,6 +391,7 @@ if (!empty($myprofile['user_img'])) {
             }
         });
     </script>
+
     <?php require_once('function/function_logout.php'); ?>
 </body>
 
