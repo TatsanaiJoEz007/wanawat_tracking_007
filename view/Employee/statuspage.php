@@ -1,3 +1,5 @@
+
+
 <?php
 // db.php
 
@@ -23,11 +25,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['selected_items'])) {
 
     // Insert data into tb_delivery table
     $deliveryNumber = generateDeliveryNumber(); // You need to implement this function
-    $truckId = "TRK001"; // Example truck ID, you need to fetch this from somewhere
     $deliveryDate = date("Y-m-d H:i:s");
 
-    $deliveryInsertSql = "INSERT INTO tb_delivery (delivery_number, delivery_truck_id, delivery_date) 
-                          VALUES ('$deliveryNumber', '$truckId', '$deliveryDate')";
+    $deliveryInsertSql = "INSERT INTO tb_delivery (delivery_number, delivery_date) 
+                          VALUES ('$deliveryNumber', '$deliveryDate')";
 
     if ($conn->query($deliveryInsertSql) === TRUE) {
         $deliveryId = $conn->insert_id;
@@ -35,13 +36,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['selected_items'])) {
         // Insert data into tb_delivery_items table
         foreach ($selectedItems as $item) {
             $billNumber = $item['billnum']; // Assuming the name field contains the bill number
-            $desc = $item['name']; // Assuming the desc field contains the item description
-            // $lineId = $item['']; // Assuming you have a line ID associated with each item
-
+            $billCus = $item['billcus']; // Assuming the name field contains the bill customer name
+            $itemcode = $item['itemcode']; // Assuming the name field contains the item code
+            $name = $item['name']; // Assuming the name field contains the item description
+            $quantity = $item['quantity']; // Assuming the name field contains the item quantity
+            $unit = $item['unit']; // Assuming the name field contains the item unit
+            $price = $item['price']; // Assuming the name field contains the item price
+            $total = $item['total']; // Assuming the name field contains the line total
+            
             // Other fields to insert, like quantity, can be extracted from $item as needed
 
-            $deliveryItemsInsertSql = "INSERT INTO tb_delivery_items (delivery_id, bill_number, item_desc ,  line_id, quantity) 
-                                       VALUES ('$deliveryId', '$billNumber','$desc' , '1111', '1')"; // You need to adjust the quantity value as needed
+            $deliveryItemsInsertSql = "INSERT INTO tb_delivery_items (delivery_id, bill_number, bill_customer_name , item_code , item_desc , item_quantity , item_unit , item_price , line_total) 
+                                       VALUES ('$deliveryId', '$billNumber','$billCus' , '$itemcode', '$name' , '$quantity' , '$unit' , '$price' , '$total')"; // You need to adjust the quantity value as needed
 
             $conn->query($deliveryItemsInsertSql);
         }
@@ -58,7 +64,7 @@ $conn->close();
 
 // Function to generate a unique delivery number
 function generateDeliveryNumber() {
-    // Implement your logic to generate a unique delivery number, for example:
-    return "DEPYL" . date("YmdHis");
+    return "WDL" . date("mds") . rand(0 , 99) . "TH" ;
 }
+
 ?>

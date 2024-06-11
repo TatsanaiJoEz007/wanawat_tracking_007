@@ -232,9 +232,18 @@
                                 echo "<td>" . $item["item_unit"] . "</td>";
                                 echo "<td>" . $item["item_price"] . "</td>";
                                 echo "<td>" . $item["line_total"] . "</td>";
-                                echo "<td><center><input type='checkbox' class='product-checkbox' data-name='"
-                                    . $item["item_desc"] . "' data-price='" . $item["line_total"] . "' data-unit='"
-                                    . $item["item_unit"] . "' data-bill-number='" . $row["bill_number"] . "'></center></td>";
+                                echo "<td><center><input type='checkbox' class='product-checkbox' 
+
+                                    data-bill-number='" . $row["bill_number"] . "'
+                                    data-bill-customer= '" . $row["bill_customer_name"] . "'
+                                    data-item-code= '" . $item["item_code"] . "'
+                                    data-name='" . $item["item_desc"] . "' 
+                                    data-quantity= '" . $item["item_quantity"] . "'
+                                    data-unit='". $item["item_unit"] . "' 
+                                    data-price='" . $item["item_price"] . "'
+                                    data-total='" . $item["line_total"] . "' 
+
+                                    ></center></td>";
                                 echo "</tr>";
                             }
                         }
@@ -276,10 +285,14 @@
                     return;
                 }
 
-                const name = checkbox.getAttribute('data-name');
-                const price = checkbox.getAttribute('data-price');
-                const unit = checkbox.getAttribute('data-unit');
                 const billnum = checkbox.getAttribute('data-bill-number');
+                const billcus = checkbox.getAttribute('data-bill-customer');
+                const itemcode = checkbox.getAttribute('data-item-code');
+                const name = checkbox.getAttribute('data-name');
+                const quantity = checkbox.getAttribute('data-quantity');
+                const unit = checkbox.getAttribute('data-unit');
+                const price = checkbox.getAttribute('data-price');
+                const total = checkbox.getAttribute('data-total');
 
                 if (checkbox.checked) {
                     const li = document.createElement('li');
@@ -294,7 +307,11 @@
                         name,
                         price,
                         unit,
-                        billnum
+                        billnum,
+                        itemcode,
+                        quantity,
+                        total,
+                        billcus
                     });
                 } else {
                     cartItems.querySelectorAll('.cart-item').forEach(item => {
