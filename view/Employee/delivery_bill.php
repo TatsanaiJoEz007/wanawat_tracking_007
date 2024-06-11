@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeliveryBill</title>
+    <title>Delivery Bill</title>
+    <!-- //mockup stuff fix it later broooo -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -109,6 +110,31 @@
         .create-bill-btn:hover {
             background-color: #45a049;
         }
+
+        ::-webkit-scrollbar {
+            width: 9px;
+            /* Adjust width for vertical scrollbar */
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #FF5722;
+            /* Color for scrollbar thumb */
+            border-radius: 10px;
+            /* Rounded corners for scrollbar thumb */
+        }
+
+        .home-section {
+            max-height: 100vh;
+            /* Adjust height as needed */
+            overflow-y: auto;
+            /* Allow vertical scroll */
+            overflow-x: hidden;
+            /* Prevent horizontal scroll */
+            padding: 20px;
+            background-color: #f9f9f9;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -206,7 +232,9 @@
                                 echo "<td>" . $item["item_unit"] . "</td>";
                                 echo "<td>" . $item["item_price"] . "</td>";
                                 echo "<td>" . $item["line_total"] . "</td>";
-                                echo "<td><center><input type='checkbox' class='product-checkbox' data-name='" . $item["item_desc"] . "' data-price='" . $item["line_total"] . "' data-unit='" . $item["item_unit"] . "'></center></td>";
+                                echo "<td><center><input type='checkbox' class='product-checkbox' data-name='"
+                                    . $item["item_desc"] . "' data-price='" . $item["line_total"] . "' data-unit='"
+                                    . $item["item_unit"] . "' data-bill-number='" . $row["bill_number"] . "'></center></td>";
                                 echo "</tr>";
                             }
                         }
@@ -238,6 +266,7 @@
         const createBillBtn = document.getElementById('create-bill-btn');
         let itemCounter = 1;
         const maxItems = 15;
+        let selectedItems = []; // Array to store selected items
 
         checkboxes.forEach(checkbox => {
             checkbox.addEventListener('change', () => {
@@ -250,6 +279,7 @@
                 const name = checkbox.getAttribute('data-name');
                 const price = checkbox.getAttribute('data-price');
                 const unit = checkbox.getAttribute('data-unit');
+                const billnum = checkbox.getAttribute('data-bill-number');
 
                 if (checkbox.checked) {
                     const li = document.createElement('li');
@@ -259,6 +289,13 @@
                     li.setAttribute('data-unit', unit);
                     cartItems.appendChild(li);
                     itemCounter++; // Increment the counter
+                    // Add the selected item to the array
+                    selectedItems.push({
+                        name,
+                        price,
+                        unit,
+                        billnum
+                    });
                 } else {
                     cartItems.querySelectorAll('.cart-item').forEach(item => {
                         if (item.textContent.includes(name)) {
@@ -270,6 +307,8 @@
                             });
                         }
                     });
+                    // Remove the unselected item from the array
+                    selectedItems = selectedItems.filter(item => item.name !== name);
                 }
 
                 calculateTotal();
@@ -277,29 +316,37 @@
         });
 
         createBillBtn.addEventListener('click', () => {
-            const selectedItems = [];
-            const items = cartItems.querySelectorAll('.cart-item');
-            items.forEach(item => {
-                const name = item.textContent.split(' - ')[0];
-                const price = item.getAttribute('data-price');
-                const unit = item.textContent.split(' - ')[2];
-                selectedItems.push({
-                    name,
-                    price,
-                    unit
-                });
+            // Prepare the summary message
+            let summary = '<ul>';
+            selectedItems.forEach(item => {
+                summary += `<li>${item.name} - ฿${item.price} - ${item.unit}</li>`;
             });
-            const selectedItemsJSON = JSON.stringify(selectedItems);
-            const form = document.createElement('form');
-            form.setAttribute('method', 'POST');
-            form.setAttribute('action', 'statuspage.php');
-            const hiddenField = document.createElement('input');
-            hiddenField.setAttribute('type', 'hidden');
-            hiddenField.setAttribute('name', 'selected_items');
-            hiddenField.setAttribute('value', selectedItemsJSON);
-            form.appendChild(hiddenField);
-            document.body.appendChild(form);
-            form.submit();
+            summary += '</ul>';
+
+            // Show the SweetAlert with the summary
+            Swal.fire({
+                title: 'ยืนยันการสร้างบิล',
+                html: 'คุณแน่ใจหรือไม่ที่ต้องการสร้างบิลดังต่อไปนี้:<br>' + summary,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'ยืนยัน',
+                cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Proceed with form submission
+                    const selectedItemsJSON = JSON.stringify(selectedItems);
+                    const form = document.createElement('form');
+                    form.setAttribute('method', 'POST');
+                    form.setAttribute('action', 'statuspage.php');
+                    const hiddenField = document.createElement('input');
+                    hiddenField.setAttribute('type', 'hidden');
+                    hiddenField.setAttribute('name', 'selected_items');
+                    hiddenField.setAttribute('value', selectedItemsJSON);
+                    form.appendChild(hiddenField);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
         });
 
         function calculateTotal() {
@@ -313,10 +360,9 @@
             totalPriceElement.textContent = `฿${totalPrice}`;
         }
 
-
-
         document.addEventListener('DOMContentLoaded', calculateTotal);
     </script>
+
 
 
 </body>

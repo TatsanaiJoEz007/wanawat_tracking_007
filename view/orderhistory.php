@@ -84,22 +84,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="text-center">
-                                    <?php
-                                    $i = 1;
-                                    $sql = "SELECT * FROM tb_user WHERE user_type = 999 ";
-                                    $query = $conn->query($sql);
-                                    foreach ($query as $row):
-                                        ?>
-                                        <tr>
-                                            <td><?php echo $i++; ?></td>
-                                            <td class="align-middle"><img src="<?php echo $row['user_img']; ?>"
-                                                    alt="User Image" style="width: 50px; height: auto;"></td>
-                                            <td class="align-middle"><?php echo $row['user_firstname'] ?></td>
-                                            <td class="align-middle"><?php echo $row['user_lastname'] ?></td>
-                                            <td class="align-middle"><?php echo $row['user_email'] ?></td>
 
-                                        </tr>
-                                    <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>

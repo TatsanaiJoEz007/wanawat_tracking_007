@@ -344,7 +344,7 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
     font-weight: 600;
   }
 
-  @media screen and (max-width: 400px) {
+  @media screen and (max-width: 320px) {
     .sidebar {
       width: 240px;
     }

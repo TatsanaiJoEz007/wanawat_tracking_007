@@ -255,8 +255,8 @@ if (!empty($myprofile['user_img'])) {
                 <div class="profile-dropdown">
                     <img src="<?php echo $imageBase64; ?>" alt="Profile" class="profile-icon" onclick="toggleDropdown(event)">
                     <div class="dropdown-menu">
-                        <a href="profile.php">Profile</a>
-                        <a onclick="logout()">Logout</a>
+                        <a href="profile.php"><?php echo $lang_profile ?></a>
+                        <a onclick="logout()"><?php echo $lang_logout?></a>
                     </div>
                 </div>
                 <div class="language-switcher">

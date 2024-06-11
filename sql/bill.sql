@@ -41,3 +41,28 @@ CREATE TABLE IF NOT EXISTS tb_line {
     PRIMARY KEY (line_id),
     FOREIGN KEY (line_bill_number) REFERENCES tb_header(bill_number)
 }ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+
+-- Create tb_delivery table ไว้เก็บข้อมูลการส่งสินค้า
+CREATE TABLE IF NOT EXISTS tb_delivery (
+    delivery_id         int(11)         NOT NULL AUTO_INCREMENT,
+    delivery_number     VARCHAR(255)    CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+    delivery_truck_id   VARCHAR(255)    CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+    delivery_date       TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    delivery_status     int(11)         NOT NULL DEFAULT 1,
+    PRIMARY KEY (delivery_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+-- Create tb_delivery_items table ไว้เก็บไอเท็มที่จะส่ง
+CREATE TABLE IF NOT EXISTS tb_delivery_items (
+    delivery_item_id    int(11)         NOT NULL AUTO_INCREMENT,
+    delivery_id         int(11)         NOT NULL,
+    bill_number         VARCHAR(255)    CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+    line_id             int(11)         NOT NULL,
+    quantity            VARCHAR(255)    CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+    PRIMARY KEY (delivery_item_id),
+    FOREIGN KEY (delivery_id) REFERENCES tb_delivery(delivery_id),
+    FOREIGN KEY (bill_number) REFERENCES tb_header(bill_number),
+    FOREIGN KEY (line_id) REFERENCES tb_line(line_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+

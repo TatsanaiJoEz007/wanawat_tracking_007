@@ -73,6 +73,28 @@
 
     }
 
+    ::-webkit-scrollbar {
+    width: 9px; /* Adjust width for vertical scrollbar */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #FF5722; /* Color for scrollbar thumb */
+    border-radius: 10px; /* Rounded corners for scrollbar thumb */
+}
+
+.home-section {
+            max-height: 100vh;
+            /* Adjust height as needed */
+            overflow-y: auto;
+            /* Allow vertical scroll */
+            overflow-x: hidden;
+            /* Prevent horizontal scroll */
+            padding: 20px;
+            background-color: #f9f9f9;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
     @media only screen and (max-width: 600px) {
         .container {
             margin: 15px auto;
