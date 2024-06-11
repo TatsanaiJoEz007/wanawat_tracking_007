@@ -12,6 +12,7 @@ if (session_status() == PHP_SESSION_NONE) {
     from {
       transform: translateY(-100%);
     }
+
     to {
       transform: translateY(0);
     }
@@ -21,7 +22,8 @@ if (session_status() == PHP_SESSION_NONE) {
     background-color: #F0592E;
     padding: 10px 20px;
     position: relative;
-    z-index: 1000; /* High z-index to stay on top */
+    z-index: 1000;
+    /* High z-index to stay on top */
   }
 
   .navbar .navbar-nav .nav-link {
@@ -65,7 +67,8 @@ if (session_status() == PHP_SESSION_NONE) {
     position: absolute;
     top: -1.9px;
     left: 20px;
-    z-index: 1001; /* Higher z-index than navbar */
+    z-index: 1001;
+    /* Higher z-index than navbar */
   }
 
   .navbar-nav {
@@ -75,12 +78,28 @@ if (session_status() == PHP_SESSION_NONE) {
   /* Responsive adjustments */
   @media (max-width: 810px) {
     .navbar-brand img {
-      width: 100px;
+      width: 70px;
       top: 9px;
-      left: 10px;
+      left: 5px;
     }
+
+    .language-switcher {
+      margin-left: -8px;
+      margin-top: 10px;
+      justify-content: center;
+      width: 100%;
+      order: 1;
+    }
+
     .navbar-nav {
-      margin-left: 120px;
+      margin-left: 0;
+      text-align: center;
+    }
+
+    .profile-dropdown {
+      max-width: fit-content;
+      margin-left: 367px;
+      margin-right: auto;
     }
   }
 
@@ -90,6 +109,7 @@ if (session_status() == PHP_SESSION_NONE) {
       top: 9px;
       left: 10px;
     }
+
     .navbar-nav {
       margin-left: 100px;
     }
@@ -101,64 +121,71 @@ if (session_status() == PHP_SESSION_NONE) {
       top: 9px;
       left: 5px;
     }
+
     .language-switcher {
-      margin-left: 10px;
+      margin-left: 0;
+      margin-top: 10px;
+      justify-content: center;
+      width: 100%;
+      order: 1;
     }
+
     .navbar-nav {
       margin-left: 0;
       text-align: center;
     }
+
   }
 </style>
 </head>
 
 <body>
 
-<nav id="navbar" class="navbar navbar-expand-lg navbar-light bg-orange">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="../view/index">
-      <img src="../view/assets/img/logo/logo.png" alt="Logo">
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNavDropdown">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="../view/freqquestion_main"><?php echo $lang_question ?> ?</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="../view/contact_main"><?php echo $lang_contact ?></a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <?php echo $lang_login ?> / <?php echo $lang_register ?>
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-            <li><a class="dropdown-item" href="../view/login"><?php echo $lang_login ?></a></li>
-            <li><a class="dropdown-item" href="../view/register"><?php echo $lang_register ?></a></li>
-          </ul>
-        </li>
-      </ul>
-      <div class="language-switcher">
-        <a href="?lang=th"><img src="../view/assets/img/logo/thai.png" alt="<?php echo $lang_th_language ?>"></a>
-        <a href="?lang=en"><img src="../view/assets/img/logo/eng.png" alt="<?php echo $lang_en_language ?>"></a>
+  <nav id="navbar" class="navbar navbar-expand-lg navbar-light bg-orange">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="../view/index">
+        <img src="../view/assets/img/logo/logo.png" alt="Logo">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="../view/freqquestion_main"><?php echo $lang_question ?> ?</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../view/contact_main"><?php echo $lang_contact ?></a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <?php echo $lang_login ?> / <?php echo $lang_register ?>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <li><a class="dropdown-item" href="../view/login"><?php echo $lang_login ?></a></li>
+              <li><a class="dropdown-item" href="../view/register"><?php echo $lang_register ?></a></li>
+            </ul>
+          </li>
+        </ul>
+        <div class="language-switcher">
+          <a href="?lang=th"><img src="../view/assets/img/logo/thai.png" alt="<?php echo $lang_th_language ?>"></a>
+          <a href="?lang=en"><img src="../view/assets/img/logo/eng.png" alt="<?php echo $lang_en_language ?>"></a>
+        </div>
       </div>
     </div>
-  </div>
-</nav>
+  </nav>
 
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-beta1/js/bootstrap.bundle.min.js"></script>
-<script>
-  window.addEventListener('scroll', function() {
-    const navbar = document.getElementById('navbar');
-    const scrollY = window.scrollY;
-    if (scrollY > 0) {
-      navbar.classList.add('fixed-top');
-    } else {
-      navbar.classList.remove('fixed-top');
-    }
-  });
-</script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-beta1/js/bootstrap.bundle.min.js"></script>
+  <script>
+    window.addEventListener('scroll', function() {
+      const navbar = document.getElementById('navbar');
+      const scrollY = window.scrollY;
+      if (scrollY > 0) {
+        navbar.classList.add('fixed-top');
+      } else {
+        navbar.classList.remove('fixed-top');
+      }
+    });
+  </script>
 
 </body>

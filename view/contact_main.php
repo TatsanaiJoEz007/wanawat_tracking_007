@@ -35,11 +35,13 @@ session_start();
 <br>
 <br>
 <br>
-    <footer>
-        <?php require_once('function/footer.php'); ?>
-    </footer>
+
 
     <script src="https://fastly.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
+<footer>
+        <?php require_once('function/footer.php'); ?>
+</footer>
 
 </html>

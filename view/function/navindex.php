@@ -56,6 +56,7 @@ if (!empty($myprofile['user_img'])) {
             from {
                 transform: translateY(-100%);
             }
+
             to {
                 transform: translateY(0);
             }
@@ -66,9 +67,7 @@ if (!empty($myprofile['user_img'])) {
             padding: 10px 20px;
             position: relative;
             z-index: 1000;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            /* High z-index to stay on top */
         }
 
         .navbar .navbar-nav .nav-link {
@@ -106,6 +105,11 @@ if (!empty($myprofile['user_img'])) {
             width: 90px;
             height: auto;
             transition: width 0.3s;
+            position: absolute;
+            top: -1.9px;
+            left: 20px;
+            z-index: 1001;
+            /* Higher z-index than navbar */
         }
 
         .navbar-nav {
@@ -114,17 +118,38 @@ if (!empty($myprofile['user_img'])) {
 
         @media (max-width: 810px) {
             .navbar-brand img {
-                width: 100px;
+                width: 70px;
+                top: 9px;
+                left: 5px;
             }
+
+            .language-switcher {
+                margin-left: -8px;
+                margin-top: 10px;
+                justify-content: center;
+                width: 100%;
+                order: 1;
+            }
+
             .navbar-nav {
-                margin-left: 120px;
+                margin-left: 0;
+                text-align: center;
+            }
+
+            .profile-dropdown {
+                max-width: fit-content;
+                margin-left: 367px;
+                margin-right: auto;
             }
         }
 
         @media (max-width: 768px) {
             .navbar-brand img {
                 width: 90px;
+                top: 9px;
+                left: 10px;
             }
+
             .navbar-nav {
                 margin-left: 100px;
             }
@@ -133,7 +158,10 @@ if (!empty($myprofile['user_img'])) {
         @media (max-width: 576px) {
             .navbar-brand img {
                 width: 70px;
+                top: 9px;
+                left: 5px;
             }
+
             .language-switcher {
                 margin-left: 0;
                 margin-top: 10px;
@@ -141,9 +169,16 @@ if (!empty($myprofile['user_img'])) {
                 width: 100%;
                 order: 1;
             }
+
             .navbar-nav {
                 margin-left: 0;
                 text-align: center;
+            }
+
+            .profile-dropdown {
+                max-width: fit-content;
+                margin-left: 173px;
+                margin-right: auto;
             }
         }
 
@@ -220,8 +255,8 @@ if (!empty($myprofile['user_img'])) {
                 <div class="profile-dropdown">
                     <img src="<?php echo $imageBase64; ?>" alt="Profile" class="profile-icon" onclick="toggleDropdown(event)">
                     <div class="dropdown-menu">
-                        <a href="#profile">Profile</a>
-                        <a href="#logout">Logout</a>
+                        <a href="profile.php">Profile</a>
+                        <a onclick="logout()">Logout</a>
                     </div>
                 </div>
                 <div class="language-switcher">
@@ -233,7 +268,7 @@ if (!empty($myprofile['user_img'])) {
     </nav>
 
     <script>
-        window.addEventListener('scroll', function () {
+        window.addEventListener('scroll', function() {
             const navbar = document.getElementById('navbar');
             const scrollY = window.scrollY;
 
@@ -249,7 +284,7 @@ if (!empty($myprofile['user_img'])) {
             const dropdown = document.querySelector('.profile-dropdown');
             const menu = dropdown.querySelector('.dropdown-menu');
             dropdown.classList.toggle('active');
-            
+
             // Adjust dropdown position if it overflows the viewport
             const rect = menu.getBoundingClientRect();
             if (rect.right > window.innerWidth) {
@@ -261,7 +296,7 @@ if (!empty($myprofile['user_img'])) {
             }
         }
 
-        document.addEventListener('click', function (e) {
+        document.addEventListener('click', function(e) {
             const dropdown = document.querySelector('.profile-dropdown');
             if (!dropdown.contains(e.target)) {
                 dropdown.classList.remove('active');
