@@ -1,184 +1,136 @@
 <?php
-    $lang = isset($_GET['lang']) ? $_GET['lang'] : 'th';
-    
-    $th_language = array('th' => 'ภาษาไทย' , 'en' => 'TH Language');
-    $lang_th_language = $th_language[$lang];
-
-    $en_language = array('th' => 'ภาษาอังกฤษ' , 'en' => 'ENG Language'); // 
-    $lang_en_language = $en_language[$lang];
-
-
-
-    //Navbar Function
-
-    $login_translate = array('th' => 'เข้าสู่ระบบ' , 'en' => 'Login');
-    $lang_login = $login_translate[$lang];
-
-    $register_translate = array('th' => 'ลงทะเบียน' , 'en' => 'Register');
-    $lang_register = $register_translate[$lang];
-
-    $question_translate = array('th' => 'คำถามที่พบบ่อย'  , 'en' => 'Frequency Asked Questions');
-    $lang_question = $question_translate[$lang];
-
-    $contact_translate = array('th' => 'ติดต่อเรา' , 'en' => 'Contact Us');
-    $lang_contact = $contact_translate[$lang];
-
-    $question_translate = array('th' => 'คำถามที่พบบ่อย' , 'en' => 'Frequency Asked Questions (FAQs)');
-    $lang_question = $question_translate[$lang];
-
-    $profile_translate = array('th' => 'ดูโปรไฟล์' , 'en' => 'View Profile');
-    $lang_profile = $profile_translate [$lang];
-
-    $logout_translate = array('th' => 'ออกจากระบบ' , 'en' => 'Logout');
-    $lang_logout = $logout_translate[$lang];
-    
-    //End Navbar Function
-
-
-    //Tracking Function
-
-    $track_translate = array('th' => 'กรอกหมายเลขติดตามของคุณที่นี่!' , 'en' => 'Enter your tracking number here!');
-    $lang_track = $track_translate[$lang];
-
-    $ex_translate = array('th' => 'ตัวอย่าง' , 'en' => 'Ex.');
-    $lang_ex = $track_translate[$lang];
-
-
-    //End Tracking Function
-
-
-
-
-    //Login Page 
-
-    $email_translate = array('th' => 'อีเมลล์' , 'en' => 'Email');
-    $lang_email = $email_translate[$lang];
-
-    $password_translate = array('th' => 'รหัสผ่าน' , 'en' => 'Password');
-    $lang_password = $password_translate[$lang];
-
-    $login_translate = array('th' => 'เข้าสู่ระบบ' , 'en' => 'Login');
-    $lang_login = $login_translate[$lang];
-
-    $signup_translate = array('th' => 'สมัครสมาชิก' , 'en' => 'Sign up');
-    $lang_signup = $signup_translate[$lang];
-
-    $forgotpassword_translate = array('th' => 'ลืมรหัสผ่าน' , 'en' => 'Forgot password?');
-    $lang_forgotpassword = $forgotpassword_translate[$lang];
-
-    $donthaveaccount_translate = array('th' => 'หากยังไม่มีรหัสผ่านกด-->' , 'en' => 'Don&#10076;t have an account?');
-    $lang_donthaveaccount = $donthaveaccount_translate[$lang];
-
-    //end Login Page
-
-
-
-    //register Page 
-    $register_translate = array('th' => 'สมัครสมาชิก' , 'en' => 'Register');
-    $lang_register = $register_translate[$lang];
-
-    $fristname_translate = array('th' => 'ชื่อ' , 'en' => 'Firstname');
-    $lang_fristname = $fristname_translate[$lang];
-
-    $lastname_translate = array('th' => 'นามสกุล' , 'en' => 'Lastname');
-    $lang_lastname = $lastname_translate[$lang];
-
-    $address_translate = array('th' => 'ที่อยู่' , 'en' => 'Address');
-    $lang_address= $address_translate[$lang];
-
-    $addressph_translate = array('th' => 'ที่อยู่ (ไม่ต้องระบุตำบล อำเภอ จังหวัด)' , 'en' => 'Address (Do not specify sub-district, district, province)');
-    $lang_addressph= $addressph_translate[$lang];
-
-    $tel_translate = array('th' => 'เบอร์โทร' , 'en' => 'Telephone Number');
-    $lang_tel = $tel_translate[$lang];
-
-    $telph_translate = array('th' => 'เบอร์โทร (0XXXXXXXXX) ไม่ต้องใส่ขีด' , 'en' => '(0XXXXXXXXX) Do not use hyphens');
-    $lang_telph = $telph_translate[$lang];
-
-    $provinces_translate = array('th' => 'จังหวัด' , 'en' => 'Province');
-    $lang_provinces = $provinces_translate[$lang];
-
-    $provincesph_translate = array('th' => 'โปรดเลือกจังหวัด' , 'en' => 'Please choose Province');
-    $lang_provincesph = $provincesph_translate[$lang];
-
-    $amphures_translate = array('th' => 'อำเภอ' , 'en' => 'District');
-    $lang_amphures = $amphures_translate[$lang];
-
-    $amphuresph_translate = array('th' => 'โปรดเลือกอำเภอ' , 'en' => 'Please choose District');
-    $lang_amphuresph = $amphuresph_translate[$lang];
-
-    $districts_translate = array('th' => 'ตำบล' , 'en' => 'Subdistrict');
-    $lang_districts = $districts_translate[$lang];
-
-    $districtsph_translate = array('th' => 'โปรดเลือกตำบล' , 'en' => 'Please choose Subdistrict');
-    $lang_districtsph = $districtsph_translate[$lang];
-
-    $zipcode_translate = array('th' => 'รหัสไปรษณีย์' , 'en' => 'Zip Code');
-    $lang_zipcode = $zipcode_translate[$lang];
-
-    $confirmPassword_translate = array('th' => 'ยืนยันรหัสผ่าน' , 'en' => 'Confirm Password');
-    $lang_confirmPassword = $confirmPassword_translate[$lang];
-
-    $haveaccount_translate = array('th' => 'มีสมาชิกแล้วกด?? -->' , 'en' => 'Already have an account?');
-    $lang_haveaccount= $haveaccount_translate[$lang];
-    //end register Page 
-
-    //Contact Page
-    $contact_translate = array('th' => 'ติดต่อเรา' , 'en' => 'Contact us');
-    $lang_contact = $contact_translate[$lang];
-
-    $facebook_translate = array('th' => 'เฟสบุ๊ค' , 'en' => 'Facebook');
-    $lang_facebook = $facebook_translate[$lang];
-
-    $website_translate = array('th' => 'เว็บไซต์' , 'en' => 'Website');
-    $lang_website = $website_translate[$lang];
-
-    $call_translate = array('th' => 'โทร' , 'en' => 'Call');
-    $lang_call = $call_translate [$lang];
-
-    $askquestion_translate = array('th' => 'ถามคำถาม หรือแจ้งปัญหาในการใช้งาน' , 'en' => 'Ask a Question');
-    $lang_askquestion = $askquestion_translate [$lang];
-
-    $submit_translate = array('th' => 'ยืนยัน' , 'en' => 'Submit');
-    $lang_submit = $submit_translate [$lang];
-
-    $yourname_translate = array('th' => 'ชื่อผู้ส่ง' , 'en' => 'Yourname');
-    $lang_yourname = $yourname_translate [$lang];
-
-    $youremail_translate = array('th' => 'ใส่อีเมล์' , 'en' => 'YourEmail');
-    $lang_youremail = $youremail_translate [$lang];
-
-    $description_translate = array('th' => 'ใส่รายละเอียด' , 'en' => 'Description');
-    $lang_description= $description_translate [$lang];
-
-
-    //end Contact Page
-    
-    //question Page
-    
-    $freq_translate = array('th' => 'คำถามที่พบบ่อย' , 'en' => 'frequently questions');
-    $lang_freq = $freq_translate  [$lang];
-
-    
-     // end question Page
-
-     //profilepage
-     $fullname_translate = array('th' => 'ชื่อ-นามสกุล' , 'en' => 'Fullname');
-     $lang_fullname = $fullname_translate  [$lang];
-
-     $email_translate = array('th' => 'อีเมลล์' , 'en' => 'Email');
-     $lang_email = $email_translate  [$lang];
-
-     $mobile_translate = array('th' => 'เบอร์โทรศัพท์' , 'en' => 'Mobile');
-     $lang_mobile = $mobile_translate  [$lang];
-
-     $address_translate = array('th' => 'ที่อยู่' , 'en' => 'Address');
-     $lang_address = $address_translate  [$lang];
-
-
- 
-     //end profilepage
-
-
+$lang = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'th';
+
+$translations = [
+    'th' => [
+        'th_language' => 'ภาษาไทย',
+        'en_language' => 'TH Language',
+        'login' => 'เข้าสู่ระบบ',
+        'register' => 'ลงทะเบียน',
+        'question' => 'คำถามที่พบบ่อย',
+        'contact' => 'ติดต่อเรา',
+        'profile' => 'ดูโปรไฟล์',
+        'logout' => 'ออกจากระบบ',
+        'track' => 'กรอกหมายเลขติดตามของคุณที่นี่!',
+        'ex' => 'ตัวอย่าง',
+        'email' => 'อีเมลล์',
+        'password' => 'รหัสผ่าน',
+        'signup' => 'สมัครสมาชิก',
+        'forgotpassword' => 'ลืมรหัสผ่าน',
+        'donthaveaccount' => 'หากยังไม่มีรหัสผ่านกด-->',
+        'fristname' => 'ชื่อ',
+        'lastname' => 'นามสกุล',
+        'address' => 'ที่อยู่',
+        'addressph' => 'ที่อยู่ (ไม่ต้องระบุตำบล อำเภอ จังหวัด)',
+        'tel' => 'เบอร์โทร',
+        'telph' => '(0XXXXXXXXX) ไม่ต้องใส่ขีด',
+        'provinces' => 'จังหวัด',
+        'provincesph' => 'โปรดเลือกจังหวัด',
+        'amphures' => 'อำเภอ',
+        'amphuresph' => 'โปรดเลือกอำเภอ',
+        'districts' => 'ตำบล',
+        'districtsph' => 'โปรดเลือกตำบล',
+        'zipcode' => 'รหัสไปรษณีย์',
+        'confirmPassword' => 'ยืนยันรหัสผ่าน',
+        'haveaccount' => 'มีสมาชิกแล้วกด?? -->',
+        'facebook' => 'เฟสบุ๊ค',
+        'website' => 'เว็บไซต์',
+        'call' => 'โทร',
+        'askquestion' => 'ถามคำถาม หรือแจ้งปัญหาในการใช้งาน',
+        'submit' => 'ยืนยัน',
+        'yourname' => 'ชื่อผู้ส่ง',
+        'youremail' => 'ใส่อีเมล์',
+        'description' => 'ใส่รายละเอียด',
+        'freq' => 'คำถามที่พบบ่อย',
+        'fullname' => 'ชื่อ-นามสกุล',
+        'mobile' => 'เบอร์โทรศัพท์',
+    ],
+    'en' => [
+        'th_language' => 'TH Language',
+        'en_language' => 'ENG Language',
+        'login' => 'Login',
+        'register' => 'Register',
+        'question' => 'Frequency Asked Questions',
+        'contact' => 'Contact Us',
+        'profile' => 'View Profile',
+        'logout' => 'Logout',
+        'track' => 'Enter your tracking number here!',
+        'ex' => 'Ex.',
+        'email' => 'Email',
+        'password' => 'Password',
+        'signup' => 'Sign up',
+        'forgotpassword' => 'Forgot password?',
+        'donthaveaccount' => 'Don\'t have an account?',
+        'fristname' => 'Firstname',
+        'lastname' => 'Lastname',
+        'address' => 'Address',
+        'addressph' => 'Address (Do not specify sub-district, district, province)',
+        'tel' => 'Telephone Number',
+        'telph' => '(0XXXXXXXXX) Do not use hyphens',
+        'provinces' => 'Province',
+        'provincesph' => 'Please choose Province',
+        'amphures' => 'District',
+        'amphuresph' => 'Please choose District',
+        'districts' => 'Subdistrict',
+        'districtsph' => 'Please choose Subdistrict',
+        'zipcode' => 'Zip Code',
+        'confirmPassword' => 'Confirm Password',
+        'haveaccount' => 'Already have an account?',
+        'facebook' => 'Facebook',
+        'website' => 'Website',
+        'call' => 'Call',
+        'askquestion' => 'Ask a Question',
+        'submit' => 'Submit',
+        'yourname' => 'Yourname',
+        'youremail' => 'YourEmail',
+        'description' => 'Description',
+        'freq' => 'Frequently Questions',
+        'fullname' => 'Fullname',
+        'mobile' => 'Mobile',
+    ]
+];
+
+$lang_th_language = $translations[$lang]['th_language'];
+$lang_en_language = $translations[$lang]['en_language'];
+$lang_login = $translations[$lang]['login'];
+$lang_register = $translations[$lang]['register'];
+$lang_question = $translations[$lang]['question'];
+$lang_contact = $translations[$lang]['contact'];
+$lang_profile = $translations[$lang]['profile'];
+$lang_logout = $translations[$lang]['logout'];
+$lang_track = $translations[$lang]['track'];
+$lang_ex = $translations[$lang]['ex'];
+$lang_email = $translations[$lang]['email'];
+$lang_password = $translations[$lang]['password'];
+$lang_signup = $translations[$lang]['signup'];
+$lang_forgotpassword = $translations[$lang]['forgotpassword'];
+$lang_donthaveaccount = $translations[$lang]['donthaveaccount'];
+$lang_fristname = $translations[$lang]['fristname'];
+$lang_lastname = $translations[$lang]['lastname'];
+$lang_address = $translations[$lang]['address'];
+$lang_addressph = $translations[$lang]['addressph'];
+$lang_tel = $translations[$lang]['tel'];
+$lang_telph = $translations[$lang]['telph'];
+$lang_provinces = $translations[$lang]['provinces'];
+$lang_provincesph = $translations[$lang]['provincesph'];
+$lang_amphures = $translations[$lang]['amphures'];
+$lang_amphuresph = $translations[$lang]['amphuresph'];
+$lang_districts = $translations[$lang]['districts'];
+$lang_districtsph = $translations[$lang]['districtsph'];
+$lang_zipcode = $translations[$lang]['zipcode'];
+$lang_confirmPassword = $translations[$lang]['confirmPassword'];
+$lang_haveaccount = $translations[$lang]['haveaccount'];
+$lang_contact = $translations[$lang]['contact'];
+$lang_facebook = $translations[$lang]['facebook'];
+$lang_website = $translations[$lang]['website'];
+$lang_call = $translations[$lang]['call'];
+$lang_askquestion = $translations[$lang]['askquestion'];
+$lang_submit = $translations[$lang]['submit'];
+$lang_yourname = $translations[$lang]['yourname'];
+$lang_youremail = $translations[$lang]['youremail'];
+$lang_description = $translations[$lang]['description'];
+$lang_freq = $translations[$lang]['freq'];
+$lang_fullname = $translations[$lang]['fullname'];
+$lang_mobile = $translations[$lang]['mobile'];
 
 ?>

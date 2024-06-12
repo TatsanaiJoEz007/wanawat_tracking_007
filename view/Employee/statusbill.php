@@ -110,7 +110,7 @@ if ($conn->connect_error) {
             margin-top: 20px;
         }
 
-        .search{
+        .search {
             background-color: #f0592e;
             color: white;
             margin-top: 20px;
@@ -154,21 +154,64 @@ if ($conn->connect_error) {
         }
 
         .card-red {
-            background-color: #ffcccc; /* Light red */
+            background-color: #ffcccc;
+            /* Light red */
         }
 
         .card-green {
-            background-color: #ccffcc; /* Light green */
+            background-color: #ccffcc;
+            /* Light green */
         }
 
         .card-yellow {
-            background-color: #ffffcc; /* Light yellow */
+            background-color: #ffffcc;
+            /* Light yellow */
         }
 
         .card-blue {
-            background-color: #cce5ff; /* Light blue */
+            background-color: #cce5ff;
+            /* Light blue */
         }
 
+        .instruction-list {
+            list-style-type: none;
+            padding-left: 20px;
+            margin: 0;
+            color: #555;
+            display: none;
+        }
+
+
+        .instruction-box h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .instruction-box ol {
+            padding-left: 20px;
+        }
+
+        .instruction-box li {
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #555;
+        }
+
+        .instruction-box.active ol {
+            display: block;
+        }
+
+        .expand-icon {
+            font-size: 24px;
+            color: white;
+            float: right;
+            transition: transform 0.3s ease;
+        }
+
+        .active .expand-icon {
+            transform: rotate(45deg);
+        }
     </style>
 </head>
 
@@ -176,6 +219,40 @@ if ($conn->connect_error) {
     <?php require_once('function/sidebar_employee.php'); ?>
     <div class="container">
         <h2>สถานะบิล</h2>
+        <div class="instruction-box" onclick="toggleInstructions()">
+            <h2 style="color:black;">ความหมายของสีสถานะสินค้า</h2>
+            <span class="expand-icon">+</span>
+            <ol class="instruction-list" style="display:none;">
+                <li>
+                    <b style="color: #ffcccc;">สีแดง</b>
+                    <u style="color:white;">สถานะสินค้าที่เกิดปัญหา</u>
+                </li>
+                <li>
+                    <b style="color: #ccffcc;">สีเขียว</b>
+                    <u style="color:white;">สถานะสินค้าที่จัดส่งถึงปลายทาง</u>
+                </li>
+                <li>
+                    <b style="color: #cce5ff;">สีน้ำเงิน</b>
+                    <u style="color:white;">สถานะสินค้าที่กำลังจัดเตรียม</u>
+                </li>
+                <li>
+                    <b style="color: #ffffcc;">สีเหลือง</b>
+                    <u style="color:white;">สถานะสินค้าที่กำลังจัดส่ง</u>
+                </li>
+            </ol>
+        </div>
+
+
+
+        <script>
+            function toggleInstructions() {
+                var instructions = document.querySelector('.instruction-list');
+                instructions.style.display = instructions.style.display === 'none' ? 'block' : 'none';
+                var expandIcon = document.querySelector('.expand-icon');
+                expandIcon.textContent = expandIcon.textContent === '+' ? '-' : '+';
+            }
+        </script>
+
         <div class="search-bar">
             <form method="GET" action="">
                 <input class="insearch" type="text" name="search" placeholder="Search by delivery number" value="<?php echo isset($_GET['search']) ? $_GET['search'] : ''; ?>">
@@ -194,18 +271,32 @@ if ($conn->connect_error) {
                     $status_text = '';
                     $card_class = '';
                     switch ($row['delivery_status']) {
-                        case 1: $status_text = 'กำลังจัดเตรียม'; $card_class = 'card-blue'; break;
-                        case 2: $status_text = 'กำลังจัดส่ง'; $card_class = 'card-yellow'; break;
-                        case 3: $status_text = 'จัดส่งถึงปลายทาง'; $card_class = 'card-green'; break;
-                        case 99: $status_text = 'เกิดปัญหา'; $card_class = 'card-red'; break;
-                        default: $status_text = 'Unknown'; break;
+                        case 1:
+                            $status_text = 'กำลังจัดเตรียม';
+                            $card_class = 'card-blue';
+                            break;
+                        case 2:
+                            $status_text = 'กำลังจัดส่ง';
+                            $card_class = 'card-yellow';
+                            break;
+                        case 3:
+                            $status_text = 'จัดส่งถึงปลายทาง';
+                            $card_class = 'card-green';
+                            break;
+                        case 99:
+                            $status_text = 'เกิดปัญหา';
+                            $card_class = 'card-red';
+                            break;
+                        default:
+                            $status_text = 'Unknown';
+                            break;
                     }
             ?>
                     <div class="card <?php echo $card_class; ?>">
                         <div class="card-body">
                             <h1 class="card-text">เลขที่ขนส่ง : <?php echo $row['delivery_number']; ?></h1>
                             <p class="card-text">จำนวนสินค้าในบิล : <?php echo $row['item_count']; ?></p>
-                            <p class="card-text">สถานะ: <?php echo $status_text; ?></p>
+                            <h3 class="card-text">สถานะ: <?php echo $status_text; ?></h3>
                             <a href="#" class="btn">View Details</a>
                         </div>
                     </div>
@@ -218,4 +309,5 @@ if ($conn->connect_error) {
         </div>
     </div>
 </body>
+
 </html>

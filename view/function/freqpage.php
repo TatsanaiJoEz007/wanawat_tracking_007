@@ -1,4 +1,4 @@
-
+<?php require_once "language.php" ?>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
     integrity="sha512-nicXN0XQ8FqHgDYdPZj+3mMp3CJtV3rbfn/ukn8fnCRyCJlDoVJy4bhvDRqVLyuD8h1n1HtYjv3kzxng+jc0zg=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -62,7 +62,7 @@
 <div class="container">
     <br>
     <hr>
-    <h1>คำถามที่พบบ่อย</h1>
+    <h1><?php echo $lang_question ?></h1>
     
     <?php require_once 'function/func_freq.php'; ?>
 

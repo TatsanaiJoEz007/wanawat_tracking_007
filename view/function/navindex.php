@@ -260,14 +260,23 @@ if (!empty($myprofile['user_img'])) {
                     </div>
                 </div>
                 <div class="language-switcher">
-                    <a href="?lang=th"><img src="../view/assets/img/logo/thai.png" alt="<?php echo $lang_th_language ?>"></a>
-                    <a href="?lang=en"><img src="../view/assets/img/logo/eng.png" alt="<?php echo $lang_en_language ?>"></a>
+                    <img src="../view/assets/img/logo/thai.png" alt="<?php echo $lang_th_language ?>" onclick="switchLanguage('th')">
+                    <img src="../view/assets/img/logo/eng.png" alt="<?php echo $lang_en_language ?>" onclick="switchLanguage('en')">
                 </div>
             </div>
         </div>
     </nav>
 
     <script>
+
+        function switchLanguage(lang) {
+            $.post('function/language.php', { lang: lang }, function(data) {
+                if (data.success) {
+                location.reload();
+                }
+            }, 'json');
+            }
+
         window.addEventListener('scroll', function() {
             const navbar = document.getElementById('navbar');
             const scrollY = window.scrollY;

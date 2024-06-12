@@ -1,18 +1,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <?php
-require_once('language.php');
-if (session_status() == PHP_SESSION_NONE) {
-  session_start();
-}
+require_once('function/language.php');
 ?>
+
 
 <style>
   @keyframes slideDown {
     from {
       transform: translateY(-100%);
     }
-
     to {
       transform: translateY(0);
     }
@@ -168,15 +165,23 @@ if (session_status() == PHP_SESSION_NONE) {
           </li>
         </ul>
         <div class="language-switcher">
-          <a href="?lang=th"><img src="../view/assets/img/logo/thai.png" alt="<?php echo $lang_th_language ?>"></a>
-          <a href="?lang=en"><img src="../view/assets/img/logo/eng.png" alt="<?php echo $lang_en_language ?>"></a>
+          <img src="../view/assets/img/logo/thai.png" alt="<?php echo $lang_th_language ?>" onclick="switchLanguage('th')">
+          <img src="../view/assets/img/logo/eng.png" alt="<?php echo $lang_en_language ?>" onclick="switchLanguage('en')">
         </div>
       </div>
     </div>
   </nav>
 
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-beta1/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
+    function switchLanguage(lang) {
+      $.post('function/language.php', { lang: lang }, function(data) {
+        if (data.success) {
+          location.reload();
+        }
+      }, 'json');
+    }
+
     window.addEventListener('scroll', function() {
       const navbar = document.getElementById('navbar');
       const scrollY = window.scrollY;

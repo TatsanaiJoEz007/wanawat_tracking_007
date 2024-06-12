@@ -1,19 +1,21 @@
 <?php
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
 
-if (isset($_GET['lang'])) {
-    $lang = $_GET['lang'];
-    $_SESSION['lang'] = $lang;
-} elseif (isset($_SESSION['lang'])) {
-    $lang = $_SESSION['lang'];
+session_start(); // Start the session
+
+if (isset($_POST['lang'])) {
+    $lang = $_POST['lang'];
+    $_SESSION['lang'] = $lang; // Set the language in session
+    setcookie('lang', $lang, time() + (86400 * 30), "/"); // Set the language in cookie
+    echo json_encode(['success' => true]);
+    exit;
+} elseif (isset($_COOKIE['lang'])) {
+    $lang = $_COOKIE['lang'];
 } else {
-    // Default language is Thai
     $lang = 'th';
-    $_SESSION['lang'] = $lang;
+    $_SESSION['lang'] = $lang; // Set the default language in session
+    setcookie('lang', $lang, time() + (86400 * 30), "/");
 }
 
-// Now, include the language file
+// Include translation file based on the language
 require_once('th_eng.php');
 ?>

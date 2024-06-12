@@ -135,11 +135,36 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
         }
+
+        .instruction-box {
+            background-color: #e9ecef;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .instruction-box h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .instruction-box ol {
+            padding-left: 20px;
+        }
+
+        .instruction-box li {
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #555;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
+
     <?php
     // db.php
     $servername = "localhost";  // Usually 'localhost' if running on the same server
@@ -159,6 +184,15 @@
     <?php require_once('function/sidebar_employee.php'); ?>
 
     <br><br>
+    <div class="instruction-box">
+            <h2>วิธีการใช้งานระบบการเลือกบิล</h2>
+            <ol>
+                <li>กด <b>เลือกสินค้าที่ต้องการส่ง</b> ที่ Checkbox <i style="color:red;">(เลือกได้สูงสุด 15 รายการ)</i></li>
+                <li>เช็คความถูกต้องจาก <b>ตะกร้าสินค้า</b></li>
+                <li>กด <b>สร้างบิล</b> เพื่ออัปโหลดบิลการจัดส่งสินค้า</li>
+            </ol>
+        </div>
+
     <div class="container">
         <div class="product-list">
             <h1>สินค้ารอเลือกบิล</h1>
@@ -174,7 +208,7 @@
                             <th>หน่วย</th>
                             <th>ราคา</th>
                             <th>ราคารวม</th>
-                            <th>Select</th>
+                            <th>เลือก</th>
                         </tr>
                     </thead>
                     <tbody>

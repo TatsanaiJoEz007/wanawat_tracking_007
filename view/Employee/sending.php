@@ -159,15 +159,15 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Delivery Number</th>
-                    <th>Bill Number</th>
-                    <th>Customer Name</th>
-                    <th>Item Code</th>
-                    <th>Item Description</th>
-                    <th>Quantity</th>
-                    <th>Unit</th>
-                    <th>Price</th>
-                    <th>Line Total</th>
+                    <th>เลขการจัดส่ง</th>
+                    <th>เลขบิล</th>
+                    <th>ชื่อลูกค้า</th>
+                    <th>รหัสสินค้า</th>
+                    <th>ชื่อสินค้า</th>
+                    <th>จำนวนสินค้า</th>
+                    <th>หน่วย</th>
+                    <th>ราคา</th>
+                    <th>ราคารวม</th>
                 </tr>
             </thead>
             <tbody>
