@@ -26,8 +26,6 @@
             text-align: center;
         }
 
-
-
         table {
             width: 100%;
             border-collapse: collapse;
@@ -66,28 +64,52 @@
             border-color: #1e7e34;
             border-radius: 10%;
             transition: 0.3s;
+        }
 
+        .search-bar {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .search-bar input {
+            width: 80%;
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .search {
+            background-color: #f0592e;
+            color: white;
+            margin-top: 20px;
+            margin-left: 20px;
+            margin-right: 20px;
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .search:hover {
+            background-color: #F1693E;
+            cursor: pointer;
+            transition: 0.3s ease-in-out;
         }
 
         ::-webkit-scrollbar {
             width: 9px;
-            /* Adjust width for vertical scrollbar */
         }
 
         ::-webkit-scrollbar-thumb {
             background-color: #FF5722;
-            /* Color for scrollbar thumb */
             border-radius: 10px;
-            /* Rounded corners for scrollbar thumb */
         }
 
         .home-section {
             max-height: 100vh;
-            /* Adjust height as needed */
             overflow-y: auto;
-            /* Allow vertical scroll */
             overflow-x: hidden;
-            /* Prevent horizontal scroll */
             padding: 20px;
             background-color: #f9f9f9;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -109,10 +131,10 @@
 <body>
     <?php
     // db.php
-    $servername = "localhost";  // Usually 'localhost' if running on the same server
-    $username = "root";  // Replace with your database username
-    $password = "";  // Replace with your database password
-    $dbname = "wanawat_tracking";  // Replace with your database name
+    $servername = "localhost";
+    $username = "root";
+    $password = "";
+    $dbname = "wanawat_tracking";
 
     // Create connection
     $conn = new mysqli($servername, $username, $password, $dbname);
@@ -125,7 +147,14 @@
 
     <?php require_once('function/sidebar_employee.php'); ?>
     <div class="container">
-        <h1>Preparing</h1>
+        <h1>กำลังจัดเตรียม</h1>
+        <br>
+        <div class="search-bar">
+            <form method="GET" action="">
+                <input class="insearch" type="text" name="search" placeholder="Search by delivery number" value="<?php echo isset($_GET['search']) ? $_GET['search'] : ''; ?>">
+                <button type="submit" class="search">Search</button>
+            </form>
+        </div>
         <br>
         <table class="table">
             <thead>
@@ -143,15 +172,19 @@
             </thead>
             <tbody>
                 <?php
-                // Your PHP code here
+                $search_term = isset($_GET['search']) ? $_GET['search'] : '';
 
-                // Your SQL query to fetch data from tb_delivery and tb_delivery_items
+                // Modify query to include search term
                 $sql = "SELECT d.delivery_number, di.bill_number, di.bill_customer_name, 
                 di.item_code, di.item_desc, di.item_quantity, 
                 di.item_unit, di.item_price, di.line_total
                 FROM tb_delivery d
                 INNER JOIN tb_delivery_items di ON d.delivery_id = di.delivery_id
                 WHERE d.delivery_status = 1";
+
+                if ($search_term) {
+                    $sql .= " AND d.delivery_number LIKE '%" . mysqli_real_escape_string($conn, $search_term) . "%'";
+                }
 
                 $result = $conn->query($sql);
 
@@ -170,7 +203,6 @@
                         }
                         $merged_rows[$delivery_number]["bill_numbers"][] = $row["bill_number"];
                         $merged_rows[$delivery_number]["bill_customer_names"][] = $row["bill_customer_name"];
-                        // Add item details to the item_details array
                         $merged_rows[$delivery_number]["item_details"][] = [
                             "item_code" => $row["item_code"],
                             "item_desc" => $row["item_desc"],
@@ -204,7 +236,6 @@
 
                 $conn->close();
                 ?>
-
             </tbody>
         </table>
     </div>

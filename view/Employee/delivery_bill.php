@@ -232,18 +232,18 @@
                                 echo "<td>" . $item["item_unit"] . "</td>";
                                 echo "<td>" . $item["item_price"] . "</td>";
                                 echo "<td>" . $item["line_total"] . "</td>";
+                                echo "<input type='hidden' name='item_sequence[]' value='" . $index . "'>";
                                 echo "<td><center><input type='checkbox' class='product-checkbox' 
-
                                     data-bill-number='" . $row["bill_number"] . "'
                                     data-bill-customer= '" . $row["bill_customer_name"] . "'
                                     data-item-code= '" . $item["item_code"] . "'
                                     data-name='" . $item["item_desc"] . "' 
                                     data-quantity= '" . $item["item_quantity"] . "'
-                                    data-unit='". $item["item_unit"] . "' 
+                                    data-unit='" . $item["item_unit"] . "' 
                                     data-price='" . $item["item_price"] . "'
                                     data-total='" . $item["line_total"] . "' 
-
-                                    ></center></td>";
+                                    data-item-sequence='" . $item["line_sequence"] . "'>
+                                </center></td>";
                                 echo "</tr>";
                             }
                         }
@@ -354,7 +354,7 @@
                     const selectedItemsJSON = JSON.stringify(selectedItems);
                     const form = document.createElement('form');
                     form.setAttribute('method', 'POST');
-                    form.setAttribute('action', 'statuspage.php');
+                    form.setAttribute('action', 'function/function_adddelivery.php');
                     const hiddenField = document.createElement('input');
                     hiddenField.setAttribute('type', 'hidden');
                     hiddenField.setAttribute('name', 'selected_items');

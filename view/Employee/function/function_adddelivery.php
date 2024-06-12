@@ -1,9 +1,4 @@
-
-
 <?php
-// db.php
-
-//mockup stuff fix it later broooo
 
 $servername = "localhost";  // Usually 'localhost' if running on the same server
 $username = "root";  // Replace with your database username
@@ -43,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['selected_items'])) {
             $unit = $item['unit']; // Assuming the name field contains the item unit
             $price = $item['price']; // Assuming the name field contains the item price
             $total = $item['total']; // Assuming the name field contains the line total
-            
+
             // Other fields to insert, like quantity, can be extracted from $item as needed
 
             $deliveryItemsInsertSql = "INSERT INTO tb_delivery_items (delivery_id, bill_number, bill_customer_name , item_code , item_desc , item_quantity , item_unit , item_price , line_total) 
@@ -53,7 +48,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['selected_items'])) {
         }
 
         // Perform any additional actions after successful insertion, such as redirecting to a success page
-        echo "Data inserted successfully!";
+        echo "<script type='text/javascript'>
+                setTimeout(function() {
+                    location.href = '../delivery_bill.php';
+                }, 10);
+            </script>";
+    
     } else {
         echo "Error: " . $deliveryInsertSql . "<br>" . $conn->error;
     }
@@ -63,8 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['selected_items'])) {
 $conn->close();
 
 // Function to generate a unique delivery number
-function generateDeliveryNumber() {
-    return "WDL" . date("mds") . rand(0 , 99) . "TH" ;
+function generateDeliveryNumber()
+{
+    return "WDL" . date("mds") . rand(0, 99) . "TH";
 }
-
-?>

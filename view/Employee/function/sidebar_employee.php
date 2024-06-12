@@ -484,10 +484,10 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
             <li>
                 <a href="../employee/history.php">
                     <i class="bi bi-clock-history nav_icon"></i>
-                    <span class="link_name">ประวัติการใช้งาน</span>
+                    <span class="link_name">ประวัติการจัดส่ง</span>
                 </a>
                 <ul class="sub-menu blank">
-                    <li><a class="link_name" href="../employee/history.php">ประวัติการใช้งาน</a></li>
+                    <li><a class="link_name" href="../employee/history.php">ประวัติการจัดส่ง</a></li>
                 </ul>
             </li>
 

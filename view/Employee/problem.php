@@ -1,161 +1,259 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee - Problem</title>
+    <title>Employee-Preparing</title>
     <link rel="icon" type="image/x-icon" href="https://wehome.co.th/wp-content/uploads/2023/01/logo-WeHome-BUILDER-788x624.png">
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.27/dist/sweetalert2.min.css" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap" rel="stylesheet">
 
     <style>
-        body {
-            background-color: #f8f9fa;
+        h1 {
+            font-size: 36px;
+            color: #333;
+            text-align: center;
+            margin-top: 50px;
         }
+
         .container {
-            margin-top: 20px;
+            max-width: 1500px;
+            margin: 30px auto;
         }
-        .table th, .table td {
-            vertical-align: middle;
+
+        h1 {
+            color: #343a40;
+            text-align: center;
         }
-        .table img {
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+
+        table th,
+        table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #dee2e6;
+            color: #343a40;
+        }
+
+        table th {
+            background-color: #F0592E;
+            color: #fff;
+            text-align: left;
+            text-transform: uppercase;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+            padding: 8px 16px;
+            font-size: 14px;
+            border-radius: 4px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+            border-radius: 10%;
+            transition: 0.3s;
+        }
+
+        .search-bar {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .search-bar input {
+            width: 80%;
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
             border-radius: 5px;
         }
-        .table-hover tbody tr:hover {
-            background-color: #f0f0f5; /* Subtle hover effect */
+
+        .search {
+            background-color: #f0592e;
+            color: white;
+            margin-top: 20px;
+            margin-left: 20px;
+            margin-right: 20px;
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
-        .btn-warning {
-            background-color: #ffc107; /* More vibrant warning color */
-            border-color: #ffc107;
-        }
-        .swal2-popup { /* Customize SweetAlert appearance */
-            font-family: 'Arial', sans-serif;
+
+        .search:hover {
+            background-color: #F1693E;
+            cursor: pointer;
+            transition: 0.3s ease-in-out;
         }
 
         ::-webkit-scrollbar {
-    width: 9px; /* Adjust width for vertical scrollbar */
-}
+            width: 9px;
+        }
 
-::-webkit-scrollbar-thumb {
-    background-color: #FF5722; /* Color for scrollbar thumb */
-    border-radius: 10px; /* Rounded corners for scrollbar thumb */
-}
+        ::-webkit-scrollbar-thumb {
+            background-color: #FF5722;
+            border-radius: 10px;
+        }
 
-.home-section {
+        .home-section {
             max-height: 100vh;
-            /* Adjust height as needed */
             overflow-y: auto;
-            /* Allow vertical scroll */
             overflow-x: hidden;
-            /* Prevent horizontal scroll */
             padding: 20px;
             background-color: #f9f9f9;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
         }
+
+        @media only screen and (max-width: 600px) {
+            .container {
+                margin: 15px auto;
+            }
+
+            table {
+                font-size: 12px;
+            }
+        }
     </style>
 </head>
 
-<?php require_once('function/sidebar_employee.php');  ?>
-
 <body>
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <h1 class="text-center mb-4">Problem List</h1> 
-            </div>
+    <?php
+    // db.php
+    $servername = "localhost";
+    $username = "root";
+    $password = "";
+    $dbname = "wanawat_tracking";
 
-            <div class="col-12">
-                <table id="problemTable" class="table table-striped table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Problem ID</th>
-                            <th>Problem</th>
-                            <th>Description</th>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Status</th>
-                            <th>Image</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Electricity</td>
-                            <td>Electricity is not working</td>
-                            <td>2022-12-01</td>
-                            <td>12:00:00</td>
-                            <td>Not fixed</td>
-                            <td><img src="https://avatars.githubusercontent.com/u/116146758?v=4" alt="Electricity" width="100"></td>
-                            <td>
-                                <a href="editProblem.php" class="btn btn-warning">Edit</a>
-                                <a href="deleteProblem.php" class="btn btn-danger" onclick="return deleteProblem();">Delete</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>Water</td>
-                            <td>Water is not working</td>
-                            <td>2022-12-02</td>
-                            <td>13:00:00</td>
-                            <td>Not fixed</td>
-                            <td><img src="https://avatars.githubusercontent.com/u/46838817?v=4" alt="Water" width="100"></td>
-                            <td>
-                                <a href="editProblem.php" class="btn btn-warning">Edit</a>
-                                <a href="deleteProblem.php" class="btn btn-danger" onclick="return deleteProblem();">Delete</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>Water</td>
-                            <td>Water is not working Please Help I can't wash put my soap on my fucking face you motherfucker</td>
-                            <td>2022-12-03</td>
-                            <td>14:00:00</td>
-                            <td>Not fixed</td>
-                            <td><img src="https://scontent.xx.fbcdn.net/v/t1.15752-9/441291944_7932114376833722_8156975045150246158_n.png?_nc_cat=101&ccb=1-7&_nc_sid=5f2048&_nc_ohc=ehiSETrJEkMQ7kNvgHvc_Pk&_nc_ad=z-m&_nc_cid=0&_nc_ht=scontent.xx&oh=03_Q7cD1QGak78CuIMO2pcT5jztuMekXQmvcSG-T-8UmXYGHWyE1g&oe=6686B2E4" alt="Internet" width="100"></td>
-                            <td>
-                                <a href="editProblem.php" class="btn btn-warning">Edit</a>
-                                <a href="deleteProblem.php" class="btn btn-danger" onclick="return deleteProblem();">Delete</a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+    // Create connection
+    $conn = new mysqli($servername, $username, $password, $dbname);
+
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+    ?>
+
+    <?php require_once('function/sidebar_employee.php'); ?>
+    <div class="container">
+        <h1>เกิดปัญหา</h1>
+        <br>
+        <div class="search-bar">
+            <form method="GET" action="">
+                <input class="insearch" type="text" name="search" placeholder="Search by delivery number" value="<?php echo isset($_GET['search']) ? $_GET['search'] : ''; ?>">
+                <button type="submit" class="search">Search</button>
+            </form>
         </div>
+        <br>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Delivery Number</th>
+                    <th>Bill Number</th>
+                    <th>Customer Name</th>
+                    <th>Item Code</th>
+                    <th>Item Description</th>
+                    <th>Quantity</th>
+                    <th>Unit</th>
+                    <th>Price</th>
+                    <th>Line Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $search_term = isset($_GET['search']) ? $_GET['search'] : '';
+
+                // Modify query to include search term
+                $sql = "SELECT d.delivery_number, di.bill_number, di.bill_customer_name, 
+                di.item_code, di.item_desc, di.item_quantity, 
+                di.item_unit, di.item_price, di.line_total
+                FROM tb_delivery d
+                INNER JOIN tb_delivery_items di ON d.delivery_id = di.delivery_id
+                WHERE d.delivery_status = 99";
+
+                if ($search_term) {
+                    $sql .= " AND d.delivery_number LIKE '%" . mysqli_real_escape_string($conn, $search_term) . "%'";
+                }
+
+                $result = $conn->query($sql);
+
+                $merged_rows = [];
+
+                if ($result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                        $delivery_number = $row["delivery_number"];
+                        if (!isset($merged_rows[$delivery_number])) {
+                            $merged_rows[$delivery_number] = [
+                                "delivery_number" => $delivery_number,
+                                "bill_numbers" => [],
+                                "bill_customer_names" => [],
+                                "item_details" => []
+                            ];
+                        }
+                        $merged_rows[$delivery_number]["bill_numbers"][] = $row["bill_number"];
+                        $merged_rows[$delivery_number]["bill_customer_names"][] = $row["bill_customer_name"];
+                        $merged_rows[$delivery_number]["item_details"][] = [
+                            "item_code" => $row["item_code"],
+                            "item_desc" => $row["item_desc"],
+                            "item_quantity" => $row["item_quantity"],
+                            "item_unit" => $row["item_unit"],
+                            "item_price" => $row["item_price"],
+                            "line_total" => $row["line_total"]
+                        ];
+                    }
+                }
+
+                foreach ($merged_rows as $delivery_number => $row) {
+                    echo "<tr>";
+                    echo "<td rowspan='" . count($row["bill_numbers"]) . "'>" . $delivery_number . "</td>";
+                    for ($i = 0; $i < count($row["bill_numbers"]); $i++) {
+                        if ($i > 0) {
+                            echo "<tr>";
+                        }
+                        echo "<td>" . $row["bill_numbers"][$i] . "</td>";
+                        echo "<td>" . $row["bill_customer_names"][$i] . "</td>";
+                        $item = $row["item_details"][$i];
+                        echo "<td>" . $item["item_code"] . "</td>";
+                        echo "<td>" . $item["item_desc"] . "</td>";
+                        echo "<td>" . $item["item_quantity"] . "</td>";
+                        echo "<td>" . $item["item_unit"] . "</td>";
+                        echo "<td>" . $item["item_price"] . "</td>";
+                        echo "<td>" . $item["line_total"] . "</td>";
+                        echo "</tr>";
+                    }
+                }
+
+                $conn->close();
+                ?>
+            </tbody>
+        </table>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.27/dist/sweetalert2.all.min.js"></script>
-    
+    <script src="https://fastly.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('#problemTable').DataTable({
-                "pagingType": "full_numbers"
+            $('#sidebarCollapse').on('click', function() {
+                $('#sidebar').toggleClass('active');
             });
         });
 
-        function deleteProblem(problemId) { // Pass the problem ID
-            Swal.fire({
-                title: 'Are you sure?',
-                text: 'You will not be able to recover this problem!',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, delete it!',
-                cancelButtonText: 'No, cancel!',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // If confirmed, redirect to delete_problem.php with the ID
-                    window.location.href = 'delete_problem.php?id=' + problemId; 
-                }
-            });
+        function myFunction() {
+            alert("Preparing");
         }
     </script>
 </body>
+
 </html>
