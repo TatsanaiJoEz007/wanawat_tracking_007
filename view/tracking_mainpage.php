@@ -1,9 +1,5 @@
 <head>
-    <?php 
-        require_once('function/head.php'); 
-        require_once('config/connect.php');
-    
-    ?>
+    <?php require_once('function/head.php'); ?>
 
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -218,7 +214,7 @@
 </head>
 
 <body>
-    <?php require_once('function/navbar.php'); ?>
+    <?php require_once('function/navindex.php'); ?>
 
     <div class="container px-1 px-md-4 py-5 mx-auto">
         <div class="card">

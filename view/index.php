@@ -16,7 +16,7 @@
             color: black;
             z-index: 1000;
             display: none;
-            top : -50px;
+            top: -50px;
         }
 
         .modal-content {
@@ -52,15 +52,15 @@
         }
 
         ::-webkit-scrollbar {
-    width: 9px; /* Adjust width for vertical scrollbar */
-}
+            width: 9px; /* Adjust width for vertical scrollbar */
+        }
 
-::-webkit-scrollbar-thumb {
-    background-color: #FF5722; /* Color for scrollbar thumb */
-    border-radius: 10px; /* Rounded corners for scrollbar thumb */
-}
+        ::-webkit-scrollbar-thumb {
+            background-color: #FF5722; /* Color for scrollbar thumb */
+            border-radius: 10px; /* Rounded corners for scrollbar thumb */
+        }
 
-.home-section {
+        .home-section {
             max-height: 100vh;
             overflow-y: auto;
             overflow-x: hidden;
@@ -100,8 +100,6 @@
 
     <footer>
         <?php require_once('function/footer.php'); ?>
-
-    
     </footer>
 
     <script>
@@ -150,7 +148,7 @@
         function rejectCookie() {
             swal.fire({
                 title: 'แจ้งเตือน',
-                text: 'คุณจะไม่ได้รับประสบการณ์การท่องและฟังก์ชั่นในการทำงานต่างๆจากหน้าเว็ป',
+                text: 'คุณจะไม่ได้รับประสบการณ์การใช้งานฟังก์ชั่นในการทำงานต่างๆจากหน้าเว็ป',
                 icon: 'warning',
                 confirmButtonText: 'ตกลง'
             }).then((result) => {

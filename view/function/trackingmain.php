@@ -1,11 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tracking</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
@@ -109,59 +102,31 @@
         }
     </style>
 </head>
-
 <body>
-    <?php require_once('config/connect.php'); ?>
-
     <div class="container text-center">
         <div class="tracking-input-group">
             <img src="../view/assets/img/logo/mascot.png" alt="Mascot" class="mascot">
             <p>&nbsp; &nbsp;</p>
-            <input type="text" class="form-control tracking-input" id="trackingIdInput" placeholder="<?php echo $lang_track ?> (Ex. ED#############)" required>
+            <input type="text" class="form-control tracking-input" placeholder="<?php echo $lang_track ?>  (Ex. ED#############)" required>
             <button class="track-button">Track</button>
         </div>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const trackingInputGroup = document.querySelector('.tracking-input-group');
             setTimeout(() => {
                 trackingInputGroup.classList.add('show');
             }, 500); // Delay in milliseconds
+        });
 
-            document.querySelector('.track-button').addEventListener('click', function() {
-                var trackingId = document.getElementById('trackingIdInput').value;
-
-                // Using AJAX to send trackingId to search_tracking.php
-                var xhr = new XMLHttpRequest();
-                xhr.open('POST', 'function/search_tracking.php', true);
-                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState == 4 && xhr.status == 200) {
-                        var response = xhr.responseText.trim();
-                        if (response === 'match') {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Tracking ID:',
-                                text: trackingId,
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then(function() {
-                                window.location.href = '../tracking_page.php'; // Redirect to tracking_page.php
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'ไม่พบเลขพัสดุ',
-                                text: 'กรุณาตรวจสอบเลข Tracking Number อีกครั้ง'
-                            });
-                        }
-                    }
-                };
-                xhr.send('trackingId=' + encodeURIComponent(trackingId));
+        document.querySelector('.track-button').addEventListener('click', function() {
+            var trackingId = document.querySelector('.tracking-input').value;
+            Swal.fire({
+                icon: 'success',
+                title: 'Tracking ID:',
+                text: trackingId,
             });
         });
     </script>
 </body>
-
 </html>
