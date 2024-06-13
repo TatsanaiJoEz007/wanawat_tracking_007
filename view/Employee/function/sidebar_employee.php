@@ -1,41 +1,38 @@
 <?php
-if (session_status() == PHP_SESSION_NONE) {
+    require_once('../../view/config/connect.php');
     session_start();
-}
-require_once('../config/connect.php');
-?>
 
-<?php
-if (!isset($_SESSION['login'])) {
-    //echo '<script>location.href="login"</script>';
-}
 
-function fetchUserProfile($conn, $userId)
-{
-    $sql = "SELECT tb_user.*, 
-            provinces.name_th AS province_name, 
-            amphures.name_th AS amphure_name, 
-            districts.name_th AS district_name,
-            districts.zip_code AS zipcode 
-            FROM tb_user
-            LEFT JOIN provinces ON tb_user.province_id = provinces.id 
-            LEFT JOIN amphures ON tb_user.amphure_id = amphures.id 
-            LEFT JOIN districts ON tb_user.district_id = districts.id 
-            WHERE user_id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $userId);
-    $stmt->execute();
-    return $stmt->get_result()->fetch_array(MYSQLI_ASSOC);
-}
+    if (!isset($_SESSION['login'])) {
+        echo '<script>location.href="../../view/login.php"</script>';
+    }
 
-function getImageBase64($imageData)
-{
-    return 'data:image/jpeg;base64,' . base64_encode($imageData);
-}
+    function fetchUserProfile($conn, $userId)
+    {
+        $sql = "SELECT tb_user.*, 
+                provinces.name_th AS province_name, 
+                amphures.name_th AS amphure_name, 
+                districts.name_th AS district_name,
+                districts.zip_code AS zipcode 
+                FROM tb_user
+                LEFT JOIN provinces ON tb_user.province_id = provinces.id 
+                LEFT JOIN amphures ON tb_user.amphure_id = amphures.id 
+                LEFT JOIN districts ON tb_user.district_id = districts.id 
+                WHERE user_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_array(MYSQLI_ASSOC);
+    }
 
-$userId = $_SESSION['user_id'];
-$myprofile = fetchUserProfile($conn, $userId);
-$imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_img']) : '../../view/assets/img/logo/mascot.png'; // Set your default image path here
+    function getImageBase64($imageData)
+    {
+        return 'data:image/jpeg;base64,' . base64_encode($imageData);
+    }
+
+    $userId = $_SESSION['user_id'];
+    $myprofile = fetchUserProfile($conn, $userId);
+    $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_img']) : '../../view/assets/img/logo/mascot.png'; // Set your default image path here
 ?>
 
 <!DOCTYPE html>
@@ -510,25 +507,16 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
                 </ul>
             </li>
 
-            <?php
-            $sql = "SELECT * FROM tb_user WHERE user_id = '$_SESSION[user_id]'";
-            $query = $conn->query($sql);
-            $myprofile = $query->fetch_array();
-            ?>
-
-
-
             <li>
                 <div class="profile-details">
                     <div class="profile-content">
-                        <img src="<?php echo $imageBase64 ?>" alt="profileImg">
+                        <img src=<?php echo $imageBase64; ?> alt="profileImg">
                     </div>
                     <div class="name-job">
-                        <div class="profile_name">
-                            <?php echo $myprofile['user_firstname'] ?>
-                        </div>
-
+                        <div class="profile_name"><?php echo $myprofile['user_firstname'] ?> &nbsp; <?php echo $myprofile['user_lastname'] ?></div>
+                        <div class="job"><?php echo $myprofile['user_email'] ?></div>
                     </div>
+                    <?php require_once "../../view/admin/function/function_logout.php" ?>
                     <i class='bx bx-log-out' onclick="logout()"></i>
                 </div>
             </li>

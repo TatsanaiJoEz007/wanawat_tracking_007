@@ -92,7 +92,7 @@
                                     </div>
                                     <div class="modal-body">
 
-                                        <form action="#" id="register" method="post">
+                                        <form action="#" id="register" method="post" >
                                             <div class="mb-3">
                                                 <label for="emp_firstname" class="form-label">ชื่อ</label>
                                                 <input type="text" class="form-control" id="emp_firstname" name="emp_firstname" required>

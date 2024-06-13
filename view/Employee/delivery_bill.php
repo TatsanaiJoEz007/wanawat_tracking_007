@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<?php session_start(); ?>
 <html lang="en">
 
 <head>
@@ -331,8 +332,8 @@
                 if (checkbox.checked) {
                     const li = document.createElement('li');
                     li.classList.add('cart-item');
-                    li.textContent = `${itemCounter}. ${name} - ฿${price} - ${unit}`; // Add item number
-                    li.setAttribute('data-price', price);
+                    li.textContent = `${itemCounter}. ${name} - ฿${total} - ${unit}`; // Add item number
+                    li.setAttribute('data-price', total);
                     li.setAttribute('data-unit', unit);
                     cartItems.appendChild(li);
                     itemCounter++; // Increment the counter
@@ -370,7 +371,7 @@
             // Prepare the summary message
             let summary = '<ul>';
             selectedItems.forEach(item => {
-                summary += `<li>${item.name} - ฿${item.price} - ${item.unit}</li>`;
+                summary += `<li>${item.name} - ฿${item.total} - ${item.unit}</li>`;
             });
             summary += '</ul>';
 
