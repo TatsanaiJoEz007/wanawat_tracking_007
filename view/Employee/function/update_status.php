@@ -13,30 +13,70 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Step 2: Retrieve POST data
-$newStatus = isset($_POST['newStatus']) ? intval($_POST['newStatus']) : null;
-$deliveryId = isset($_POST['deliveryId']) ? intval($_POST['deliveryId']) : null;
+// Check if the request is a POST request
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Decode JSON data sent from frontend
+    $data = json_decode(file_get_contents('php://input'), true);
 
-if ($newStatus === null || $deliveryId === null) {
-    die("Invalid request. Missing parameters.");
-}
+    // Check if deliveryId is provided in JSON data
+    if (isset($data['deliveryId'])) {
+        // Sanitize and validate deliveryId (example)
+        $deliveryId = mysqli_real_escape_string($conn, $data['deliveryId']);
 
-// Step 3: Update delivery status in the database
-$sql = "UPDATE tb_delivery SET delivery_status = ? WHERE delivery_id = ?";
-$stmt = $conn->prepare($sql);
+        // Fetch current delivery status
+        $selectQuery = "SELECT delivery_status FROM tb_delivery WHERE delivery_id = ?";
+        $stmt = $conn->prepare($selectQuery);
+        $stmt->bind_param('i', $deliveryId);
+        $stmt->execute();
+        $stmt->store_result();
+        
+        if ($stmt->num_rows > 0) {
+            $stmt->bind_result($currentStatus);
+            $stmt->fetch();
 
-if ($stmt === false) {
-    die("Error preparing statement: " . $conn->error);
-}
+            // Determine new status, ensuring it doesn't exceed 5
+            if ($currentStatus == 99) {
+                $newStatus = 1; // Reset to 1 if it was 99
+            } else {
+                $newStatus = min($currentStatus + 1, 5); // Increment by 1, max 5
+            }
 
-$stmt->bind_param("ii", $newStatus, $deliveryId);
+            // Update delivery status in database
+            $updateQuery = "UPDATE tb_delivery SET delivery_status = ? WHERE delivery_id = ?";
+            $stmt = $conn->prepare($updateQuery);
+            $stmt->bind_param('ii', $newStatus, $deliveryId);
 
-if ($stmt->execute()) {
-    echo "Status updated successfully.";
+            if ($stmt->execute()) {
+                // Return success response if update was successful
+                $response = ['status' => 'success', 'message' => 'Delivery status updated successfully.'];
+                http_response_code(200);
+                echo json_encode($response);
+                exit;
+            } else {
+                // Return error response if update failed
+                $response = ['status' => 'error', 'message' => 'Failed to update delivery status.'];
+                http_response_code(500); // Internal Server Error
+                echo json_encode($response);
+                exit;
+            }
+        } else {
+            // Return error response if deliveryId is not found
+            $response = ['status' => 'error', 'message' => 'Delivery ID not found.'];
+            http_response_code(404); // Not Found
+            echo json_encode($response);
+            exit;
+        }
+    } else {
+        // Return error response if deliveryId is not provided
+        $response = ['status' => 'error', 'message' => 'Delivery ID not provided.'];
+        http_response_code(400); // Bad Request
+        echo json_encode($response);
+        exit;
+    }
 } else {
-    echo "Error updating status: " . $stmt->error;
+    // Return error response if request method is not POST
+    http_response_code(405); // Method Not Allowed
+    echo json_encode(['status' => 'error', 'message' => 'Method not allowed.']);
+    exit;
 }
-
-$stmt->close();
-$conn->close();
 ?>

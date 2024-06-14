@@ -26,7 +26,6 @@ session_start();
     <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <script src="https://cdn.lordicon.com/lordicon.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
     <style>
         body {
@@ -230,69 +229,97 @@ session_start();
         .active .expand-icon {
             transform: rotate(45deg);
         }
+
+        .btn-custom {
+            background-color: #007bff;
+            /* Blue color from Bootstrap */
+            color: #fff;
+            /* White text */
+            border: none;
+            /* No border */
+            padding: 0.5rem 1rem;
+            /* Padding for better spacing */
+            border-radius: 0.25rem;
+            /* Rounded corners */
+            cursor: pointer;
+            /* Cursor style */
+            transition: background-color 0.3s;
+            /* Smooth transition */
+        }
+
+        .btn-custom:hover {
+            background-color: #0056b3;
+            /* Darker shade on hover */
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            /* Stay in place */
+            z-index: 1000;
+            /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            /* Enable scroll if needed */
+            background-color: rgba(0, 0, 0, 0.4);
+            /* Black w/ opacity */
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            /* Could be more or less, depending on screen size */
+            max-width: 600px;
+            /* Limit maximum width */
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
     </style>
 </head>
 
 <body>
     <?php require_once('function/sidebar_employee.php'); ?>
     <div class="container">
-        <h2>สถานะบิล</h2>
-        <div class="instruction-box" onclick="toggleInstructions()">
-            <h2 style="color:black;">ความหมายของสีสถานะสินค้า <span class="expand-icon" style="color:black;">+</span></h2>
-            <ol class="instruction-list" style="display:none;">
-                <li>
-                    <b style="color: red;">สีแดง</b>
-                    <i style="color:black;">: สถานะสินค้าที่เกิดปัญหา</i>
-                </li>
-                <li>
-                    <b style="color: green;">สีเขียว</b>
-                    <i style="color:black;">: สถานะสินค้าที่ถึงนำส่งให้ลูกค้าสำเร็จ</i>
-                </li>
-                <li>
-                    <b style="color: blue; ">สีน้ำเงิน</b>
-                    <i style="color:black;">: สถานะสินค้าที่คำสั่งซื้อเข้าสู่ระบบ</i>
-                </li>
-                <li>
-                    <b style="color: yellow;">สีเหลือง</b>
-                    <i style="color:black;">: สถานะสินค้าที่กำลังจัดส่งไปยังศูนย์กระจายสินค้า</i>
-                </li>
-                <li>
-                    <b style="color: grey;">สีเทา</b>
-                    <i style="color:black;">: สถานะสินค้าอยู่ที่ศูนย์กระจายสินค้าปลาย</i>
-                </li>
-                <li>
-                    <b style="color: purple;">สีม่วง</b>
-                    <i style="color:black;">: สถานะสินค้าที่กำลังนำส่งให้ลูกค้า</i>
-            </ol>
-        </div>
-
-
-        <script>
-            function toggleInstructions() {
-                var instructions = document.querySelector('.instruction-list');
-                instructions.style.display = instructions.style.display === 'none' ? 'block' : 'none';
-                var expandIcon = document.querySelector('.expand-icon');
-                expandIcon.textContent = expandIcon.textContent === '+' ? '-' : '+';
-            }
-        </script>
-
+        <!-- Search bar -->
         <div class="search-bar">
             <form method="GET" action="">
-                <input class="insearch" type="text" name="search" placeholder="Search by delivery number" value="<?php echo isset($_GET['search']) ? $_GET['search'] : ''; ?>">
+                <input class="insearch" type="text" name="search" placeholder="Search by delivery number" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
                 <button type="submit" class="search">Search</button>
             </form>
         </div>
+        <!-- Card container for displaying delivery information -->
         <div class="card-container">
             <?php
             $search_term = isset($_GET['search']) ? $_GET['search'] : '';
-            $query = "SELECT d.delivery_number, COUNT(di.item_code) AS item_count, d.delivery_status FROM tb_delivery d INNER JOIN tb_delivery_items di ON d.delivery_id = di.delivery_id";
+            $query = "SELECT d.delivery_id, d.delivery_number, COUNT(di.item_code) AS item_count, d.delivery_status FROM tb_delivery d INNER JOIN tb_delivery_items di ON d.delivery_id = di.delivery_id";
             if ($search_term) $query .= " WHERE d.delivery_number LIKE '%" . mysqli_real_escape_string($conn, $search_term) . "%'";
-            $query .= " GROUP BY d.delivery_number";
+            $query .= " GROUP BY d.delivery_id";
             $result = mysqli_query($conn, $query);
             if (mysqli_num_rows($result) > 0) {
                 while ($row = mysqli_fetch_assoc($result)) {
-                    $status_text = '';
-                    $card_class = '';
                     switch ($row['delivery_status']) {
                         case 1:
                             $status_text = 'สถานะสินค้าที่คำสั่งซื้อเข้าสู่ระบบ';
@@ -322,136 +349,206 @@ session_start();
                             $status_text = 'Unknown';
                             break;
                     }
-            ?>
-                    <div class="card <?php echo $card_class; ?>">
-                        <div class="card-body">
-                            <h1 class="card-text">เลขที่ขนส่ง : <?php echo $row['delivery_number']; ?></h1>
-                            <p class="card-text">จำนวนสินค้าในบิล : <?php echo $row['item_count']; ?></p>
-                            <h3 class="card-text">สถานะ: <?php echo $status_text; ?></h3>
-                            <a href="#" class="btn btn-primary view-details-btn" data-status="<?php echo $row['current_status']; ?>" data-delivery-id="<?php echo $row['delivery_id']; ?>" data-toggle="modal" data-target="#statusUpdateModal">View Details</a>
 
+                    // Output the card with data-delivery-id attribute
+                    echo '<div class="card ' . $card_class . '" data-delivery-id="' . $row['delivery_id'] . '">';
+                    echo '<div class="card-body">';
+                    echo '<h1 class="card-text">เลขที่ขนส่ง : ' . $row['delivery_number'] . '</h1>';
+                    echo '<p class="card-text">จำนวนสินค้าในบิล : ' . $row['item_count'] . '</p>';
+                    echo '<h3 class="card-text">สถานะ: ' . $status_text . '</h3>';
+                    // Conditionally render the button based on the class
+                    echo '<button class="btn-custom" onclick="openModal(\'' . $status_text . '\', \'' . $row['delivery_id'] . '\', \'' . $row['delivery_number'] . '\')">Manage</button>';
 
-                            <!-- Button to report problem -->
-                            <a href="#" class="btn btn-danger report-problem-btn" data-delivery-id="<?php echo $row['delivery_id']; ?>">แจ้งพัสดุเกิดปัญหา</a>
-                        </div>
-                    </div>
-
-                    <!-- Include SweetAlert CSS and JS -->
-                    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
-                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
-
-                    <script>
-                        $(document).ready(function() {
-                            // Function to handle "Report Problem" button click
-                            $('.report-problem-btn').on('click', function() {
-                                var deliveryId = $(this).data('delivery-id'); // Assuming you have delivery_id stored somewhere
-
-                                // Show SweetAlert confirmation dialog
-                                Swal.fire({
-                                    title: 'สินค้านี้มีปัญหาใช่หรือไม่?',
-                                    text: "หากสินค้ามีปัญหา จะมีการส่งแจ้งเตือนไปที่ลูกค้า หากเป็นความผิดพลาดจะทำให้มีปัญหาได้?",
-                                    icon: 'warning',
-                                    showCancelButton: true,
-                                    confirmButtonColor: '#d33',
-                                    cancelButtonColor: '#3085d6',
-                                    confirmButtonText: 'ใช่สินค้านี้มีปัญหาเกี่ยวกับการขนส่ง'
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        // Perform AJAX request to report problem
-                                        $.ajax({
-                                            url: 'function/report_problem.php',
-                                            method: 'POST',
-                                            data: {
-                                                deliveryId: deliveryId
-                                            },
-                                            success: function(response) {
-                                                // Handle success
-                                                console.log(response); // Log response for debugging
-                                                Swal.fire('Success!', 'Parcel problem reported successfully.', 'success');
-                                                // Optionally update UI here
-                                            },
-                                            error: function(xhr, status, error) {
-                                                // Handle error
-                                                console.error(xhr.responseText);
-                                                Swal.fire('Error!', 'Failed to report parcel problem.', 'error');
-                                            }
-                                        });
-                                    }
-                                });
-                            });
-                        });
-                    </script>
-
-            <?php
+                    echo '</div></div>';
                 }
             } else {
                 echo "<p>No delivery bills found.</p>";
             }
             ?>
         </div>
-
-        <!-- Modal -->
-        <div class="modal fade" id="statusUpdateModal" tabindex="-1" role="dialog" aria-labelledby="statusUpdateModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="statusUpdateModalLabel">Update Status</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <p>Current Status: <span id="currentStatusText"></span></p>
-                        <textarea id="statusUpdateTextarea" class="form-control" placeholder="Enter new status"></textarea>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="updateStatusBtn">Update Status</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <script>
-            $(document).ready(function() {
-                $('.view-details-btn').on('click', function() {
-                    var currentStatus = $(this).data('status');
-                    var deliveryId = $(this).data('delivery-id'); // Assuming you have delivery_id stored somewhere
-                    $('#currentStatusText').text(currentStatus);
-                    $('#statusUpdateTextarea').val(''); // Populate this with current data if needed
-                });
-
-                $('#updateStatusBtn').on('click', function() {
-                    var newStatus = $('#statusUpdateTextarea').val();
-                    var deliveryId = $('.view-details-btn').data('delivery-id'); // Get delivery_id from the button
-
-                    // AJAX request to update status
-                    $.ajax({
-                        url: 'function/update_status.php',
-                        method: 'POST',
-                        data: {
-                            newStatus: newStatus,
-                            deliveryId: deliveryId
-                        },
-                        success: function(response) {
-                            console.log(response); // Log response for debugging
-                            $('#statusUpdateModal').modal('hide');
-                            // Optionally update UI here (remove this line in production)
-                            // Reload the page or update specific elements to reflect status change
-                            location.reload(); // Reload page to reflect changes
-                        },
-                        error: function(xhr, status, error) {
-                            console.error(xhr.responseText);
-                            // Handle errors here
-                        }
-                    });
-                });
-            });
-        </script>
-
     </div>
+
+    <!-- Modal section -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <h2>Update Status</h2>
+            <?php
+            $sql = "SELECT * FROM tb_delivery";
+            $result = mysqli_query($conn, $sql);
+            $row = mysqli_fetch_assoc($result);
+
+            $delivery_number = $row['delivery_number'];
+            ?>
+            <h1 id="deliveryNumber" class="card-text"><b>Delivery Number : </b><span><?php echo $delivery_number ?></span></h1> <br>
+            <p><b>Current Status: </b><span id="currentStatus"></span></p>
+            <hr> <br>
+            <button id="updateStatusBtn" class="btn-custom">Update problem</button>
+            <button id="reportProblemBtn" class="btn-custom btn-red">Report a Problem</button>
+        </div>
+    </div>
+
+    <!-- Include SweetAlert for modal notifications -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
+
+    <!-- JavaScript section for modal interaction -->
+    <script>
+        var modal = document.getElementById("myModal");
+        var span = document.getElementsByClassName("close")[0];
+
+        // Open modal and set current status text
+        function openModal(statusText, deliveryId, deliveryNumber) {
+            var currentStatus = document.getElementById("currentStatus");
+            currentStatus.textContent = statusText;
+            modal.dataset.deliveryId = deliveryId;
+            document.getElementById("deliveryNumber").getElementsByTagName("span")[0].textContent = deliveryNumber;
+            modal.style.display = "block";
+        }
+
+
+        // Close modal when clicking outside modal
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        document.getElementById("updateStatusBtn").onclick = function() {
+            var deliveryId = modal.dataset.deliveryId;
+
+            // Show confirmation dialog
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Do you want to update the status?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Example AJAX request for updating status
+                    fetch('function/update_status.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                deliveryId: deliveryId
+                            }),
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log("Response from server:", data);
+
+                            // Handle response
+                            if (data.status === 'success') {
+                                if (data.maxReached) {
+                                    Swal.fire({
+                                        icon: 'info',
+                                        title: 'Status Max',
+                                        text: 'The status is already at its maximum value (5).',
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Success!',
+                                        text: 'Status updated successfully!',
+                                    });
+                                    location.reload(); // Reload page after successful update
+                                }
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error!',
+                                    text: data.message || 'Failed to update status.',
+                                });
+                            }
+                            modal.style.display = "none"; // Close modal after action
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: 'Failed to update status.',
+                            });
+                            modal.style.display = "none"; // Close modal on error
+                        });
+                } else {
+                    // User clicked "No" or closed the dialog
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Cancelled',
+                        text: 'Status update cancelled.',
+                    });
+                    modal.style.display = "none"; // Close modal without action
+                }
+            });
+        }
+
+
+        document.getElementById("reportProblemBtn").onclick = function() {
+            var deliveryId = modal.dataset.deliveryId;
+
+            // Ask for confirmation using SweetAlert
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Are you sure you want to report a problem with this delivery?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, report problem',
+                cancelButtonText: 'No, cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // User confirmed, proceed with reporting problem
+
+                    // Example AJAX request for reporting problem
+                    fetch('function/problem_status.php', { // Update this URL
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                deliveryId: deliveryId,
+                                problem: 'Describe the problem here' // You can prompt user for description here
+                            }),
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            // Handle response as needed
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: 'Problem reported successfully!',
+                            });
+                            location.reload(); // Reload page after successful report
+                            modal.style.display = "none"; // Close modal after action
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: 'Failed to report problem.',
+                            });
+                            modal.style.display = "none"; // Close modal on error
+                        });
+                }
+            });
+        }
+    </script>
+
 </body>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 </html>

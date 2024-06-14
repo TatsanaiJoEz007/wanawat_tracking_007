@@ -14,14 +14,17 @@ if ($conn->connect_error) {
 }
 
 // Step 2: Retrieve POST data
-$deliveryId = isset($_POST['deliveryId']) ? intval($_POST['deliveryId']) : null;
+$data = json_decode(file_get_contents("php://input"), true);
 
-if ($deliveryId === null) {
-    die("Invalid request. Missing deliveryId.");
+$deliveryId = isset($data['deliveryId']) ? intval($data['deliveryId']) : null;
+$problem = isset($data['problem']) ? $data['problem'] : '';
+
+if ($deliveryId === null || $problem === '') {
+    die("Invalid request. Missing deliveryId or problem description.");
 }
 
 // Step 3: Update delivery status in the database
-$sql = "UPDATE tb_delivery SET delivery_status = 5 WHERE delivery_id = ?";
+$sql = "UPDATE tb_delivery SET delivery_status = 99 WHERE delivery_id = ?";
 $stmt = $conn->prepare($sql);
 
 if ($stmt === false) {
@@ -31,11 +34,18 @@ if ($stmt === false) {
 $stmt->bind_param("i", $deliveryId);
 
 if ($stmt->execute()) {
-    echo "Parcel problem reported successfully.";
+    $response = array(
+        'status' => 'success',
+        'message' => 'Parcel problem reported successfully.'
+    );
+    echo json_encode($response);
 } else {
-    echo "Error reporting parcel problem: " . $stmt->error;
+    $response = array(
+        'status' => 'error',
+        'message' => 'Error reporting parcel problem: ' . $stmt->error
+    );
+    echo json_encode($response);
 }
 
 $stmt->close();
 $conn->close();
-?>
