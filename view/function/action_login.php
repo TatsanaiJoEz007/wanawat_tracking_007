@@ -13,8 +13,9 @@ require_once('../admin/function/action_activity_log/log_activity.php'); // Inclu
 // ตรวจสอบว่ามีการส่งค่า POST มาจากฟอร์มหรือไม่
 if (isset($_POST['login'])) {
     // รับค่าจากฟอร์ม
-    $user_email = ($_POST['user_email']);
+    $user_email = $_POST['user_email'];
     $user_pass = md5($_POST['user_pass']);
+    $remember = isset($_POST['remember']) ? $_POST['remember'] : false;
 
     // ค้นหาผู้ใช้จากฐานข้อมูล
     $check = "SELECT * FROM tb_user WHERE user_email = ?";
@@ -51,6 +52,15 @@ if (isset($_POST['login'])) {
                 $entity_id = $user['user_id'];
                 $additional_info = "User logged in with email: " . $user_email;
                 logAdminActivity($admin_user_id, $action, $entity, $entity_id, $additional_info);
+
+                // การตั้งค่าสำหรับ "Remember Me"
+                if ($remember) {
+                    setcookie('username', $user_email, time() + (86400 * 30), "/"); // 30 days
+                    setcookie('password', $_POST['user_pass'], time() + (86400 * 30), "/"); // Save plain password
+                } else {
+                    setcookie('username', '', time() - 3600, "/");
+                    setcookie('password', '', time() - 3600, "/");
+                }
 
                 if ($user_type == 999) { // สำหรับ admin
                     $_SESSION['user_type'] = 'admin';

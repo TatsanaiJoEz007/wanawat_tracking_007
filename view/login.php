@@ -36,11 +36,15 @@ session_start();
                     <form id="login" method="post">
                         <div class="mb-3">
                             <label for="signin-email" class="form-label"><?php echo $lang_email ?></label>
-                            <input type="email" class="form-control" id="signin-email" name="signin-email" required placeholder="Enter email">
+                            <input type="email" class="form-control" id="signin-email" name="signin-email" value="<?php echo isset($_COOKIE['username']) ? $_COOKIE['username'] : ''; ?>" required placeholder="Enter email">
                         </div>
                         <div class="mb-3">
                             <label for="signin-password" class="form-label"><?php echo $lang_password ?></label>
-                            <input type="password" class="form-control" id="signin-password" name="signin-password" required placeholder="Password">
+                            <input type="password" class="form-control" id="signin-password" name="signin-password" value="<?php echo isset($_COOKIE['password']) ? $_COOKIE['password'] : ''; ?>" required placeholder="Password">
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="remember" name="remember" <?php echo isset($_COOKIE['username']) ? 'checked' : ''; ?>>
+                            <label class="form-check-label" for="remember">Remember Me</label>
                         </div>
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-custom" name="login"><?php echo $lang_login ?></button>
@@ -68,6 +72,7 @@ $(document).ready(function() {
         // รับค่าจากฟอร์ม
         let user_email = $('#signin-email').val();
         let user_pass = $('#signin-password').val();
+        let remember = $('#remember').is(':checked');
 
         // ส่งค่าผ่าน AJAX ไปยัง action_login.php
         $.ajax({
@@ -76,12 +81,20 @@ $(document).ready(function() {
             data: {
                 user_email: user_email,
                 user_pass: user_pass,
+                remember: remember,
                 login: 1
             },
             success: function(response) {
                 // ตรวจสอบค่าที่ส่งกลับจาก action_login.php
                 if (response === 'user') {
                     // เข้าสู่ระบบสำเร็จ
+                    if (remember) {
+                        document.cookie = "username=" + user_email + "; max-age=" + (86400 * 30) + "; path=/";
+                        document.cookie = "password=" + user_pass + "; max-age=" + (86400 * 30) + "; path=/";
+                    } else {
+                        document.cookie = "username=; max-age=-1; path=/";
+                        document.cookie = "password=; max-age=-1; path=/";
+                    }
                     Swal.fire({
                         position: 'center',
                         icon: 'success',
