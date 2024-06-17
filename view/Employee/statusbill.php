@@ -43,6 +43,7 @@ session_start();
         }
 
         h2 {
+            font-size: 2.5em;
             text-align: center;
             margin-bottom: 20px;
             color: #333;
@@ -297,6 +298,23 @@ session_start();
             text-decoration: none;
             cursor: pointer;
         }
+
+        .content {
+            padding: 16px;
+        }
+
+        .sticky {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 9999;
+            /* Ensure it's above other elements */
+        }
+
+        .sticky+.content {
+            padding-top: 60px;
+            /* Adjust according to the height of your sticky element */
+        }
     </style>
 </head>
 
@@ -305,12 +323,65 @@ session_start();
     <div class="container">
         <!-- Search bar -->
         <div class="search-bar">
+            <h2>สถานะการขนส่ง</h2>
+            <div class="instruction-box" onclick="toggleInstructions()">
+                <h2 style="color:black;">ความหมายของสีสถานะสินค้า <span class="expand-icon" style="color:black;">+</span></h2>
+                <ol class="instruction-list" style="display:none;">
+                    <li>
+                        <b style="color: red;">สีแดง</b>
+                        <i style="color:black;">: สถานะสินค้าที่เกิดปัญหา</i>
+                    </li>
+                    <li>
+                        <b style="color: green;">สีเขียว</b>
+                        <i style="color:black;">: สถานะสินค้าที่ถึงนำส่งให้ลูกค้าสำเร็จ</i>
+                    </li>
+                    <li>
+                        <b style="color: blue;">สีน้ำเงิน</b>
+                        <i style="color:black;">: สถานะสินค้าที่คำสั่งซื้อเข้าสู่ระบบ</i>
+                    </li>
+                    <li>
+                        <b style="color: yellow;">สีเหลือง</b>
+                        <i style="color:black;">: สถานะสินค้าที่กำลังจัดส่งไปยังศูนย์กระจายสินค้า</i>
+                    </li>
+                    <li>
+                        <b style="color: grey;">สีเทา</b>
+                        <i style="color:black;">: สถานะสินค้าอยู่ที่ศูนย์กระจายสินค้าปลาย</i>
+                    </li>
+                    <li>
+                        <b style="color: purple;">สีม่วง</b>
+                        <i style="color:black;">: สถานะสินค้าที่กำลังนำส่งให้ลูกค้า</i>
+                </ol>
+            </div>
+
+            <script>
+                function toggleInstructions() {
+                    var instructions = document.querySelector('.instruction-list');
+                    instructions.style.display = instructions.style.display === 'none' ? 'block' : 'none';
+                    var expandIcon = document.querySelector('.expand-icon');
+                    expandIcon.textContent = expandIcon.textContent === '+' ? '-' : '+';
+                }
+
+                window.onscroll = function() {
+                    myFunction();
+                };
+
+                var instructionsbox = document.querySelector('.instruction-box');
+                var sticky = instructionsbox.offsetTop;
+
+                function myFunction() {
+                    if (window.pageYOffset >= sticky) {
+                        instructionsbox.classList.add("sticky");
+                    } else {
+                        instructionsbox.classList.remove("sticky");
+                    }
+                }
+            </script>
+
             <form method="GET" action="">
                 <input class="insearch" type="text" name="search" placeholder="Search by delivery number" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
                 <button type="submit" class="search">Search</button>
             </form>
         </div>
-        <!-- Card container for displaying delivery information -->
         <div class="card-container">
             <?php
             $search_term = isset($_GET['search']) ? $_GET['search'] : '';
@@ -382,7 +453,7 @@ session_start();
             <h1 id="deliveryNumber" class="card-text"><b>Delivery Number : </b><span><?php echo $delivery_number ?></span></h1> <br>
             <p><b>Current Status: </b><span id="currentStatus"></span></p>
             <hr> <br>
-            <button id="updateStatusBtn" class="btn-custom">Update problem</button>
+            <button id="updateStatusBtn" class="btn-custom">Update Status</button>
             <button id="reportProblemBtn" class="btn-custom btn-red">Report a Problem</button>
         </div>
     </div>

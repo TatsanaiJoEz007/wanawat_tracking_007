@@ -186,13 +186,13 @@
 
     <br><br>
     <div class="instruction-box">
-            <h2>วิธีการใช้งานระบบการเลือกบิล</h2>
-            <ol>
-                <li>กด <b>เลือกสินค้าที่ต้องการส่ง</b> ที่ Checkbox <i style="color:red;">(เลือกได้สูงสุด 15 รายการ)</i></li>
-                <li>เช็คความถูกต้องจาก <b>ตะกร้าสินค้า</b></li>
-                <li>กด <b>สร้างบิล</b> เพื่ออัปโหลดบิลการจัดส่งสินค้า</li>
-            </ol>
-        </div>
+        <h2>วิธีการใช้งานระบบการเลือกบิล</h2>
+        <ol>
+            <li>กด <b>เลือกสินค้าที่ต้องการส่ง</b> ที่ Checkbox <i style="color:red;">(เลือกได้สูงสุด 15 รายการ)</i></li>
+            <li>เช็คความถูกต้องจาก <b>ตะกร้าสินค้า</b></li>
+            <li>กด <b>สร้างบิล</b> เพื่ออัปโหลดบิลการจัดส่งสินค้า</li>
+        </ol>
+    </div>
 
     <div class="container">
         <div class="product-list">
@@ -377,12 +377,12 @@
 
             // Show the SweetAlert with the summary
             Swal.fire({
-                title: 'ยืนยันการสร้างบิล',
-                html: 'คุณแน่ใจหรือไม่ที่ต้องการสร้างบิลดังต่อไปนี้:<br>' + summary,
-                icon: 'question',
+                title: '<span style="color: red;">ยืนยันการสร้างบิล</span>',
+                html: '<span style="color: red;">คุณจะไม่สามารถแก้ไขบิลได้อีกต่อไปหากกดยืนยันแล้ว</span><br> ระบบจะทำการสร้างบิลดังต่อไปนี้ :<br>' + summary,
+                icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'ยืนยัน',
-                cancelButtonText: 'ยกเลิก'
+                cancelButtonText: 'ยกเลิก',
             }).then((result) => {
                 if (result.isConfirmed) {
                     // Proceed with form submission

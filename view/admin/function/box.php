@@ -51,6 +51,21 @@ mysqli_free_result($result);
 $total_line_box = $total_line;
 ?>
 
+<?php
+// Assuming you have a database connection established
+require_once('../config/connect.php');
+// Query to get the count of questions with status 1
+$query = "SELECT COUNT(*) AS total_delivery FROM tb_delivery WHERE delivery_status != 5 AND delivery_status != 99";
+$result = mysqli_query($conn, $query);
+$row = mysqli_fetch_assoc($result);
+$total_delivery = $row['total_delivery'];
+
+// Close the result set
+mysqli_free_result($result);
+
+// Assign the count to the box
+$total_delivery_box = $total_delivery;
+?>
 <style>
     /* Add your custom styles here */
     body {
@@ -152,13 +167,14 @@ $total_line_box = $total_line;
         <div class="col-lg-3 col-6">
             <div class="small-box bg-red">
                 <div class="inner">
-                    <h3>65</h3>
+                    <h3><?php echo $total_delivery_box ?></h3>
                     <p>จำนวนบิลที่ส่ง</p>
+                    <u>ไม่รวมบิลที่สำเร็จแล้ว และบิลที่มีปัญหา</u>
                 </div>
                 <div class="icon" style="background-color: #22D4BE;">
                     <i class="fas fa-chart-pie" style="color: #FFFFFF;"></i>
                 </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                <a href="../admin/table_delivery.php" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
             </div>
         </div>
     </div>

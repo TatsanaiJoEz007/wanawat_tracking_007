@@ -46,6 +46,7 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
   <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 </head>
 
 <style>
@@ -344,6 +345,8 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
     font-weight: 600;
   }
 
+ 
+
   @media screen and (max-width: 320px) {
     .sidebar {
       width: 240px;
@@ -374,6 +377,7 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
       left: 78px;
       width: calc(100% - 78px);
     }
+
   }
 
   /* Adjustments for sidebar collapse */
@@ -398,6 +402,7 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
     margin: 0 10px;
     transition: all 0.5s ease;
   }
+
 
   @media screen and (max-width: 768px) {
     .sidebar {
@@ -484,8 +489,9 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
         </div>
         <ul class="sub-menu">
           <li><a href="../admin/importCSV.php">เพิ่ม CSV</a></li>
-          <li><a href="../admin/table_header.php">เพิ่มหัวบิล </a></li>
-          <li><a href="../admin/table_line.php">เพิ่มรายละเอียดบิล</a></li>
+          <li><a href="../admin/table_header.php">หัวบิลที่เพิ่มแล้ว</a></li>
+          <li><a href="../admin/table_line.php">รายละเอียดบิลที่เพิ่มแล้ว</a></li>
+          <li><a href="../admin/table_delivery.php">บิลพร้อมส่ง</a></li>
         </ul>
       </li>
       <li>
@@ -539,16 +545,24 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
 
     <script>
       let arrow = document.querySelectorAll(".arrow");
-      for (var i = 0; i < arrow.length; i++) {
+      for (let i = 0; i < arrow.length; i++) {
         arrow[i].addEventListener("click", (e) => {
-          let arrowParent = e.target.parentElement.parentElement; //selecting main parent of arrow
+          let arrowParent = e.target.parentElement.parentElement; // Selecting main parent of arrow
           arrowParent.classList.toggle("showMenu");
+
+          // Replace Element.setCapture() with Element.setPointerCapture()
+          // Check if setPointerCapture is supported by the browser
+          if (arrowParent.setPointerCapture) {
+            arrowParent.setPointerCapture(e.pointerId);
+          } else if (arrowParent.releasePointerCapture) {
+            arrowParent.releasePointerCapture(e.pointerId);
+          }
         });
       }
 
+      // Ensure your existing code functionality works as intended
       let sidebar = document.querySelector(".sidebar");
       let sidebarBtn = document.querySelector(".bx-menu");
-      console.log(sidebarBtn);
       sidebarBtn.addEventListener("click", () => {
         sidebar.classList.toggle("close");
       });
