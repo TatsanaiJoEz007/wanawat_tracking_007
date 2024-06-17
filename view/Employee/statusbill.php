@@ -253,6 +253,16 @@ session_start();
             /* Darker shade on hover */
         }
 
+        .btn-red {
+            background-color: #dc3545;
+            /* Red color from Bootstrap */
+        }
+
+        .btn-red:hover {
+            background-color: #c82333;
+            /* Red color from Bootstrap */
+        }
+
         /* Modal Styles */
         .modal {
             display: none;
@@ -453,8 +463,8 @@ session_start();
             <h1 id="deliveryNumber" class="card-text"><b>Delivery Number : </b><span><?php echo $delivery_number ?></span></h1> <br>
             <p><b>Current Status: </b><span id="currentStatus"></span></p>
             <hr> <br>
-            <button id="updateStatusBtn" class="btn-custom">Update Status</button>
-            <button id="reportProblemBtn" class="btn-custom btn-red">Report a Problem</button>
+            <button id="updateStatusBtn" class="btn-custom">อัพเดทสถานะการจัดส่งสินค้า</button>
+            <button id="reportProblemBtn" class="btn-custom btn-red">แจ้งว่าสินค้ามีปัญหา</button>
         </div>
     </div>
 
@@ -488,8 +498,8 @@ session_start();
 
             // Show confirmation dialog
             Swal.fire({
-                title: 'Are you sure?',
-                text: 'Do you want to update the status?',
+                title: 'คุณแน่ใจหรือไม่?',
+                text: 'คุณแน่ใจไหมที่จะอัพเดทสถานะการจัดส่งสินค้า คุณจะไม่สามารถแก้ไขได้อีกหากกดอัพเดทไปแล้ว?',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: 'Yes',
@@ -520,22 +530,22 @@ session_start();
                                 if (data.maxReached) {
                                     Swal.fire({
                                         icon: 'info',
-                                        title: 'Status Max',
-                                        text: 'The status is already at its maximum value (5).',
+                                        title: 'คุณไม่สามารถเลือกสินค้าได้มากกว่า 15 รายการ',
+                                        text: 'คุณสามารถเลือกสินค้าได้มากที่สุด 15 รายการต่อการขนส่ง 1 ครั้ง',
                                     });
                                 } else {
                                     Swal.fire({
                                         icon: 'success',
-                                        title: 'Success!',
-                                        text: 'Status updated successfully!',
+                                        title: 'สำเร็จ!',
+                                        text: 'ทำการแก้ไขสถานะเสร็จสิ้น!',
                                     });
                                     location.reload(); // Reload page after successful update
                                 }
                             } else {
                                 Swal.fire({
                                     icon: 'error',
-                                    title: 'Error!',
-                                    text: data.message || 'Failed to update status.',
+                                    title: 'มีข้อผิดพลาด!',
+                                    text: data.message || 'มีข้อผิดพลาดในการแก้ไขสถานะ!',
                                 });
                             }
                             modal.style.display = "none"; // Close modal after action
@@ -553,8 +563,8 @@ session_start();
                     // User clicked "No" or closed the dialog
                     Swal.fire({
                         icon: 'info',
-                        title: 'Cancelled',
-                        text: 'Status update cancelled.',
+                        title: 'ยกเลิก',
+                        text: 'การอัพเดทสถานะถูกยกเลิก.',
                     });
                     modal.style.display = "none"; // Close modal without action
                 }
@@ -563,61 +573,72 @@ session_start();
 
 
         document.getElementById("reportProblemBtn").onclick = function() {
-            var deliveryId = modal.dataset.deliveryId;
+                var deliveryId = modal.dataset.deliveryId;
 
-            // Ask for confirmation using SweetAlert
-            Swal.fire({
-                title: 'Are you sure?',
-                text: 'Are you sure you want to report a problem with this delivery?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, report problem',
-                cancelButtonText: 'No, cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // User confirmed, proceed with reporting problem
+                // Ask for confirmation using SweetAlert
+                Swal.fire({
+                        title: 'คุณแน่ใจไหม?',
+                        text: 'คุณแน่ใจหรือไม่ที่จะแจ้งว่าการจัดส่งครั้งนี้มีปัญหา คุณจะไม่สามารถแก้ไขได้หากคุณได้ทำการแจ้งว่าการจัดส่งครั้งนี้มีปัญหา?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'ใช่, แจ้งปัญหา',
+                        cancelButtonText: 'ไม่, ยกเลิก',
+                    }).then((result) => {
+                            if (result.isConfirmed) {
+                                // User confirmed, proceed with reporting problem
 
-                    // Example AJAX request for reporting problem
-                    fetch('function/problem_status.php', { // Update this URL
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                deliveryId: deliveryId,
-                                problem: 'Describe the problem here' // You can prompt user for description here
-                            }),
-                        })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Network response was not ok');
+                                // Example AJAX request for updating status
+                                fetch('function/problem_status.php', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify({
+                                            deliveryId: deliveryId,
+                                            problem: 'Specify the problem here if needed'
+                                        }),
+                                    })
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error('Network response was not ok');
+                                        }
+                                        return response.json();
+                                    })
+                                    .then(data => {
+                                        console.log("Response from server:", data);
+
+                                        // Handle response
+                                        if (data.status === 'success') {
+                                            Swal.fire({
+                                                icon: 'success',
+                                                title: 'Success!',
+                                                text: 'Parcel problem reported successfully.',
+                                            });
+                                            location.reload();
+                                            // Optionally, you can reload the page or update UI here
+                                        } else {
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Error!',
+                                                text: data.message || 'Failed to report parcel problem.',
+                                            });
+                                        }
+                                        modal.style.display = "none"; // Close modal after action
+                                    })
+                                    .catch(error => {
+                                        console.error('Error:', error);
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error!',
+                                            text: 'Failed to update status.',
+                                        });
+                                        modal.style.display = "none"; // Close modal on error
+                                    });
                             }
-                            return response.json();
-                        })
-                        .then(data => {
-                            // Handle response as needed
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Success!',
-                                text: 'Problem reported successfully!',
-                            });
-                            location.reload(); // Reload page after successful report
-                            modal.style.display = "none"; // Close modal after action
-                        })
-                        .catch((error) => {
-                            console.error('Error:', error);
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error!',
-                                text: 'Failed to report problem.',
-                            });
-                            modal.style.display = "none"; // Close modal on error
                         });
-                }
-            });
-        }
+                    }
     </script>
 
 </body>

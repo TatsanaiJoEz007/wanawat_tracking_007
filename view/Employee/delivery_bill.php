@@ -166,21 +166,23 @@
 
 <body>
 
-    <?php
-    // db.php
-    $servername = "localhost";  // Usually 'localhost' if running on the same server
-    $username = "root";  // Replace with your database username
-    $password = "";  // Replace with your database password
-    $dbname = "wanawat_tracking";  // Replace with your database name
+<?php
+// db.php
+$servername = "localhost";  // Usually 'localhost' if running on the same server
+$username = "root";  // Replace with your database username
+$password = "";  // Replace with your database password
+$dbname = "wanawat_tracking";  // Replace with your database name
 
-    // Create connection
-    $conn = new mysqli($servername, $username, $password, $dbname);
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
 
-    // Check connection
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-    ?>
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+
+?>
 
     <?php require_once('function/sidebar_employee.php'); ?>
 
@@ -268,17 +270,21 @@
                                 echo "<td>" . $item["item_price"] . "</td>";
                                 echo "<td>" . $item["line_total"] . "</td>";
                                 echo "<input type='hidden' name='item_sequence[]' value='" . $index . "'>";
-                                echo "<td><center><input type='checkbox' class='product-checkbox' 
+                                echo "<td>";
+                                echo "<center>";
+                                echo "<input type='checkbox' class='product-checkbox' 
                                     data-bill-number='" . $row["bill_number"] . "'
-                                    data-bill-customer= '" . $row["bill_customer_name"] . "'
-                                    data-item-code= '" . $item["item_code"] . "'
+                                    data-bill-customer='" . $row["bill_customer_name"] . "'
+                                    data-item-code='" . $item["item_code"] . "'
                                     data-name='" . $item["item_desc"] . "' 
-                                    data-quantity= '" . $item["item_quantity"] . "'
+                                    data-quantity='" . $item["item_quantity"] . "'
                                     data-unit='" . $item["item_unit"] . "' 
                                     data-price='" . $item["item_price"] . "'
                                     data-total='" . $item["line_total"] . "' 
-                                    data-item-sequence='" . $item["line_sequence"] . "'>
-                                </center></td>";
+                                    data-item-sequence='" . $item["line_sequence"] . "'>";
+                                echo "</center>";
+                                echo "</td>";
+                        
                                 echo "</tr>";
                             }
                         }
@@ -378,7 +384,7 @@
             // Show the SweetAlert with the summary
             Swal.fire({
                 title: '<span style="color: red;">ยืนยันการสร้างบิล</span>',
-                html: '<span style="color: red;">คุณจะไม่สามารถแก้ไขบิลได้อีกต่อไปหากกดยืนยันแล้ว</span><br> ระบบจะทำการสร้างบิลดังต่อไปนี้ :<br>' + summary,
+                html: '<span style="color: red;">คุณจะไม่สามารถแก้ไขบิลได้อีกต่อไปหากกดยืนยันแล้ว</span> ระบบจะทำการสร้างบิลดังต่อไปนี้ :<br>' + summary,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'ยืนยัน',
@@ -413,6 +419,25 @@
         }
 
         document.addEventListener('DOMContentLoaded', calculateTotal);
+
+
+        // ส่ง request ไปยังไฟล์ PHP ที่ทำการอัพเดท status ใน database
+function updateStatusToZero(billNumber) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'update_status.php', true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                // ดำเนินการหลังจากอัพเดทเสร็จสมบูรณ์
+                console.log('Status updated to 0 for bill number ' + billNumber);
+            } else {
+                console.error('Failed to update status');
+            }
+        }
+    };
+    xhr.send('bill_number=' + encodeURIComponent(billNumber));
+}
     </script>
 
 
