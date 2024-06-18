@@ -1,4 +1,4 @@
-<?php require_once ('../config/connect.php'); ?>
+<?php require_once('../config/connect.php'); ?>
 <!DOCTYPE html>
 <html lang="th">
 
@@ -72,8 +72,8 @@
         background-color: #007bff;
         color: #fff;
         padding: 10px 20px;
-        margin-right: 500px;
-        border-radius: 5px;
+        margin-right: 145px;
+        border-radius: 6px;
         display: inline-block;
         transition: background-color 0.3s;
     }
@@ -83,30 +83,55 @@
     }
 
     .swal2-textarea {
-    resize: vertical; /* Allow vertical resizing */
-    min-height: 100px; /* Set a minimum height */
-    max-height: 300px; /* Set a maximum height */
-    border-radius: 5px;
-}
+        resize: vertical;
+        /* Allow vertical resizing */
+        min-height: 100px;
+        /* Set a minimum height */
+        max-height: 300px;
+        /* Set a maximum height */
+        border-radius: 5px;
+    }
 
-    .table-scrollable {
-            max-height: 800px;
-            /* ปรับความสูงตามที่ต้องการ */
-            overflow-y: scroll;
-        }
 
-        /* หากต้องการให้ตารางเลื่อนตามความกว้างของหน้าจอ */
-        @media (max-width: 100px) {
-            .table-scrollable {
-                overflow-x: auto;
-            }
+    /* หากต้องการให้ตารางเลื่อนตามความกว้างของหน้าจอ */
+    @media (max-width: 100px) {
+        .table-scrollable {
+            overflow-x: auto;
         }
+    }
+
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+        width: 12px;
+        /* Adjust width for vertical scrollbar */
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: #FF5722;
+        /* Color for scrollbar thumb */
+        border-radius: 10px;
+        /* Rounded corners for scrollbar thumb */
+    }
+
+    /* Container Styling */
+    .home-section {
+        max-height: 100vh;
+        /* Adjust height as needed */
+        overflow-y: auto;
+        /* Allow vertical scroll */
+        overflow-x: hidden;
+        /* Prevent horizontal scroll */
+        padding: 20px;
+        background-color: #f9f9f9;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+    }
 </style>
 
 </head>
 
 <body>
-    <?php require_once ('function/sidebar.php'); ?>
+    <?php require_once('function/sidebar.php'); ?>
     <h1>Admin FAQ Panel</h1>
 
     <!-- New FAQ Button -->
@@ -115,7 +140,7 @@
 
     </div>
 
-    <div class="faq-container table-scrollable">
+    <div class="faq-container">
         <?php
         // Include database connection
         include '../config/connect.php';
@@ -123,7 +148,7 @@
         // Fetch all FAQs from the database
         $query = "SELECT * FROM tb_freq";
         $result = mysqli_query($conn, $query);
-  
+
         // Check if FAQs exist
         if (mysqli_num_rows($result) > 0) {
             // Output data of each row
@@ -135,21 +160,18 @@
                 echo "<button class='edit-faq-btn btn btn-primary' data-id='" . $row['freq_id'] . "'>Edit</button> ";
                 echo "&nbsp;"; // Add space between buttons
                 echo "<button class='delete-faq-btn btn btn-danger' data-id='" . $row['freq_id'] . "'>Delete</button>";
-                
-          
             }
-           
         } else {
             echo "No FAQs found";
         }
-    
+
         // Close database connection
         mysqli_close($conn);
         ?>
     </div>
     <script>
         // Function to handle new FAQ addition
-        $('#new-faq-btn').click(function () {
+        $('#new-faq-btn').click(function() {
             Swal.fire({
                 title: 'Add New FAQ',
                 html: '<input id="header" class="swal2-input" placeholder="Header">' +
@@ -170,17 +192,17 @@
                             freq_header: header,
                             freq_content: content
                         }
-                    }).done(function (response) {
+                    }).done(function(response) {
                         if (response.trim() == "success") {
-                            Swal.fire('FAQ Added!', '', 'success').then(() => {
+                            Swal.fire('FAQ Added!', 'เพิ่มคำถามที่พบบ่อยสำเร็จ', 'success').then(() => {
                                 location.reload(); // Reload page after adding FAQ
                             });
                         } else {
-                            Swal.fire(['Yayyyyyy...', 'Sabattag to add FAQ', 'Success']);
+                            Swal.fire(['FAQ', 'เพิ่มคำถามที่พบบ่อยสำเร็จ', 'Success']);
                             location.reload();
                         }
-                    }).fail(function () {
-                        Swal.fire('Yayyyyyy...', 'Sabattag to add FAQ', 'Success');
+                    }).fail(function() {
+                        Swal.fire('FAQ Added Fail!.', 'เพิ่มคำถามที่พบบ่อยไม่สำเร็จ', 'Success');
                         location.reload();
                     });
                 }
@@ -188,21 +210,23 @@
         });
 
         // Function to handle editing FAQ
-        $(document).on('click', '.edit-faq-btn',function () {
+        $(document).on('click', '.edit-faq-btn', function() {
             var freq_id = $(this).data('id');
 
             // Retrieve existing FAQ data
             $.ajax({
                 url: 'function/getfreq.php?id=' + freq_id,
                 type: 'POST',
-                data : {freq_id : freq_id},
+                data: {
+                    freq_id: freq_id
+                },
                 dataType: 'json',
-                success: function (data) {
+                success: function(data) {
                     console.log(data);
                     Swal.fire({
                         title: 'Edit FAQ',
                         html: '<input id="editedHeader" class="swal2-input" placeholder="Header" value="' + data.freq_header + '">' +
-    '<textarea id="editedContent" class="swal2-textarea" placeholder="Content">' + data.freq_content + '</textarea>',
+                            '<textarea id="editedContent" class="swal2-textarea" placeholder="Content">' + data.freq_content + '</textarea>',
 
                         showCancelButton: true,
                         confirmButtonText: 'Save',
@@ -216,45 +240,45 @@
                                     header: $('#editedHeader').val(),
                                     content: $('#editedContent').val()
                                 }
-                            }).done(function (response) {
-                                Swal.fire('FAQ Edited!', '', 'success').then(() => {
+                            }).done(function(response) {
+                                Swal.fire('FAQ Edited!', 'แก้ไขสำเร็จ', 'success').then(() => {
                                     location.reload(); // Reload page after editing FAQ
                                 });
-                            }).fail(function () {
-                                Swal.fire('Oops...', 'Failed to edit FAQ', 'error');
+                            }).fail(function() {
+                                Swal.fire('ไม่นะ', 'แก้ไขไม่สำเร็จ', 'error');
                             });
                         }
                     });
                 },
-                error: function (jqXHR, textStatus, errorThrown) {
+                error: function(jqXHR, textStatus, errorThrown) {
                     console.log('Error:', errorThrown);
                 }
             });
         });
 
         // Function to handle deleting FAQ
-        $('.delete-faq-btn').click(function () {
+        $('.delete-faq-btn').click(function() {
             var freq_id = $(this).data('id');
             Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
+                title: 'คุณแน่ใจหรือไม่?',
+                text: "หากลบแล้วคุณจะไม่สามารถเรียกคืนได้อีก!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, delete it!'
+                confirmButtonText: 'ใช่, ลบเลย!'
             }).then((result) => {
                 if (result.isConfirmed) {
                     // AJAX request to delete FAQ
                     $.ajax({
                         url: 'function/delete_faq.php?id=' + freq_id,
                         type: 'POST'
-                    }).done(function (response) {
-                        Swal.fire('Deleted!', 'Your FAQ has been deleted.', 'success').then(() => {
+                    }).done(function(response) {
+                        Swal.fire('ลบสำเร็จ!', 'ลบคำถามที่พบบ่อยสำเร็จ', 'success').then(() => {
                             location.reload(); // Reload page after deleting FAQ
                         });
-                    }).fail(function (reload) {
-                        Swal.fire('Oops...', 'Failed to delete FAQ', 'error');
+                    }).fail(function(reload) {
+                        Swal.fire('ลบไม่สำเร็จ', 'เกิดปัญหาในการเพิ่มคำถามที่พบบ่อย', 'error');
                     });
                 }
             });

@@ -44,6 +44,9 @@ $translations = [
         'freq' => 'คำถามที่พบบ่อย',
         'fullname' => 'ชื่อ-นามสกุล',
         'mobile' => 'เบอร์โทรศัพท์',
+        'success' =>'สำเร็จ',
+        'notsuccess' =>'ไม่สำเร็จ',
+
     ],
     'en' => [
         'th_language' => 'TH Language',
@@ -87,6 +90,8 @@ $translations = [
         'freq' => 'Frequently Questions',
         'fullname' => 'Fullname',
         'mobile' => 'Mobile',
+        'success' =>'success',
+        
     ]
 ];
 
@@ -132,5 +137,7 @@ $lang_description = $translations[$lang]['description'];
 $lang_freq = $translations[$lang]['freq'];
 $lang_fullname = $translations[$lang]['fullname'];
 $lang_mobile = $translations[$lang]['mobile'];
+$lang_susess = $translations[$lang]['susess'];
+
 
 ?>

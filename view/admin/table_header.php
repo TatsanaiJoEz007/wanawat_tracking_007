@@ -25,17 +25,13 @@
         }
 
         ::-webkit-scrollbar {
-    width: 12px; /* Adjust width for vertical scrollbar */
-}
+            width: 12px; /* Adjust width for vertical scrollbar */
+        }
 
-::-webkit-scrollbar-thumb {
-    background-color: #FF5722; /* Color for scrollbar thumb */
-    border-radius: 10px; /* Rounded corners for scrollbar thumb */
-}
-
-/* Container Styling */
-
-
+        ::-webkit-scrollbar-thumb {
+            background-color: #FF5722; /* Color for scrollbar thumb */
+            border-radius: 10px; /* Rounded corners for scrollbar thumb */
+        }
     </style>
 </head>
 
@@ -61,7 +57,7 @@
                         <!-- Table of Users -->
                         <div class="table-container">
                             <table class="table table-striped">
-                                <thead >
+                                <thead>
                                     <tr>
                                         <th class="sorting" scope="col" style="text-align: center;">#</th>
                                         <th scope="col" style="text-align: center;">บิลวันที่</th>
@@ -93,16 +89,23 @@
                                     $query = $conn->query($sql);
 
                                     foreach ($query as $row) :
+                                        $bill_date = trim($row['bill_date']);
+                                        $bill_number = trim($row['bill_number']);
+                                        $bill_customer_id = trim($row['bill_customer_id']);
+                                        $bill_customer_name = trim($row['bill_customer_name']);
+                                        $bill_total = trim($row['bill_total']);
+                                        $bill_isCanceled = trim($row['bill_isCanceled']) == "N" ? "ไม่ถูกยกเลิก" : "ถูกยกเลิก";
+                                        $create_at = trim($row['create_at']);
                                     ?>
                                         <tr>
                                             <td><?php echo $i++; ?></td>
-                                            <td class="align-middle"><?php echo $row['bill_date'] ?></td>
-                                            <td class="align-middle"><?php echo $row['bill_number'] ?></td>
-                                            <td class="align-middle"><?php echo $row['bill_customer_id'] ?></td>
-                                            <td class="align-middle"><?php echo $row['bill_customer_name'] ?></td>
-                                            <td class="align-middle"><?php echo $row['bill_total'] ?></td>
-                                            <td class="align-middle"><?php echo $row['bill_isCanceled'] ?></td>
-                                            <td class="align-middle"><?php echo $row['create_at'] ?></td>
+                                            <td class="align-middle"><?php echo $bill_date; ?></td>
+                                            <td class="align-middle"><?php echo $bill_number; ?></td>
+                                            <td class="align-middle"><?php echo $bill_customer_id; ?></td>
+                                            <td class="align-middle"><?php echo $bill_customer_name; ?></td>
+                                            <td class="align-middle"><?php echo $bill_total; ?></td>
+                                            <td class="align-middle"><?php echo $bill_isCanceled; ?></td>
+                                            <td class="align-middle"><?php echo $create_at; ?></td>
                                             <td class="align-middle">
                                                 <a href="#" class="btn btn-sm btn-danger" onclick="confirmDelete(<?php echo $row['bill_id']; ?>)">Delete</a>
                                             </td>
