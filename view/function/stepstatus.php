@@ -4,9 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Delivery Tracking</title>
-    
+
     <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <script src="https://cdn.lordicon.com/lordicon.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js"></script>
+    <script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=6675a897f75dab0019adeb8f&product=inline-share-buttons&source=platform" async="async"></script>
+
     <style>
         body {
             color: #000;
@@ -309,14 +312,20 @@
                         <center>
                             <lord-icon src="https://cdn.lordicon.com/jxzkkoed.json" trigger="hover" state="hover-enlarge" colors="primary:#121331,secondary:#ffc738,tertiary:#f0952e" style="width:80px;height:80px">
                         </center>
-                    </lord-icon>
+                        </lord-icon>
                         <div class="alert alert-danger mt-3" role="alert">
-                            <p><center>There is a problem with this delivery. Please contact customer support for assistance. </center></p>
-                            <p><center>การจัดส่งนี้มีปัญหา กรุณาติดต่อเจ้าหน้าที่ดูแลลูกค้าเพื่อขอความช่วยเหลือ </center></p>
+                            <p>
+                                <center>There is a problem with this delivery. Please contact customer support for assistance. </center>
+                            </p>
+                            <p>
+                                <center>การจัดส่งนี้มีปัญหา กรุณาติดต่อเจ้าหน้าที่ดูแลลูกค้าเพื่อขอความช่วยเหลือ </center>
+                            </p>
                         </div>
                     <?php endif; ?>
                 </div>
             </div>
+            <div class="sharethis-inline-share-buttons"></div>
+
 </body>
 <script src="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
 <script>

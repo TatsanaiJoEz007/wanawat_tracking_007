@@ -150,27 +150,25 @@
                     <span class="contact-link">+6674324697</span>
                 </div>
             </div>
-            <!-- Bug Report Form -->
-            <div class="contact-card form-widget">
+
+            <!-- Bug Report Form
+            <div class="contact-card form-widget" hidden>
                 <form id="bug-report-form" method="post">
-                    <div class="contact-info">
-                        <span class="contact-label"><?php echo $lang_askquestion ?></span>
-                        <input type="text" name="name" placeholder="<?php echo $lang_yourname ?>" required>
-                        <input type="email" name="email" placeholder="<?php echo $lang_youremail ?>" required>
-                        <textarea name="description" placeholder="<?php echo $lang_description ?>" required></textarea>
-                        <button type="submit" id="submit-button"><?php echo $lang_submit ?></button>
+                    <div class="contact-info" >
+                        <span class="contact-label" ><?php echo $lang_askquestion ?></span>
+                        <input type="text" name="name" placeholder="<?php echo $lang_yourname ?>" required >
+                        <input type="email" name="email" placeholder="<?php echo $lang_youremail ?>" required >
+                        <textarea name="description" placeholder="<?php echo $lang_description ?>" required ></textarea>
+                        <button type="submit" id="submit-button" disabled hidden><?php echo $lang_submit ?></button>
                     </div>
                 </form>
-            </div>
-
-
-
+            </div> -->
 
             <!-- Google Maps Card -->
             <div class="contact-card">
                 <iframe
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2063.5866429814596!2d100.55404425108453!3d7.1203017333774605!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x304d2dbfc1128073%3A0x37eed52fc2690e21!2z4Lin4Li14LmC4Liu4LihIOC4muC4tOC4p-C5gOC4lOC4reC4o-C5jCDguKrguLLguILguLLguKrguIfguILguKXguLIgKOC4muC4iOC4gS7guKfguJnguLLguKfguLHguJLguJnguYzguKfguLHguKrguJTguLgp!5e0!3m2!1sth!2sth!4v1714657276800!5m2!1sth!2sth"
-                    width="100%" height="250" style="border:0;" allowfullscreen="" loading="lazy"
+                    width="100%" height="250px" style="border:3;" allowfullscreen="" loading="lazy"
                     referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
         </div>

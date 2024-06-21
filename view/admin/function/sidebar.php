@@ -505,7 +505,7 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
         <ul class="sub-menu">
           <li><a class="link_name" href="#">จัดการหน้าเว็บไซต์</a></li>
           <li><a href="../admin/banner">หน้าแบนเนอร์</a></li>
-          <li><a href="../admin/contact.php">หน้าติดต่อ</a></li>
+          <li><a href="../admin/contact.php" hidden disabled>หน้าติดต่อ</a></li>
           <li><a href="../admin/question.php">หน้าคำถามที่พบบ่อย</a></li>
         </ul>
       </li>

@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
+
+<?php session_start() ?>
 <head>
     <meta charset="UTF-8">
     <title>CSV Language Converter</title>
@@ -9,30 +11,166 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     <!-- Add custom styles -->
     <style>
-        body { background-color: #f8f9fa; color: #333; font-family: 'Arial', sans-serif; margin: 0; padding: 0; }
-        .container { max-width: 800px; margin: 40px auto; padding: 20px; background-color: #fff; border-radius: 10px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); }
-        .heading { text-align: center; font-size: 36px; font-weight: bold; margin-bottom: 30px; color: #333; }
-        .sub-heading { text-align: center; font-size: 24px; margin-bottom: 20px; color: #555; }
-        .section { margin-bottom: 50px; }
-        .buttons { display: flex; justify-content: center; margin-bottom: 30px; }
-        .btn-custom, .btn-custom2 { background-color: #F0592E; color: #fff; border: none; padding: 12px 24px; border-radius: 5px; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; margin: 0 15px; font-size: 18px; text-decoration: none; }
-        .btn-custom:hover, .btn-custom2:hover { background-color: #ee4616; transform: scale(1.05); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); }
-        .file-input { display: none; }
-        .output-container { background-color: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); margin-top: 30px; word-wrap: break-word; font-size: 16px; line-height: 1.6; color: #555; max-height: 300px; overflow-y: auto; }
-        .fa { margin-right: 8px; }
-        .d-none { display: none; }
-        .ml-3 { margin-left: 1rem; }
-        .file-selected { background-color: #F0592E; }
-        ::-webkit-scrollbar { width: 12px; }
-        ::-webkit-scrollbar-thumb { background-color: #FF5722; border-radius: 10px; }
-        .home-section { max-height: 100vh; overflow-y: auto; overflow-x: hidden; padding: 20px; background-color: #f9f9f9; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 10px; }
-        .instruction-box { background-color: #e9ecef; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
-        .instruction-box h2 { font-size: 24px; margin-bottom: 15px; color: #333; }
-        .instruction-box ol { padding-left: 20px; }
-        .instruction-box li { margin-bottom: 10px; font-size: 18px; color: #555; }
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .heading {
+            text-align: center;
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .sub-heading {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .btn-custom,
+        .btn-custom2 {
+            background-color: #F0592E;
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            margin: 0 15px;
+            font-size: 18px;
+            text-decoration: none;
+        }
+
+        .btn-custom2:hover {
+            background-color: #ee4616;
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-custom:hover {
+            background-color: #ee4616;
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .output-container {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+            word-wrap: break-word;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #555;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .fa {
+            margin-right: 8px;
+        }
+
+        .d-none {
+            display: none;
+        }
+
+        .ml-3 {
+            margin-left: 1rem;
+        }
+
+        .file-selected {
+            background-color: #F0592E;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 12px;
+            /* Adjust width for vertical scrollbar */
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #FF5722;
+            /* Color for scrollbar thumb */
+            border-radius: 10px;
+            /* Rounded corners for scrollbar thumb */
+        }
+
+        /* Container Styling */
+        .home-section {
+            max-height: 100vh;
+            /* Adjust height as needed */
+            overflow-y: auto;
+            /* Allow vertical scroll */
+            overflow-x: hidden;
+            /* Prevent horizontal scroll */
+            padding: 20px;
+            background-color: #f9f9f9;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .instruction-box {
+            background-color: #e9ecef;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .instruction-box h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .instruction-box ol {
+            padding-left: 20px;
+        }
+
+        .instruction-box li {
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #555;
+        }
     </style>
 </head>
+
 <body>
+
+    <?php require_once('function/sidebar_employee.php'); ?>
 
     <div class="container">
         <h1 class="heading">Import Head CSV</h1>
@@ -115,55 +253,42 @@
                             const filteredData = results.data.filter(row => row.some(cell => cell.trim() !== ''));
                             convertedCSVData = Papa.unparse(filteredData);
                             document.getElementById('output1').innerText = convertedCSVData;
+                            Swal.fire('Success', 'CSV file has been converted to UTF-8.', 'success');
                         }
                     });
                 };
-                reader.readAsText(file, 'windows-874');
+                reader.readAsText(file);
             } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Please select a CSV file.'
-                });
+                Swal.fire('Error', 'Please select a CSV file.', 'error');
             }
         }
 
         function importToDatabase() {
             if (convertedCSVData) {
-                const formData = new FormData();
-                formData.append('csvData', convertedCSVData);
-
-                fetch('api.php?action=importHead', {
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Success',
-                                text: "Importing data successfully!"
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops...',
-                                text: data.message
-                            });
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Please convert a CSV file first.'
+                fetch('function/function_importCSV.php?action=importHead', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ data: convertedCSVData })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire('Success', 'Data has been imported to the database.', 'success');
+                    } else {
+                        Swal.fire('Error', data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    Swal.fire('Error', error.message, 'error');
                 });
+            } else {
+                Swal.fire('Error', 'No converted CSV data available.', 'error');
             }
         }
 
-        let convertedCSVData2; // Store converted CSV data globally
+        let convertedCSVData2; // Store converted CSV data globally for Line CSV
 
         function convertCSV2() {
             const fileInput = document.getElementById('csvFileInput2');
@@ -178,53 +303,55 @@
                             const filteredData = results.data.filter(row => row.some(cell => cell.trim() !== ''));
                             convertedCSVData2 = Papa.unparse(filteredData);
                             document.getElementById('output2').innerText = convertedCSVData2;
+                            Swal.fire('Success', 'CSV file has been converted to UTF-8.', 'success');
                         }
                     });
                 };
-                reader.readAsText(file, 'windows-874');
+                reader.readAsText(file);
             } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Please select a CSV file.'
-                });
+                Swal.fire('Error', 'Please select a CSV file.', 'error');
             }
         }
 
         function importToDatabase2() {
             if (convertedCSVData2) {
-                const formData = new FormData();
-                formData.append('csvData2', convertedCSVData2);
-
-                fetch('api.php?action=importLine', {
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Success',
-                                text: "Importing data successfully!"
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops...',
-                                text: data.message
-                            });
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Please convert a CSV file first.'
+                fetch('function/function_importCSV.php?action=importLine', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ data: convertedCSVData2 })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire('Success', 'Data has been imported to the database.', 'success');
+                    } else {
+                        Swal.fire('Error', data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    Swal.fire('Error', error.message, 'error');
                 });
+            } else {
+                Swal.fire('Error', 'No converted CSV data available.', 'error');
             }
         }
+
+        document.getElementById('csvFileInput1').addEventListener('change', function() {
+            const fileInputText = document.getElementById('fileInputText1');
+            const fileName = this.files[0].name;
+            fileInputText.textContent = fileName;
+            fileInputText.classList.add('file-selected');
+        });
+
+        document.getElementById('csvFileInput2').addEventListener('change', function() {
+            const fileInputText = document.getElementById('fileInputText2');
+            const fileName = this.files[0].name;
+            fileInputText.textContent = fileName;
+            fileInputText.classList.add('file-selected');
+        });
+
     </script>
 </body>
 </html>
