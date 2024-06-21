@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<?php session_start() ?>
 <head>
     <meta charset="UTF-8">
     <title>CSV Language Converter</title>
@@ -169,7 +170,7 @@
 
 <body>
 
-    <?php require_once('function/sidebar.php'); ?>
+    <?php require_once('function/sidebar_employee.php'); ?>
 
     <div class="container">
         <h1 class="heading">Import Head CSV</h1>
@@ -421,8 +422,8 @@
 
             foreach ($rows as $row) {
                 $data2 = str_getcsv($row);
-                if (count($data2) === 8) { // Check if the row has all 8 columns
-                    $stmt = $pdo->prepare("INSERT INTO tb_line (line_bill_number, item_sequence, item_code, item_desc, item_quantity, item_unit, item_price, line_total) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                if (count($data2) === 9) { // Check if the row has all 8 columns
+                    $stmt = $pdo->prepare("INSERT INTO tb_line (line_bill_number, item_sequence, item_code, item_desc, item_quantity, item_unit, item_price, line_total , line_weight) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
                     $stmt->execute($data2);
                 }
             }

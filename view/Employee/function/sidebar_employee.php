@@ -1,38 +1,38 @@
 <?php
-    require_once('../../view/config/connect.php');
-    session_start();
+require_once('../../view/config/connect.php');
+session_start();
 
 
-    if (!isset($_SESSION['login'])) {
-        echo '<script>location.href="../../view/login.php"</script>';
-    }
+// if (!isset($_SESSION['login'])) {
+//     echo '<script>location.href="../../view/login.php"</script>';
+// }
 
-    function fetchUserProfile($conn, $userId)
-    {
-        $sql = "SELECT tb_user.*, 
-                provinces.name_th AS province_name, 
-                amphures.name_th AS amphure_name, 
-                districts.name_th AS district_name,
-                districts.zip_code AS zipcode 
-                FROM tb_user
-                LEFT JOIN provinces ON tb_user.province_id = provinces.id 
-                LEFT JOIN amphures ON tb_user.amphure_id = amphures.id 
-                LEFT JOIN districts ON tb_user.district_id = districts.id 
-                WHERE user_id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $userId);
-        $stmt->execute();
-        return $stmt->get_result()->fetch_array(MYSQLI_ASSOC);
-    }
+function fetchUserProfile($conn, $userId)
+{
+    $sql = "SELECT tb_user.*, 
+                    provinces.name_th AS province_name, 
+                    amphures.name_th AS amphure_name, 
+                    districts.name_th AS district_name,
+                    districts.zip_code AS zipcode 
+                    FROM tb_user
+                    LEFT JOIN provinces ON tb_user.province_id = provinces.id 
+                    LEFT JOIN amphures ON tb_user.amphure_id = amphures.id 
+                    LEFT JOIN districts ON tb_user.district_id = districts.id 
+                    WHERE user_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    return $stmt->get_result()->fetch_array(MYSQLI_ASSOC);
+}
 
-    function getImageBase64($imageData)
-    {
-        return 'data:image/jpeg;base64,' . base64_encode($imageData);
-    }
+function getImageBase64($imageData)
+{
+    return 'data:image/jpeg;base64,' . base64_encode($imageData);
+}
 
-    $userId = $_SESSION['user_id'];
-    $myprofile = fetchUserProfile($conn, $userId);
-    $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_img']) : '../../view/assets/img/logo/mascot.png'; // Set your default image path here
+$userId = $_SESSION['user_id'];
+$myprofile = fetchUserProfile($conn, $userId);
+$imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_img']) : '../../view/assets/img/logo/mascot.png'; // Set your default image path here
 ?>
 
 <!DOCTYPE html>
@@ -450,6 +450,19 @@
         </div>
         <ul class="nav-links">
 
+            <li>
+                <div class="iocn-link">
+                    <a href="#">
+                        <i class="bx bx-cloud-upload nav_icon"></i>
+                        <span class="link_name">เพิ่มบิลจาก CSV</span>
+                    </a>
+                    <i class='bx bxs-chevron-down arrow'></i>
+                </div>
+                <ul class="sub-menu">
+                    <li><a href="../employee/importCSV.php">เพิ่ม CSV</a></li>
+                    <li><a href="../employee/table.php">หัวบิลที่เพิ่มแล้ว</a></li>
+                </ul>
+            </li>
             <li>
                 <a href="../employee/statusbill.php">
                     <i class="bx bx-send nav_icon"></i>
