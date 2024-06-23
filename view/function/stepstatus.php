@@ -226,41 +226,74 @@
 </head>
 
 <body>
-    <div class="container px-1 px-md-4 py-5 mx-auto">
+    <div class="container px-1 px-md-4 py-5 mx-auto ">
         <div class="card">
             <div class="row d-flex justify-content-between px-3 top">
                 <div class="d-flex">
-                    <?php
+                <?php
                     // Establish database connection
-                    $servername = "localhost";
-                    $username = "root";
-                    $password = "";
-                    $dbname = "wanawat_tracking";
-
-                    $conn = new mysqli($servername, $username, $password, $dbname);
+                    require_once('config/connect.php');
 
                     // Check connection
                     if ($conn->connect_error) {
                         die("Connection failed: " . $conn->connect_error);
                     }
 
-                    // Fetch delivery number from URL parameter
+                    // Fetch delivery number or bill number from URL parameter
                     $trackingId = htmlspecialchars($_GET['trackingId']);
 
-                    // Query to fetch delivery number and delivery time
-                    $sql = "SELECT delivery_number, delivery_date, delivery_status FROM tb_delivery WHERE delivery_number = ?";
+                    // Initialize variables
+                    $delivery_number = null;
+                    $delivery_date = null;
+                    $delivery_status = null;
+                    $searchByBillNumber = false;
+
+                    // Query to fetch details from tb_delivery using delivery_number
+                    $sql = "SELECT d.delivery_number, d.delivery_date, d.delivery_status 
+                            FROM tb_delivery AS d
+                            WHERE d.delivery_number = ?";
                     $stmt = $conn->prepare($sql);
                     $stmt->bind_param("s", $trackingId);
                     $stmt->execute();
                     $stmt->bind_result($delivery_number, $delivery_date, $delivery_status);
+                    $stmt->fetch();
+                    $stmt->close();
 
-                    // Display delivery number and delivery time
-                    if ($stmt->fetch()) {
-                        // Determine which steps should be active based on delivery status
+                    // If no result found, try searching by bill_number
+                    if (!$delivery_number) {
+                        $sql = "SELECT di.delivery_id, di.bill_number 
+                                FROM tb_delivery_items AS di
+                                WHERE di.bill_number = ?";
+                        $stmt = $conn->prepare($sql);
+                        $stmt->bind_param("s", $trackingId);
+                        $stmt->execute();
+                        $stmt->bind_result($delivery_id, $bill_number);
+                        $stmt->fetch();
+                        $stmt->close();
+
+                        if ($bill_number) {
+                            $searchByBillNumber = true;
+                            // Fetch delivery_number, delivery_date, and delivery_status from tb_delivery using delivery_id
+                            $sql = "SELECT d.delivery_number, d.delivery_date, d.delivery_status 
+                                    FROM tb_delivery AS d
+                                    INNER JOIN tb_delivery_items AS di ON d.delivery_id = di.delivery_id
+                                    WHERE di.bill_number = ?";
+                    
+                            $stmt = $conn->prepare($sql);
+                            $stmt->bind_param("i", $delivery_id);
+                            $stmt->execute();
+                            $stmt->bind_result($delivery_number, $delivery_date, $delivery_status);
+                            $stmt->fetch();
+                            $stmt->close();
+                        }
+                    }
+
+                    // Determine active steps based on delivery status
+                    $active_steps = [];
+                    if ($delivery_number && $delivery_status !== null) {
                         $active_steps = range(1, $delivery_status);
                     } else {
-                        echo "<b>ไม่พบวันที่คำสั่งซื้อเข้าระบบ</b>"; // If delivery number is not found
-                        $active_steps = [];
+                        echo "<b>ไม่พบวันที่คำสั่งซื้อเข้าระบบ</b>"; // If neither delivery number nor bill number is found
                     }
 
                     $show_error = false;
@@ -268,20 +301,18 @@
                         $show_error = true;
                     }
 
-                    // Close statement after fetching
-                    $stmt->close();
-
                     // Close connection
                     $conn->close();
                     ?>
-
                 </div>
             </div>
             <!-- Add class 'active' to progress -->
             <div class="row d-flex justify-content-center">
                 <div class="col-10">
                     <h5>หมายเลขบิล <span class='order font-weight-bold'><?php echo "$trackingId" ?></span></h5>
-                    <b> &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; วันที่คำสั่งซื้อเข้าระบบ: <?php echo date('Y-m-d H:i:s', strtotime($delivery_date))  ?> </b>
+                    <?php if ($delivery_date) : ?>
+                        <b> &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; วันที่คำสั่งซื้อเข้าระบบ: <?php echo date('Y-m-d H:i:s', strtotime($delivery_date)) ?> </b>
+                    <?php endif; ?>
                     <ul id="progressbar" class="text-center">
                         <li class="step1 <?php if (in_array(1, $active_steps)) echo 'active'; ?>">
                             <lord-icon class="iconmini" src="https://cdn.lordicon.com/qnstsxhd.json" trigger="hover" colors="primary:#121331,secondary:#f0592e,tertiary:#ebe6ef,quaternary:#ffc738" style="width:50px;height:50px"></lord-icon>
@@ -302,7 +333,7 @@
                             </lord-icon>
                             <div class="icon-content"> กำลังนำส่งให้ลูกค้า </div>
                         </li>
-                        <li class="step5 in_array(5, $active_steps)) echo 'active'; ?>">
+                        <li class="step5 <?php if (in_array(5, $active_steps)) echo 'active'; ?>">
                             <lord-icon src="https://cdn.lordicon.com/qxqvtswi.json" trigger="hover" state="bold" colors="primary:#f0592e,secondary:#f0592e,tertiary:#000000" style="width:50px;height:50px">
                             </lord-icon>
                             <div class="icon-content"> จัดส่งสำเร็จ </div>
@@ -330,8 +361,8 @@
 <script src="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     $(document).ready(function() {
-        // Assuming delivery_status is correctly fetched and available
-        var deliveryStatus = <?php echo $delivery_status; ?>;
+        // Assuming delivery_status is sent from PHP
+        var deliveryStatus = parseInt('<?php echo $delivery_status ?? 0; ?>'); // Use nullish coalescing operator
         var active_steps = <?php echo json_encode($active_steps); ?>;
 
         // Remove all active classes first
@@ -343,5 +374,6 @@
         });
     });
 </script>
+
 
 </html>

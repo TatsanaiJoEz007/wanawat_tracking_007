@@ -47,3 +47,7 @@ Options -Indexes
 
 # Limit maximum request size
 LimitRequestBody 102400
+
+
+php_flag display_errors off
+php_value error_reporting 0

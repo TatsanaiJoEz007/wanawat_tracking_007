@@ -296,16 +296,23 @@ if ($conn->connect_error) {
                 </table>
             </div>
         </div>
-        <div class="cart">
-            <h2 class="cart-title">ตะกร้าสินค้า</h2>
-            <ul class="cart-items" id="cart-items">
-                <!-- สินค้าที่เลือกจะปรากฏที่นี่ -->
-            </ul>
-            <hr>
+            <div class="cart">
+                <h2 class="cart-title">ตะกร้าสินค้า</h2>
+                <ul class="cart-items" id="cart-items">
+                    <!-- สินค้าที่เลือกจะปรากฏที่นี่ -->
+                </ul>
+                <hr>
 
-            <h7 class="cart-total">ราคารวม: <span id="total-price">฿0</span></h7>
-            <button class="create-bill-btn" id="create-bill-btn">สร้างบิล</button>
-        </div>
+                <h7 class="cart-total">ราคารวม: <span id="total-price">฿0</span></h7>
+                
+                <!-- เพิ่ม radio buttons สำหรับเลือกประเภทการขนส่ง -->
+                <div>
+                    <label><input type="radio" name="transfer_type" value="human" checked> Human</label>
+                    <label><input type="radio" name="transfer_type" value="forklift"> Forklift</label>
+                </div>
+
+                <button class="create-bill-btn" id="create-bill-btn">สร้างบิล</button>
+             </div>
     </div>
 
 
@@ -334,6 +341,7 @@ if ($conn->connect_error) {
                 const unit = checkbox.getAttribute('data-unit');
                 const price = checkbox.getAttribute('data-price');
                 const total = checkbox.getAttribute('data-total');
+                const transferType = document.querySelector('input[name="transfer_type"]:checked').getAttribute('data-transfer-type');
 
                 if (checkbox.checked) {
                     const li = document.createElement('li');
@@ -352,7 +360,8 @@ if ($conn->connect_error) {
                         itemcode,
                         quantity,
                         total,
-                        billcus
+                        billcus,
+                        transferType
                     });
                 } else {
                     cartItems.querySelectorAll('.cart-item').forEach(item => {
@@ -374,6 +383,9 @@ if ($conn->connect_error) {
         });
 
         createBillBtn.addEventListener('click', () => {
+            // Get the selected transfer type
+            const transferType = document.querySelector('input[name="transfer_type"]:checked').value;
+
             // Prepare the summary message
             let summary = '<ul>';
             selectedItems.forEach(item => {
@@ -401,11 +413,20 @@ if ($conn->connect_error) {
                     hiddenField.setAttribute('name', 'selected_items');
                     hiddenField.setAttribute('value', selectedItemsJSON);
                     form.appendChild(hiddenField);
+
+                    // Add transfer type as a hidden input field
+                    const transferTypeField = document.createElement('input');
+                    transferTypeField.setAttribute('type', 'hidden');
+                    transferTypeField.setAttribute('name', 'transfer_type');
+                    transferTypeField.setAttribute('value', transferType);
+                    form.appendChild(transferTypeField);
+
                     document.body.appendChild(form);
                     form.submit();
                 }
             });
         });
+
 
         function calculateTotal() {
             const cartItems = document.querySelectorAll('#cart-items .cart-item');

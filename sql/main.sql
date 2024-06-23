@@ -112,3 +112,15 @@ CREATE TABLE IF NOT EXISTS tb_delivery (
    
     PRIMARY KEY (deli_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS employee_activity_log(
+    id INT AUTO_INCREMENT,
+    employeeId INT NOT NULL,
+    action_type VARCHAR(255) NOT NULL,
+    entity VARCHAR(255) NOT NULL,
+    entity_id INT NOT NULL,
+    create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    additional_info TEXT,
+    PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

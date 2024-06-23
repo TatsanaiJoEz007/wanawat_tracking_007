@@ -137,7 +137,7 @@ $lang_description = $translations[$lang]['description'];
 $lang_freq = $translations[$lang]['freq'];
 $lang_fullname = $translations[$lang]['fullname'];
 $lang_mobile = $translations[$lang]['mobile'];
-$lang_susess = $translations[$lang]['susess'];
+$lang_success = $translations[$lang]['success'];
 
 
 ?>
