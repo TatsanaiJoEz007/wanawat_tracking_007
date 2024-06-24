@@ -6,7 +6,7 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^([^\.]+)$ $1.php [NC,L]
 
 # Disable PHP display_errors
-php_flag display_errors on
+php_flag display_errors off
 
 # Prevent directory browsing
 Options -Indexes
@@ -46,8 +46,4 @@ Options -Indexes
 </IfModule>
 
 # Limit maximum request size
-LimitRequestBody 102400
-
-
-php_flag display_errors off
-php_value error_reporting 0
+LimitRequestBody 10240000000000

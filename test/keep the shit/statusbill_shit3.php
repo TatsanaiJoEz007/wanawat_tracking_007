@@ -1,22 +1,19 @@
 <?php
-session_start();
+    // db.php
+    $servername = "localhost";  // Usually 'localhost' if running on the same server
+    $username = "root";  // Replace with your database username
+    $password = "";  // Replace with your database password
+    $dbname = "wanawat_tracking";  // Replace with your database name
 
-// db.php
-$servername = "localhost";  // Usually 'localhost' if running on the same server
-$username = "root";  // Replace with your database username
-$password = "";  // Replace with your database password
-$dbname = "wanawat_tracking";  // Replace with your database name
+    // Create connection
+    $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
 
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-$user_id = $_SESSION['user_id'];
-
+    session_start();
 ?>
 
 <!DOCTYPE html>
@@ -29,8 +26,6 @@ $user_id = $_SESSION['user_id'];
     <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <script src="https://cdn.lordicon.com/lordicon.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-
 
     <style>
         body {
@@ -67,32 +62,60 @@ $user_id = $_SESSION['user_id'];
             border-radius: 5px;
         }
 
-        .table-container {
-            width: 100%;
-            margin: 0 auto;
-            overflow-x: auto;
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-
-        table,
-        th,
-        td {
+        .card {
             border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 250px;
+            background-color: #fff;
+            overflow: hidden;
+            transition: transform 0.2s;
         }
 
-        th,
-        td {
-            padding: 10px;
-            text-align: left;
+        .card:hover {
+            transform: scale(1.05);
         }
 
-        th {
-            background-color: #f4f4f4;
+        .card-body {
+            padding: 15px;
+        }
+
+        .card-body .card-text {
+            margin-bottom: 0.5rem;
+            color: #555;
+        }
+
+        .card-body .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .card-body .btn:hover {
+            background-color: #005fad;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            margin-top: 20px;
         }
 
         .search {
@@ -111,91 +134,6 @@ $user_id = $_SESSION['user_id'];
             background-color: #F1693E;
             cursor: pointer;
             transition: 0.3s ease-in-out;
-        }
-
-        .status-red {
-            background-color: #ffcccc;
-        }
-
-        .status-green {
-            background-color: #ccffcc;
-        }
-
-        .status-yellow {
-            background-color: #ffffcc;
-        }
-
-        .status-blue {
-            background-color: #cce5ff;
-        }
-
-        .status-purple {
-            background-color: #dfe2fb;
-        }
-
-        .status-grey {
-            background-color: #f0f2f5;
-        }
-
-        .btn-custom {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 0.25rem;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            text-decoration: none;
-        }
-
-        .btn-custom:hover {
-            background-color: #0056b3;
-        }
-
-        .btn-red {
-            background-color: #dc3545;
-        }
-
-        .btn-red:hover {
-            background-color: #c82333;
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4);
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 600px;
-            border-radius: 10px;
-            position: relative;
-        }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
         }
 
         ::-webkit-scrollbar {
@@ -221,6 +159,36 @@ $user_id = $_SESSION['user_id'];
             background-color: #f9f9f9;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
+        }
+
+        .card-red {
+            background-color: #ffcccc;
+            /* Light red */
+        }
+
+        .card-green {
+            background-color: #ccffcc;
+            /* Light green */
+        }
+
+        .card-yellow {
+            background-color: #ffffcc;
+            /* Light yellow */
+        }
+
+        .card-blue {
+            background-color: #cce5ff;
+            /* Light blue */
+        }
+
+        .card-purple {
+            background-color: #dfe2fb;
+            /* Light purple */
+        }
+
+        .card-grey {
+            background-color: #f0f2f5;
+            /* Light grey */
         }
 
         .instruction-box {
@@ -263,63 +231,100 @@ $user_id = $_SESSION['user_id'];
             transform: rotate(45deg);
         }
 
-        .button-cute {
-            background-color: #f0592e;
-            border: 2px solid #f0600e;
-            border-radius: 12px;
-            padding: 10px 20px;
-            cursor: pointer;
-            transition: transform 0.3s ease-in-out;
-        }
-
-        .button-cute:hover {
-            background-color: #f0500e;
-            transform: translateY(-3px);
-        }
-
-        .button-cute a {
-            text-decoration: none;
-            color: #fff;
-            font-size: 18px;
-            transition: color 0.3s ease-in-out;
-        }
-
-        .button-cute:hover a {
-            color: #ffdeeb;
-        }
-
-        .button-cute a::after {
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-            transform: translateX(-5px);
-        }
-
-        .button-cute:hover a::after {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .pagination a {
-            margin: 0 5px;
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            text-decoration: none;
-            color: #333;
-        }
-
-        .pagination a.active {
+        .btn-custom {
             background-color: #007bff;
-            color: white;
-            border-color: #007bff;
+            /* Blue color from Bootstrap */
+            color: #fff;
+            /* White text */
+            border: none;
+            /* No border */
+            padding: 0.5rem 1rem;
+            /* Padding for better spacing */
+            border-radius: 0.25rem;
+            /* Rounded corners */
+            cursor: pointer;
+            /* Cursor style */
+            transition: background-color 0.3s;
+            /* Smooth transition */
         }
-    </style>
 
+        .btn-custom:hover {
+            background-color: #0056b3;
+            /* Darker shade on hover */
+        }
+
+        .btn-red {
+            background-color: #dc3545;
+            /* Red color from Bootstrap */
+        }
+
+        .btn-red:hover {
+            background-color: #c82333;
+            /* Red color from Bootstrap */
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            /* Stay in place */
+            z-index: 1000;
+            /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            /* Enable scroll if needed */
+            background-color: rgba(0, 0, 0, 0.4);
+            /* Black w/ opacity */
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            /* Could be more or less, depending on screen size */
+            max-width: 600px;
+            /* Limit maximum width */
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .content {
+            padding: 16px;
+        }
+
+        .sticky {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 9999;
+            /* Ensure it's above other elements */
+        }
+
+        .sticky+.content {
+            padding-top: 60px;
+            /* Adjust according to the height of your sticky element */
+        }
     </style>
 </head>
 
@@ -357,6 +362,7 @@ $user_id = $_SESSION['user_id'];
                         <i style="color:black;">: สถานะสินค้าที่กำลังนำส่งให้ลูกค้า</i>
                 </ol>
             </div>
+            <button><a href="statusbill_card.php">Table Style</a></button>
             <script>
                 function toggleInstructions() {
                     var instructions = document.querySelector('.instruction-list');
@@ -445,7 +451,6 @@ $user_id = $_SESSION['user_id'];
             <table>
                 <thead>
                     <tr>
-                        <th>#</th>
                         <th>Delivery ID & Number</th>
                         <th>Item Count</th>
                         <th>Status</th>
@@ -456,7 +461,6 @@ $user_id = $_SESSION['user_id'];
                 <tbody>
                     <?php
                     if (mysqli_num_rows($result) > 0) {
-                        $i = 1;
                         while ($row = mysqli_fetch_assoc($result)) {
                             switch ($row['delivery_status']) {
                                 case 1:
@@ -490,15 +494,12 @@ $user_id = $_SESSION['user_id'];
 
                             // Output the row in the table
                             echo '<tr class="' . $status_class . '">';
-                            echo '<td>' . $i . '</td>';
-                            echo '<td>' . $row['delivery_number'] . '</td>';
+                            echo '<td>' . $row['delivery_id'] . ' - ' . $row['delivery_number'] . '</td>';
                             echo '<td>' . $row['item_count'] . '</td>';
                             echo '<td>' . $status_text . '</td>';
                             echo '<td>' . $row['delivery_date'] . '</td>';
                             echo '<td><button class="btn-custom" onclick="openModal(\'' . $status_text . '\', \'' . $row['delivery_id'] . '\', \'' . $row['delivery_number'] . '\')">Manage</button></td>';
                             echo '</tr>';
-
-                            $i++;
                         }
                     } else {
                         echo "<tr><td colspan='5'>No delivery bills found.</td></tr>";
@@ -525,14 +526,19 @@ $user_id = $_SESSION['user_id'];
     </div>
 
 
+
     <!-- Modal section -->
-
-
     <div id="myModal" class="modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
             <h2>Update Status</h2>
-            <h1 id="deliveryNumber" class="card-text"><b>Delivery Number : </b><span></span></h1> <br>
+            <?php
+            $sql = "SELECT * FROM tb_delivery";
+            $result = mysqli_query($conn, $sql);
+            $row = mysqli_fetch_assoc($result);
+
+            $delivery_number = $row['delivery_number'];
+            ?>
+            <h1 id="deliveryNumber" class="card-text"><b>Delivery Number : </b><span><?php echo $delivery_number ?></span></h1> <br>
             <p><b>Current Status: </b><span id="currentStatus"></span></p>
             <hr> <br>
             <button id="updateStatusBtn" class="btn-custom">อัพเดทสถานะการจัดส่งสินค้า</button>
@@ -565,24 +571,19 @@ $user_id = $_SESSION['user_id'];
             }
         }
 
-        // Update status button click handler
         document.getElementById("updateStatusBtn").onclick = function() {
             var deliveryId = modal.dataset.deliveryId;
 
-            // Ask for confirmation using SweetAlert
+            // Show confirmation dialog
             Swal.fire({
-                title: 'คุณแน่ใจไหม?',
-                text: 'คุณแน่ใจหรือไม่ที่จะอัพเดทสถานะการขนส่งครั้งนี้ คุณจะไม่สามารถแก้ไขได้หากคุณได้ทำการอัพเดทไปแล้ว?',
-                icon: 'warning',
+                title: 'คุณแน่ใจหรือไม่?',
+                text: 'คุณแน่ใจไหมที่จะอัพเดทสถานะการจัดส่งสินค้า คุณจะไม่สามารถแก้ไขได้อีกหากกดอัพเดทไปแล้ว?',
+                icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'ใช่, อัพเดท',
-                cancelButtonText: 'ไม่, ยกเลิก',
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // User confirmed, proceed with updating status
-
                     // Example AJAX request for updating status
                     fetch('function/update_status.php', {
                             method: 'POST',
@@ -604,86 +605,25 @@ $user_id = $_SESSION['user_id'];
 
                             // Handle response
                             if (data.status === 'success') {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Success!',
-                                    text: 'Delivery status updated successfully.',
-                                });
-                                location.reload(); // Reload the page after successful update
+                                if (data.maxReached) {
+                                    Swal.fire({
+                                        icon: 'info',
+                                        title: 'คุณไม่สามารถเลือกสินค้าได้มากกว่า 15 รายการ',
+                                        text: 'คุณสามารถเลือกสินค้าได้มากที่สุด 15 รายการต่อการขนส่ง 1 ครั้ง',
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'สำเร็จ!',
+                                        text: 'ทำการแก้ไขสถานะเสร็จสิ้น!',
+                                    });
+                                    location.reload(); // Reload page after successful update
+                                }
                             } else {
                                 Swal.fire({
                                     icon: 'error',
-                                    title: 'Error!',
-                                    text: data.message || 'Failed to update delivery status.',
-                                });
-                            }
-                            modal.style.display = "none"; // Close modal after action
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error!',
-                                text: 'Failed to update delivery status.',
-                            });
-                            modal.style.display = "none"; // Close modal on error
-                        });
-                }
-            });
-        }
-
-
-        document.getElementById("reportProblemBtn").onclick = function() {
-            var deliveryId = modal.dataset.deliveryId;
-
-            // Ask for confirmation using SweetAlert
-            Swal.fire({
-                title: 'คุณแน่ใจไหม?',
-                text: 'คุณแน่ใจหรือไม่ที่จะแจ้งว่าการจัดส่งครั้งนี้มีปัญหา คุณจะไม่สามารถแก้ไขได้หากคุณได้ทำการแจ้งว่าการจัดส่งครั้งนี้มีปัญหา?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'ใช่, แจ้งปัญหา',
-                cancelButtonText: 'ไม่, ยกเลิก',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // User confirmed, proceed with reporting problem
-
-                    // Example AJAX request for updating status
-                    fetch('function/problem_status.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                deliveryId: deliveryId,
-                                problem: 'Specify the problem here if needed'
-                            }),
-                        })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Network response was not ok');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            console.log("Response from server:", data);
-
-                            // Handle response
-                            if (data.status === 'success') {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Success!',
-                                    text: 'Parcel problem reported successfully.',
-                                });
-                                location.reload();
-                                // Optionally, you can reload the page or update UI here
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error!',
-                                    text: data.message || 'Failed to report parcel problem.',
+                                    title: 'มีข้อผิดพลาด!',
+                                    text: data.message || 'มีข้อผิดพลาดในการแก้ไขสถานะ!',
                                 });
                             }
                             modal.style.display = "none"; // Close modal after action
@@ -697,14 +637,88 @@ $user_id = $_SESSION['user_id'];
                             });
                             modal.style.display = "none"; // Close modal on error
                         });
+                } else {
+                    // User clicked "No" or closed the dialog
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'ยกเลิก',
+                        text: 'การอัพเดทสถานะถูกยกเลิก.',
+                    });
+                    modal.style.display = "none"; // Close modal without action
                 }
             });
         }
 
-        $(document).ready(function() {
-            $("#myTable").DataTable();
-        });
+
+        document.getElementById("reportProblemBtn").onclick = function() {
+                var deliveryId = modal.dataset.deliveryId;
+
+                // Ask for confirmation using SweetAlert
+                Swal.fire({
+                        title: 'คุณแน่ใจไหม?',
+                        text: 'คุณแน่ใจหรือไม่ที่จะแจ้งว่าการจัดส่งครั้งนี้มีปัญหา คุณจะไม่สามารถแก้ไขได้หากคุณได้ทำการแจ้งว่าการจัดส่งครั้งนี้มีปัญหา?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'ใช่, แจ้งปัญหา',
+                        cancelButtonText: 'ไม่, ยกเลิก',
+                    }).then((result) => {
+                            if (result.isConfirmed) {
+                                // User confirmed, proceed with reporting problem
+
+                                // Example AJAX request for updating status
+                                fetch('function/problem_status.php', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify({
+                                            deliveryId: deliveryId,
+                                            problem: 'Specify the problem here if needed'
+                                        }),
+                                    })
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error('Network response was not ok');
+                                        }
+                                        return response.json();
+                                    })
+                                    .then(data => {
+                                        console.log("Response from server:", data);
+
+                                        // Handle response
+                                        if (data.status === 'success') {
+                                            Swal.fire({
+                                                icon: 'success',
+                                                title: 'Success!',
+                                                text: 'Parcel problem reported successfully.',
+                                            });
+                                            location.reload();
+                                            // Optionally, you can reload the page or update UI here
+                                        } else {
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Error!',
+                                                text: data.message || 'Failed to report parcel problem.',
+                                            });
+                                        }
+                                        modal.style.display = "none"; // Close modal after action
+                                    })
+                                    .catch(error => {
+                                        console.error('Error:', error);
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error!',
+                                            text: 'Failed to update status.',
+                                        });
+                                        modal.style.display = "none"; // Close modal on error
+                                    });
+                            }
+                        });
+                    }
     </script>
+
 </body>
 
 </html>

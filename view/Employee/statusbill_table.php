@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 // db.php
 $servername = "localhost";  // Usually 'localhost' if running on the same server
 $username = "root";  // Replace with your database username
@@ -13,7 +15,8 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-session_start();
+$user_id = $_SESSION['user_id'];
+
 ?>
 
 <!DOCTYPE html>
@@ -26,6 +29,8 @@ session_start();
     <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <script src="https://cdn.lordicon.com/lordicon.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
 
     <style>
         body {
@@ -88,6 +93,24 @@ session_start();
 
         th {
             background-color: #f4f4f4;
+        }
+
+        .search {
+            background-color: #f0592e;
+            color: white;
+            margin-top: 20px;
+            margin-left: 20px;
+            margin-right: 20px;
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .search:hover {
+            background-color: #F1693E;
+            cursor: pointer;
+            transition: 0.3s ease-in-out;
         }
 
         .status-red {
@@ -239,6 +262,64 @@ session_start();
         .active .expand-icon {
             transform: rotate(45deg);
         }
+
+        .button-cute {
+            background-color: #f0592e;
+            border: 2px solid #f0600e;
+            border-radius: 12px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .button-cute:hover {
+            background-color: #f0500e;
+            transform: translateY(-3px);
+        }
+
+        .button-cute a {
+            text-decoration: none;
+            color: #fff;
+            font-size: 18px;
+            transition: color 0.3s ease-in-out;
+        }
+
+        .button-cute:hover a {
+            color: #ffdeeb;
+        }
+
+        .button-cute a::after {
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            transform: translateX(-5px);
+        }
+
+        .button-cute:hover a::after {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            margin: 0 5px;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .pagination a.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+    </style>
+
     </style>
 </head>
 
@@ -283,16 +364,88 @@ session_start();
                     var expandIcon = document.querySelector('.expand-icon');
                     expandIcon.textContent = expandIcon.textContent === '+' ? '-' : '+';
                 }
+
+                window.onscroll = function() {
+                    myFunction();
+                };
+
+                var instructionsbox = document.querySelector('.instruction-box');
+                var sticky = instructionsbox.offsetTop;
+
+                function myFunction() {
+                    if (window.pageYOffset >= sticky) {
+                        instructionsbox.classList.add("sticky");
+                    } else {
+                        instructionsbox.classList.remove("sticky");
+                    }
+                }
             </script>
+
             <form method="GET" action="">
                 <input class="insearch" type="text" name="search" placeholder="Search by delivery number" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
-                <button type="submit" class="btn-custom">Search</button>
+                <button type="submit" class="search">Search</button>
             </form>
         </div>
+
+        <?php
+        $search_term = isset($_GET['search']) ? $_GET['search'] : '';
+
+        // Query to get total number of items
+        $total_items_query = "SELECT COUNT(DISTINCT d.delivery_id) as total 
+                             FROM tb_delivery d 
+                             INNER JOIN tb_delivery_items di ON d.delivery_id = di.delivery_id 
+                             WHERE d.created_by = $user_id";
+
+        // Append search term filter if provided
+        if ($search_term) {
+            $search_term_escaped = mysqli_real_escape_string($conn, $search_term);
+            $total_items_query .= " AND d.delivery_number LIKE '%$search_term_escaped%'";
+        }
+
+        // Execute query to get total count
+        $total_items_result = mysqli_query($conn, $total_items_query);
+
+        if (!$total_items_result) {
+            echo "Error fetching total items: " . mysqli_error($conn);
+            exit;
+        }
+
+        $total_items = mysqli_fetch_assoc($total_items_result)['total'];
+
+        $items_per_page = 20;
+        $total_pages = ceil($total_items / $items_per_page);
+        $current_page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+
+        $offset = ($current_page - 1) * $items_per_page;
+
+        // Query to fetch actual data with pagination
+        $query = "SELECT d.delivery_id, d.delivery_number, d.delivery_date, COUNT(di.item_code) AS item_count, d.delivery_status 
+                  FROM tb_delivery d 
+                  INNER JOIN tb_delivery_items di ON d.delivery_id = di.delivery_id 
+                  WHERE d.created_by = $user_id";
+
+        // Append search term filter if provided
+        if ($search_term) {
+            $search_term_escaped = mysqli_real_escape_string($conn, $search_term);
+            $query .= " AND d.delivery_number LIKE '%$search_term_escaped%'";
+        }
+
+        $query .= " GROUP BY d.delivery_id LIMIT $items_per_page OFFSET $offset";
+
+        // Execute query to fetch data
+        $result = mysqli_query($conn, $query);
+
+        if (!$result) {
+            echo "Error fetching data: " . mysqli_error($conn);
+            exit;
+        }
+        ?>
+
         <div class="table-container">
             <table>
                 <thead>
                     <tr>
+                        <th>#</th>
                         <th>Delivery ID & Number</th>
                         <th>Item Count</th>
                         <th>Status</th>
@@ -302,12 +455,8 @@ session_start();
                 </thead>
                 <tbody>
                     <?php
-                    $search_term = isset($_GET['search']) ? $_GET['search'] : '';
-                    $query = "SELECT d.delivery_id, d.delivery_number, d.delivery_date, COUNT(di.item_code) AS item_count, d.delivery_status FROM tb_delivery d INNER JOIN tb_delivery_items di ON d.delivery_id = di.delivery_id";
-                    if ($search_term) $query .= " WHERE d.delivery_number LIKE '%" . mysqli_real_escape_string($conn, $search_term) . "%'";
-                    $query .= " GROUP BY d.delivery_id";
-                    $result = mysqli_query($conn, $query);
                     if (mysqli_num_rows($result) > 0) {
+                        $i = 1;
                         while ($row = mysqli_fetch_assoc($result)) {
                             switch ($row['delivery_status']) {
                                 case 1:
@@ -341,23 +490,44 @@ session_start();
 
                             // Output the row in the table
                             echo '<tr class="' . $status_class . '">';
-                            echo '<td>' . $row['delivery_id'] . ' - ' . $row['delivery_number'] . '</td>';
+                            echo '<td>' . $i . '</td>';
+                            echo '<td>' . $row['delivery_number'] . '</td>';
                             echo '<td>' . $row['item_count'] . '</td>';
                             echo '<td>' . $status_text . '</td>';
                             echo '<td>' . $row['delivery_date'] . '</td>';
                             echo '<td><button class="btn-custom" onclick="openModal(\'' . $status_text . '\', \'' . $row['delivery_id'] . '\', \'' . $row['delivery_number'] . '\')">Manage</button></td>';
                             echo '</tr>';
+
+                            $i++;
                         }
                     } else {
-                        echo "<tr><td colspan='4'>No delivery bills found.</td></tr>";
+                        echo "<tr><td colspan='5'>No delivery bills found.</td></tr>";
                     }
                     ?>
                 </tbody>
             </table>
         </div>
+
+        <div class="pagination">
+            <?php if ($current_page > 1) : ?>
+                <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $current_page - 1])); ?>" class="btn-custom">&laquo; Previous</a>
+            <?php endif; ?>
+
+            <?php for ($i = 1; $i <= $total_pages; $i++) : ?>
+                <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $i])); ?>" class="btn-custom <?php echo ($i == $current_page) ? 'active' : ''; ?>"><?php echo $i; ?></a>
+            <?php endfor; ?>
+
+            <?php if ($current_page < $total_pages) : ?>
+                <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $current_page + 1])); ?>" class="btn-custom">Next &raquo;</a>
+            <?php endif; ?>
+        </div>
+
     </div>
 
+
     <!-- Modal section -->
+
+
     <div id="myModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -530,6 +700,10 @@ session_start();
                 }
             });
         }
+
+        $(document).ready(function() {
+            $("#myTable").DataTable();
+        });
     </script>
 </body>
 

@@ -72,9 +72,17 @@ CREATE TABLE IF NOT EXISTS tb_delivery_items (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 
-SELECT DISTINCT di.bill_number, di.bill_customer_name, 
+SELECT DISTINCT d.delivery_number , d.delivery_id , di.bill_number, di.bill_customer_name, 
                 di.item_code, di.item_desc, di.item_quantity, 
                 di.item_unit, di.item_price, di.line_total
 FROM tb_delivery d
 INNER JOIN tb_delivery_items di ON d.delivery_id = di.delivery_id
+WHERE d.delivery_status = 1;
+
+
+SELECT DISTINCT di.bill_number, di.bill_customer_name, 
+                di.item_code, di.item_desc, di.item_quantity, 
+                di.item_unit, di.item_price, di.line_total
+FROM tb_delivery d
+INNER JOIN *.tb_delivery_items di ON d.delivery_id = di.delivery_id
 WHERE d.delivery_status = 1;
