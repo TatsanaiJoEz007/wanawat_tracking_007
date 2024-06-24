@@ -1,20 +1,32 @@
 <?php
-    // db.php
-    $servername = "localhost";  // Usually 'localhost' if running on the same server
-    $username = "root";  // Replace with your database username
-    $password = "";  // Replace with your database password
-    $dbname = "wanawat_tracking";  // Replace with your database name
+// db.php
+$servername = "localhost";  // Usually 'localhost' if running on the same server
+$username = "root";  // Replace with your database username
+$password = "";  // Replace with your database password
+$dbname = "wanawat_tracking";  // Replace with your database name
 
-    // Create connection
-    $conn = new mysqli($servername, $username, $password, $dbname);
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
 
-    // Check connection
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 
-    session_start();
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    // Redirect to login page if not logged in
+    header('Location: login.php');
+    exit();
+}
+
+// Get user_id from session
+$user_id = $_SESSION['user_id'];
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -393,10 +405,14 @@
             </form>
         </div>
         <div class="card-container">
-            <?php
+        <?php
             $search_term = isset($_GET['search']) ? $_GET['search'] : '';
-            $query = "SELECT d.delivery_id, d.delivery_number, COUNT(di.item_code) AS item_count, d.delivery_status FROM tb_delivery d INNER JOIN tb_delivery_items di ON d.delivery_id = di.delivery_id";
-            if ($search_term) $query .= " WHERE d.delivery_number LIKE '%" . mysqli_real_escape_string($conn, $search_term) . "%'";
+            $query = "SELECT d.delivery_id, d.delivery_number, COUNT(di.item_code) AS item_count, d.delivery_status 
+                      FROM tb_delivery d 
+                      INNER JOIN tb_delivery_items di ON d.delivery_id = di.delivery_id 
+                      WHERE d.created_by = $user_id"; // Add user_id condition
+
+            if ($search_term) $query .= " AND d.delivery_number LIKE '%" . mysqli_real_escape_string($conn, $search_term) . "%'";
             $query .= " GROUP BY d.delivery_id";
             $result = mysqli_query($conn, $query);
             if (mysqli_num_rows($result) > 0) {
@@ -446,6 +462,7 @@
                 echo "<p>No delivery bills found.</p>";
             }
             ?>
+
         </div>
     </div>
 
