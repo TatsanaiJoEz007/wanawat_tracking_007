@@ -24,9 +24,11 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 
 // Check if form is submitted
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['selected_items'])) {
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['selected_items']) && isset($_POST['transfer_type'])) {
     // Decode the JSON data sent from the client
     $selectedItems = json_decode($_POST['selected_items'], true);
+    // Get transfer type from POST data
+    $transferType = $_POST['transfer_type'];
 
     // Insert data into tb_delivery table
     $deliveryNumber = generateDeliveryNumber();
@@ -49,8 +51,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['selected_items'])) {
             $price = $item['price'];
             $total = $item['total'];
 
-            $deliveryItemsInsertSql = "INSERT INTO tb_delivery_items (delivery_id, bill_number, bill_customer_name, item_code, item_desc, item_quantity, item_unit, item_price, line_total, created_by) 
-                                       VALUES ('$deliveryId', '$billNumber', '$billCus', '$itemcode', '$name', '$quantity', '$unit', '$price', '$total', '$user_id')";
+            $deliveryItemsInsertSql = "INSERT INTO tb_delivery_items (delivery_id, bill_number, bill_customer_name, item_code, item_desc, item_quantity, item_unit, item_price, line_total, created_by, transfer_type) 
+                                       VALUES ('$deliveryId', '$billNumber', '$billCus', '$itemcode', '$name', '$quantity', '$unit', '$price', '$total', '$user_id', '$transferType')";
 
             $conn->query($deliveryItemsInsertSql);
         }
