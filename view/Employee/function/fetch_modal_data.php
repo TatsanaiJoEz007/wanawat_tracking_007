@@ -21,6 +21,8 @@ try {
 
     // Query to fetch the data for the modal
     $query = "SELECT 
+                TRIM(di.bill_number),
+                TRIM(di.bill_customer_name),
                 TRIM(di.item_code), 
                 TRIM(di.item_desc), 
                 TRIM(di.item_quantity), 

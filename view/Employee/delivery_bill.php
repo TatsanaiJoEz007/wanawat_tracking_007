@@ -307,8 +307,8 @@ if ($conn->connect_error) {
                 
                 <!-- เพิ่ม radio buttons สำหรับเลือกประเภทการขนส่ง -->
                 <div>
-                    <label><input type="radio" name="transfer_type" value="human" checked> Human</label>
-                    <label><input type="radio" name="transfer_type" value="forklift"> Forklift</label>
+                    <label><input type="radio" name="transfer_type" value="Human" checked> Human</label>
+                    <label><input type="radio" name="transfer_type" value="Forklift"> Forklift</label>
                 </div>
 
                 <button class="create-bill-btn" id="create-bill-btn">สร้างบิล</button>
