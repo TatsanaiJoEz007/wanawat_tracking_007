@@ -1,5 +1,3 @@
-Absolutely! Here's your README file:
-
 **Wanawat Hardware Parcel Tracking**
 
 This project is a web application for Wanawat Hardware Company Limited to streamline their parcel tracking process. Users can easily input parcel information and the application will retrieve tracking data, offering a user-friendly solution.
