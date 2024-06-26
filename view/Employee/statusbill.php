@@ -26,9 +26,13 @@ $user_id = $_SESSION['user_id'];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Parcel Sending System</title>
-    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <script src="https://cdn.lordicon.com/lordicon.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Ensure you have jQuery and Bootstrap included -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Include DataTables CSS and JS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
     <style>
         body {
             margin: 0;
@@ -466,42 +470,41 @@ $user_id = $_SESSION['user_id'];
             exit;
         }
         ?>
-            <div id="action-buttons" style="display: none;">
-                <button class="btn-custom" onclick="handleSelectedItems()">Manage All</button>
-            </div>
+        <div id="action-buttons" style="display: none;">
+            <button class="btn-custom" id="manageAllBtn" onclick="handleSelectedItems()">Manage All</button>
+        </div>
 
-            <script>
-                document.addEventListener('DOMContentLoaded', (event) => {
-                    const checkboxes = document.querySelectorAll('input[name="select"]');
-                    const actionButtons = document.getElementById('action-buttons');
+        <script>
+            document.addEventListener('DOMContentLoaded', (event) => {
+                const checkboxes = document.querySelectorAll('input[name="select"]');
+                const actionButtons = document.getElementById('action-buttons');
 
-                    checkboxes.forEach((checkbox) => {
-                        checkbox.addEventListener('change', () => {
-                            const anyChecked = Array.from(checkboxes).some(chk => chk.checked);
-                            actionButtons.style.display = anyChecked ? 'block' : 'none';
-                        });
+                checkboxes.forEach((checkbox) => {
+                    checkbox.addEventListener('change', () => {
+                        const anyChecked = Array.from(checkboxes).some(chk => chk.checked);
+                        actionButtons.style.display = anyChecked ? 'block' : 'none';
                     });
                 });
+            });
 
-                function handleSelectedItems() {
-                    const selectedItems = [];
-                    const checkboxes = document.querySelectorAll('input[name="select"]:checked');
+            function handleSelectedItems() {
+                const selectedItems = [];
+                const checkboxes = document.querySelectorAll('input[name="select"]:checked');
 
-                    checkboxes.forEach((checkbox) => {
-                        selectedItems.push(checkbox.value);
-                    });
+                checkboxes.forEach((checkbox) => {
+                    selectedItems.push(checkbox.value);
+                });
 
-                    // ตรวจสอบค่า selectedItems ว่ามีค่าหรือไม่
-                    if (selectedItems.length === 0) {
-                        alert('กรุณาเลือกการจัดส่งอย่างน้อยหนึ่งรายการ');
-                        return;
-                    }
-
-                    // เรียกใช้งาน openModal2 หลังจากตรวจสอบค่า selectedItems แล้ว
-                    openModal2('Bulk Update', selectedItems.join(','));
+                // ตรวจสอบค่า selectedItems ว่ามีค่าหรือไม่
+                if (selectedItems.length === 0) {
+                    alert('กรุณาเลือกการจัดส่งอย่างน้อยหนึ่งรายการ');
+                    return;
                 }
 
-            </script>
+                // เรียกใช้งาน openModal2 หลังจากตรวจสอบค่า selectedItems แล้ว
+                openModal2('Bulk Update', selectedItems.join(','));
+            }
+        </script>
 
 
         <div class="table-container">
@@ -519,55 +522,55 @@ $user_id = $_SESSION['user_id'];
                 </thead>
                 <tbody>
                     <?php
-                        if (mysqli_num_rows($result) > 0) {
-                            $i = 1;
-                            while ($row = mysqli_fetch_assoc($result)) {
-                                switch ($row['delivery_status']) {
-                                    case 1:
-                                        $status_text = 'สถานะสินค้าที่คำสั่งซื้อเข้าสู่ระบบ';
-                                        $status_class = 'status-blue';
-                                        break;
-                                    case 2:
-                                        $status_text = 'สถานะสินค้าที่กำลังจัดส่งไปยังศูนย์กระจายสินค้า';
-                                        $status_class = 'status-yellow';
-                                        break;
-                                    case 3:
-                                        $status_text = 'สถานะสินค้าอยู่ที่ศูนย์กระจายสินค้าปลาย';
-                                        $status_class = 'status-grey';
-                                        break;
-                                    case 4:
-                                        $status_text = 'สถานะสินค้าที่กำลังนำส่งให้ลูกค้า';
-                                        $status_class = 'status-purple';
-                                        break;
-                                    case 5:
-                                        $status_text = 'สถานะสินค้าที่ถึงนำส่งให้ลูกค้าสำเร็จ';
-                                        $status_class = 'status-green';
-                                        break;
-                                    case 99:
-                                        $status_text = 'สถานะสินค้าที่เกิดปัญหา';
-                                        $status_class = 'status-red';
-                                        break;
-                                    default:
-                                        $status_text = 'Unknown';
-                                        break;
-                                }
-
-                                echo '<tr class="' . $status_class . '">';
-                                echo '<td><center><input type="checkbox" name="select" value="' . $row['delivery_id'] . '" data-status-text="' . $status_text . '" data-delivery-number="' . $row['delivery_number'] . '"></center></td>';
-                                echo '<td>' . $i . '</td>';
-                                echo '<td>' . $row['delivery_number'] . '</td>';
-                                echo '<td>' . $row['item_count'] . '</td>';
-                                echo '<td>' . $status_text . '</td>';
-                                echo '<td>' . $row['delivery_date'] . '</td>';
-                                echo '<td>' . $row['transfer_type'] . '</td>';
-                                echo '<td><button class="btn-custom" onclick="openModal(\'' . $status_text . '\', \'' . $row['delivery_id'] . '\', \'' . $row['delivery_number'] . '\')">Manage</button></td>';
-                                echo '</tr>';
-
-                                $i++;
+                    if (mysqli_num_rows($result) > 0) {
+                        $i = 1;
+                        while ($row = mysqli_fetch_assoc($result)) {
+                            switch ($row['delivery_status']) {
+                                case 1:
+                                    $status_text = 'สถานะสินค้าที่คำสั่งซื้อเข้าสู่ระบบ';
+                                    $status_class = 'status-blue';
+                                    break;
+                                case 2:
+                                    $status_text = 'สถานะสินค้าที่กำลังจัดส่งไปยังศูนย์กระจายสินค้า';
+                                    $status_class = 'status-yellow';
+                                    break;
+                                case 3:
+                                    $status_text = 'สถานะสินค้าอยู่ที่ศูนย์กระจายสินค้าปลาย';
+                                    $status_class = 'status-grey';
+                                    break;
+                                case 4:
+                                    $status_text = 'สถานะสินค้าที่กำลังนำส่งให้ลูกค้า';
+                                    $status_class = 'status-purple';
+                                    break;
+                                case 5:
+                                    $status_text = 'สถานะสินค้าที่ถึงนำส่งให้ลูกค้าสำเร็จ';
+                                    $status_class = 'status-green';
+                                    break;
+                                case 99:
+                                    $status_text = 'สถานะสินค้าที่เกิดปัญหา';
+                                    $status_class = 'status-red';
+                                    break;
+                                default:
+                                    $status_text = 'Unknown';
+                                    break;
                             }
-                        } else {
-                            echo "<tr><td colspan='6'>No delivery bills found.</td></tr>";
+
+                            echo '<tr class="' . $status_class . '">';
+                            echo '<td><center><input type="checkbox" name="select" value="' . $row['delivery_id'] . '" data-status-text="' . $status_text . '" data-delivery-number="' . $row['delivery_number'] . '"></center></td>';
+                            echo '<td>' . $i . '</td>';
+                            echo '<td>' . $row['delivery_number'] . '</td>';
+                            echo '<td>' . $row['item_count'] . '</td>';
+                            echo '<td>' . $status_text . '</td>';
+                            echo '<td>' . $row['delivery_date'] . '</td>';
+                            echo '<td>' . $row['transfer_type'] . '</td>';
+                            echo '<td><button class="btn-custom" onclick="openModal(\'' . $status_text . '\', \'' . $row['delivery_id'] . '\', \'' . $row['delivery_number'] . '\')">Manage</button></td>';
+                            echo '</tr>';
+
+                            $i++;
                         }
+                    } else {
+                        echo "<tr><td colspan='6'>No delivery bills found.</td></tr>";
+                    }
                     ?>
 
                 </tbody>
@@ -847,115 +850,105 @@ $user_id = $_SESSION['user_id'];
     </script>
 
 <!-- Modal section -->
-    <div class="modal" id="manageModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Update Status</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body" id="modalContent">
-                    <!-- ข้อมูลจะถูกเพิ่มที่นี่ -->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary">Update</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
+<div class="modal" id="manageModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Status</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalContent">
+                <!-- Content will be added here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary">Update</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
+</div>
 
     <script>
-        function openModal2(data) {
+    function openModal2(data) {
+        console.log('openModal2 called with data:', data);
+
         if (!data || !data.items) {
-            console.error('Data หรือ Items ไม่มีค่า', data);
+            console.error('Data or items is missing', data);
             return;
-            }
+        }
 
-            let modalContent = document.getElementById('modalContent');
-            modalContent.innerHTML = '';
+        let modalContent = document.getElementById('modalContent');
+        modalContent.innerHTML = '';
 
-            data.items.forEach(function(item) {
-                modalContent.innerHTML += `
-                    <p>Delivery Number: ${item.bill_number}</p>
-                    <p>Customer Name: ${item.bill_customer_name}</p>
-                    <p>Item Code: ${item.item_code}</p>
-                    <p>Item Description: ${item.item_desc}</p>
-                    <p>Quantity: ${item.item_quantity}</p>
-                    <p>Unit: ${item.item_unit}</p>
-                    <p>Price: ${item.item_price}</p>
-                    <p>Total: ${item.line_total}</p>
-                    <hr>
-                `;
+        data.items.forEach(function(item) {
+            modalContent.innerHTML += `
+                <p>Delivery Number: ${item.bill_number}</p>
+                <p>Customer Name: ${item.bill_customer_name}</p>
+                <p>Item Code: ${item.item_code}</p>
+                <p>Item Description: ${item.item_desc}</p>
+                <p>Quantity: ${item.item_quantity}</p>
+                <p>Unit: ${item.item_unit}</p>
+                <p>Price: ${item.item_price}</p>
+                <p>Total: ${item.line_total}</p>
+                <hr>
+            `;
+        });
+
+        $('#manageModal').modal('show');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const manageAllBtn = document.getElementById('manageAllBtn');
+        if (!manageAllBtn) {
+            console.error('Element with ID "manageAllBtn" not found');
+            return;
+        }
+
+        manageAllBtn.addEventListener('click', function() {
+            let selectedDeliveryIds = [];
+            document.querySelectorAll('input[type="checkbox"]:checked').forEach(function(checkbox) {
+                selectedDeliveryIds.push(checkbox.value);
             });
 
-            $('#manageModal').modal('show');
-        }
-        
-    </script>
+            if (selectedDeliveryIds.length === 0) {
+                alert('Please select at least one delivery.');
+                return;
+            }
 
-    <script>
+            console.log('Selected delivery IDs:', selectedDeliveryIds);
 
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('manageAllBtn').addEventListener('click', function() {
-                let selectedDeliveryIds = [];
-                document.querySelectorAll('input[type="checkbox"]:checked').forEach(function(checkbox) {
-                    selectedDeliveryIds.push(checkbox.value);
-                });
+            fetch('function/fetch_modal_data.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'deliveryIds=' + selectedDeliveryIds.join(',')
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Received data:', data);
 
-                if (selectedDeliveryIds.length === 0) {
-                    alert('กรุณาเลือกการจัดส่งอย่างน้อยหนึ่งรายการ');
+                if (data.error) {
+                    alert(data.error);
                     return;
                 }
 
-                fetch('function/fetch_modal_data.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: 'deliveryIds=' + selectedDeliveryIds.join(',')
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        alert(data.error);
-                        return;
-                    }
+                if (!data.items) {
+                    alert('No data available');
+                    return;
+                }
 
-                    if (!data.items) {
-                        alert('ไม่มีข้อมูลที่ต้องการ');
-                        return;
-                    }
-
-                    openModal2(data);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('เกิดข้อผิดพลาดในการดึงข้อมูล');
-                });
-                .then(data => {
-                    console.log('Received data:', data);  // เพิ่มการตรวจสอบข้อมูลที่ได้รับ
-
-                    if (data.error) {
-                        alert(data.error);
-                        return;
-                    }
-
-                    if (!data.items) {
-                        alert('ไม่มีข้อมูลที่ต้องการ');
-                        return;
-                    }
-
-                    openModal2(data);
-                })
+                openModal2(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error fetching data');
             });
         });
-
-
+    });
     </script>
-
 </body>
 
 </html>
