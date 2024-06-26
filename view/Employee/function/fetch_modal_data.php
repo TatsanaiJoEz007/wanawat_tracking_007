@@ -11,15 +11,29 @@ try {
         throw new Exception('Connection failed: '. mysqli_connect_error());
     }
 
+    $deliveryIds = [];
+    
     // Check if deliveryId is set in POST
-    if (!isset($_POST['deliveryId'])) {
-        throw new Exception('Delivery ID is not set in POST');
+    if (isset($_POST['deliveryId'])) {
+        $deliveryIds[] = $_POST['deliveryId'];
+    }
+    
+    // Check if deliveryIds is set in POST
+    if (isset($_POST['deliveryIds'])) {
+        $additionalIds = explode(',', $_POST['deliveryIds']);
+        $additionalIds = array_map('trim', $additionalIds);
+        $deliveryIds = array_merge($deliveryIds, $additionalIds);
+    }
+    
+    // If no deliveryId or deliveryIds were set, throw an error
+    if (empty($deliveryIds)) {
+        throw new Exception('Delivery ID(s) are not set in POST');
     }
 
-    // Get the delivery ID from the request
-    $deliveryId = $_POST['deliveryId'];
+    // Create placeholders for the query
+    $placeholders = implode(',', array_fill(0, count($deliveryIds), '?'));
 
-    // Query to fetch the data for the modal
+    // Prepare the SQL query
     $query = "SELECT 
                 TRIM(di.bill_number),
                 TRIM(di.bill_customer_name),
@@ -28,13 +42,24 @@ try {
                 TRIM(di.item_quantity), 
                 TRIM(di.item_unit), 
                 TRIM(di.item_price), 
-                TRIM(di.line_total) 
+                TRIM(di.line_total),
+                TRIM(di.delivery_id) 
             FROM 
                 tb_delivery_items di 
             WHERE 
-                TRIM(di.delivery_id) = '$deliveryId'";
+                TRIM(di.delivery_id) IN ($placeholders)";
 
-    $result = mysqli_query($conn, $query);
+    $stmt = $conn->prepare($query);
+
+    // Bind the parameters
+    $types = str_repeat('s', count($deliveryIds)); // Assuming delivery IDs are strings
+    $stmt->bind_param($types, ...$deliveryIds);
+
+    // Execute the query
+    $stmt->execute();
+
+    // Get the result
+    $result = $stmt->get_result();
 
     if (!$result) {
         throw new Exception('Query failed: '. mysqli_error($conn));

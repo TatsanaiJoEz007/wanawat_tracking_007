@@ -466,12 +466,12 @@ $user_id = $_SESSION['user_id'];
             exit;
         }
         ?>
-        <div id="action-buttons" style="display: none;">
-            <button class="btn-custom" onclick="handleSelectedItems(); openModal2('<?php echo $status_text ?>', '<?php echo $row['delivery_id'] ?>', '<?php echo $row['delivery_number'] ?>')"> Manage All </button>
-        </div>
+            <div id="action-buttons" style="display: none;">
+                <button class="btn-custom" onclick="handleSelectedItems()">Manage All</button>
+            </div>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', (event) => {
+            <script>
+                document.addEventListener('DOMContentLoaded', (event) => {
                     const checkboxes = document.querySelectorAll('input[name="select"]');
                     const actionButtons = document.getElementById('action-buttons');
 
@@ -483,19 +483,26 @@ $user_id = $_SESSION['user_id'];
                     });
                 });
 
-            function handleSelectedItems() {
-                const selectedItems = [];
-                const checkboxes = document.querySelectorAll('input[name="select"]:checked');
+                function handleSelectedItems() {
+                    const selectedItems = [];
+                    const checkboxes = document.querySelectorAll('input[name="select"]:checked');
 
-                checkboxes.forEach((checkbox) => {
-                    selectedItems.push(checkbox.value);
-                });
+                    checkboxes.forEach((checkbox) => {
+                        selectedItems.push(checkbox.value);
+                    });
 
-                // Perform your action with the selected items
-                console.log(selectedItems);
-                // Here you can perform AJAX requests or other actions with selectedItems
-            }
-        </script>
+                    // ตรวจสอบค่า selectedItems ว่ามีค่าหรือไม่
+                    if (selectedItems.length === 0) {
+                        alert('กรุณาเลือกการจัดส่งอย่างน้อยหนึ่งรายการ');
+                        return;
+                    }
+
+                    // เรียกใช้งาน openModal2 หลังจากตรวจสอบค่า selectedItems แล้ว
+                    openModal2('Bulk Update', selectedItems.join(','));
+                }
+
+            </script>
+
 
         <div class="table-container">
             <table>
@@ -512,56 +519,57 @@ $user_id = $_SESSION['user_id'];
                 </thead>
                 <tbody>
                     <?php
-                    if (mysqli_num_rows($result) > 0) {
-                        $i = 1;
-                        while ($row = mysqli_fetch_assoc($result)) {
-                            switch ($row['delivery_status']) {
-                                case 1:
-                                    $status_text = 'สถานะสินค้าที่คำสั่งซื้อเข้าสู่ระบบ';
-                                    $status_class = 'status-blue';
-                                    break;
-                                case 2:
-                                    $status_text = 'สถานะสินค้าที่กำลังจัดส่งไปยังศูนย์กระจายสินค้า';
-                                    $status_class = 'status-yellow';
-                                    break;
-                                case 3:
-                                    $status_text = 'สถานะสินค้าอยู่ที่ศูนย์กระจายสินค้าปลาย';
-                                    $status_class = 'status-grey';
-                                    break;
-                                case 4:
-                                    $status_text = 'สถานะสินค้าที่กำลังนำส่งให้ลูกค้า';
-                                    $status_class = 'status-purple';
-                                    break;
-                                case 5:
-                                    $status_text = 'สถานะสินค้าที่ถึงนำส่งให้ลูกค้าสำเร็จ';
-                                    $status_class = 'status-green';
-                                    break;
-                                case 99:
-                                    $status_text = 'สถานะสินค้าที่เกิดปัญหา';
-                                    $status_class = 'status-red';
-                                    break;
-                                default:
-                                    $status_text = 'Unknown';
-                                    break;
-                            }
+                        if (mysqli_num_rows($result) > 0) {
+                            $i = 1;
+                            while ($row = mysqli_fetch_assoc($result)) {
+                                switch ($row['delivery_status']) {
+                                    case 1:
+                                        $status_text = 'สถานะสินค้าที่คำสั่งซื้อเข้าสู่ระบบ';
+                                        $status_class = 'status-blue';
+                                        break;
+                                    case 2:
+                                        $status_text = 'สถานะสินค้าที่กำลังจัดส่งไปยังศูนย์กระจายสินค้า';
+                                        $status_class = 'status-yellow';
+                                        break;
+                                    case 3:
+                                        $status_text = 'สถานะสินค้าอยู่ที่ศูนย์กระจายสินค้าปลาย';
+                                        $status_class = 'status-grey';
+                                        break;
+                                    case 4:
+                                        $status_text = 'สถานะสินค้าที่กำลังนำส่งให้ลูกค้า';
+                                        $status_class = 'status-purple';
+                                        break;
+                                    case 5:
+                                        $status_text = 'สถานะสินค้าที่ถึงนำส่งให้ลูกค้าสำเร็จ';
+                                        $status_class = 'status-green';
+                                        break;
+                                    case 99:
+                                        $status_text = 'สถานะสินค้าที่เกิดปัญหา';
+                                        $status_class = 'status-red';
+                                        break;
+                                    default:
+                                        $status_text = 'Unknown';
+                                        break;
+                                }
 
-                            echo '<tr class="' . $status_class . '">';
-                            echo '<td><center><input type="checkbox" name="select" value="' . $row['delivery_id'] . '"></center></td>';
-                            echo '<td>' . $i . '</td>';
-                            echo '<td>' . $row['delivery_number'] . '</td>';
-                            echo '<td>' . $row['item_count'] . '</td>';
-                            echo '<td>' . $status_text . '</td>';
-                            echo '<td>' . $row['delivery_date'] . '</td>';
-                            echo '<td>' . $row['transfer_type'] . '</td>';
-                            echo '<td><button class="btn-custom" onclick="openModal(\'' . $status_text . '\', \'' . $row['delivery_id'] . '\', \'' . $row['delivery_number'] . '\')">Manage</button></td>';
-                            echo '</tr>';
-                
-                            $i++;
+                                echo '<tr class="' . $status_class . '">';
+                                echo '<td><center><input type="checkbox" name="select" value="' . $row['delivery_id'] . '" data-status-text="' . $status_text . '" data-delivery-number="' . $row['delivery_number'] . '"></center></td>';
+                                echo '<td>' . $i . '</td>';
+                                echo '<td>' . $row['delivery_number'] . '</td>';
+                                echo '<td>' . $row['item_count'] . '</td>';
+                                echo '<td>' . $status_text . '</td>';
+                                echo '<td>' . $row['delivery_date'] . '</td>';
+                                echo '<td>' . $row['transfer_type'] . '</td>';
+                                echo '<td><button class="btn-custom" onclick="openModal(\'' . $status_text . '\', \'' . $row['delivery_id'] . '\', \'' . $row['delivery_number'] . '\')">Manage</button></td>';
+                                echo '</tr>';
+
+                                $i++;
+                            }
+                        } else {
+                            echo "<tr><td colspan='6'>No delivery bills found.</td></tr>";
                         }
-                    } else {
-                        echo "<tr><td colspan='6'>No delivery bills found.</td></tr>";
-                    }
                     ?>
+
                 </tbody>
             </table>
         </div>
@@ -838,110 +846,114 @@ $user_id = $_SESSION['user_id'];
         });
     </script>
 
-    <!-- Modal section -->
-    <div id="myModal2" class="modal2">
-        <div class="modal-content2">
-            <span class="close">&times;</span>
-            <h2>Update Status</h2>
-            <h1 id="deliveryNumber" class="card-text"><b>Delivery Number : </b><span id="deliveryNumberText"></span></h1>
-            <p><b>Current Status: </b><span id="currentStatus"></span></p>
-            <h3>รายละเอียดสินค้า</h3>
-            <hr>
-            <div id="itemDetails">
-                <!-- Item details will be dynamically inserted here -->
+<!-- Modal section -->
+    <div class="modal" id="manageModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Status</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="modalContent">
+                    <!-- ข้อมูลจะถูกเพิ่มที่นี่ -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary">Update</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
             </div>
-            <button id="updateStatusBtn" class="btn-custom">อัพเดทสถานะการจัดส่งสินค้า</button>
-            <button id="reportProblemBtn" class="btn-custom btn-red">แจ้งว่าสินค้ามีปัญหา</button>
         </div>
     </div>
 
+    <script>
+        function openModal2(data) {
+        if (!data || !data.items) {
+            console.error('Data หรือ Items ไม่มีค่า', data);
+            return;
+            }
+
+            let modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = '';
+
+            data.items.forEach(function(item) {
+                modalContent.innerHTML += `
+                    <p>Delivery Number: ${item.bill_number}</p>
+                    <p>Customer Name: ${item.bill_customer_name}</p>
+                    <p>Item Code: ${item.item_code}</p>
+                    <p>Item Description: ${item.item_desc}</p>
+                    <p>Quantity: ${item.item_quantity}</p>
+                    <p>Unit: ${item.item_unit}</p>
+                    <p>Price: ${item.item_price}</p>
+                    <p>Total: ${item.line_total}</p>
+                    <hr>
+                `;
+            });
+
+            $('#manageModal').modal('show');
+        }
+        
+    </script>
 
     <script>
-        var modal2 = document.getElementById("myModal2");
 
-        // Open modal and set current status text
-        // Open modal and set current status text
-        function openModal2(statusText, deliveryId, deliveryNumber) {
-            var currentStatus = document.getElementById("currentStatus");
-            currentStatus.textContent = statusText;
-            modal2.dataset.deliveryId = deliveryId;
-            document.getElementById("deliveryNumberText").textContent = deliveryNumber;
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('manageAllBtn').addEventListener('click', function() {
+                let selectedDeliveryIds = [];
+                document.querySelectorAll('input[type="checkbox"]:checked').forEach(function(checkbox) {
+                    selectedDeliveryIds.push(checkbox.value);
+                });
 
-            // Fetch data for the modal
-            fetchModalData2(deliveryId);
-        }
+                if (selectedDeliveryIds.length === 0) {
+                    alert('กรุณาเลือกการจัดส่งอย่างน้อยหนึ่งรายการ');
+                    return;
+                }
 
-        // Fetch data from the server
-        function fetchModalData2(deliveryId) {
-            fetch('function/fetch_modal_data.php', {
+                fetch('function/fetch_modal_data.php', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Content-Type': 'application/x-www-form-urlencoded'
                     },
-                    body: new URLSearchParams({
-                        'deliveryId': deliveryId
-                    })
+                    body: 'deliveryIds=' + selectedDeliveryIds.join(',')
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.error) {
-                        console.error(data.error);
+                        alert(data.error);
                         return;
                     }
-                    // Clear previous content
-                    var itemDetailsContainer = document.getElementById('itemDetails');
-                    itemDetailsContainer.innerHTML = '';
 
-                    // Assuming the data structure is data.items array
-                    if (data.items && data.items.length > 0) {
-                        data.items.forEach((item, index) => {
-                            var itemHTML = `
-                    <div class="item-detail">
-                        <button class="collapsible">Item ${index + 1}</button>
-                        <div class="content">
-                            <p><b>เลขบิล:</b> ${item['TRIM(di.bill_number)']}</p>
-                            <p><b>ชื่อลูกค้า:</b> ${item['TRIM(di.bill_customer_name)']}</p>
-                            <p><b>รายละเอียดสินค้า:</b> ${item['TRIM(di.item_desc)']}</p>
-                            <p><b>ราคา:</b> ${item['TRIM(di.item_price)']}</p>
-                            <p><b>ราคารวม:</b> ${item['TRIM(di.line_total)']}</p>
-                        </div>
-                    </div>
-                `;
-                            itemDetailsContainer.insertAdjacentHTML('beforeend', itemHTML);
-                        });
-
-                        // Add click event listeners to collapsible buttons
-                        var coll = document.getElementsByClassName("collapsible");
-                        for (var i = 0; i < coll.length; i++) {
-                            coll[i].addEventListener("click", function() {
-                                this.classList.toggle("active");
-                                var content = this.nextElementSibling;
-                                if (content.style.maxHeight) {
-                                    content.style.maxHeight = null;
-                                } else {
-                                    content.style.maxHeight = content.scrollHeight + "px";
-                                }
-                            });
-                        }
+                    if (!data.items) {
+                        alert('ไม่มีข้อมูลที่ต้องการ');
+                        return;
                     }
 
-                    modal2.style.display = "block"; // Corrected modal display
+                    openModal2(data);
                 })
-                .catch(error => console.error('Error:', error));
-        }
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('เกิดข้อผิดพลาดในการดึงข้อมูล');
+                });
+                .then(data => {
+                    console.log('Received data:', data);  // เพิ่มการตรวจสอบข้อมูลที่ได้รับ
 
-        // Close modal when clicking on <span> (x)
-        var span = document.getElementsByClassName("close")[0];
-        span.onclick = function() {
-            modal2.style.display = "none";
-        }
+                    if (data.error) {
+                        alert(data.error);
+                        return;
+                    }
 
-        // Close modal when clicking outside modal
-        window.onclick = function(event) {
-            if (event.target == modal2) {
-                modal2.style.display = "none";
-            }
-        }
+                    if (!data.items) {
+                        alert('ไม่มีข้อมูลที่ต้องการ');
+                        return;
+                    }
+
+                    openModal2(data);
+                })
+            });
+        });
+
+
     </script>
 
 </body>
