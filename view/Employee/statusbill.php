@@ -27,7 +27,6 @@ $user_id = $_SESSION['user_id'];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Parcel Sending System</title>
     <!-- Ensure you have jQuery and Bootstrap included -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <!-- Include DataTables CSS and JS -->
@@ -348,6 +347,103 @@ $user_id = $_SESSION['user_id'];
             max-height: 0;
             transition: max-height 0.2s ease-out;
         }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-dialog {
+            width: 90%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #888;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 10px;
+        }
+
+        .modal-title {
+            font-size: 1.75rem;
+            font-weight: bold;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 20px 0;
+            font-size: 1rem;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            border-top: 1px solid #dee2e6;
+            padding-top: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        #openModal:checked~.modal {
+            display: flex;
+        }
     </style>
 
 </head>
@@ -471,7 +567,7 @@ $user_id = $_SESSION['user_id'];
         }
         ?>
         <div id="action-buttons" style="display: none;">
-            <button class="btn-custom" id="manageAllBtn" onclick="handleSelectedItems()">Manage All</button>
+            <button class="btn-custom" id="manageAllBtn">Manage All</button>
         </div>
 
         <script>
@@ -508,7 +604,7 @@ $user_id = $_SESSION['user_id'];
 
 
         <div class="table-container">
-            <table>
+            <table id="myTable">
                 <thead>
                     <tr>
                         <th>เลือก</th>
@@ -612,20 +708,21 @@ $user_id = $_SESSION['user_id'];
     </div>
 
     <!-- Modal section -->
-    <div id="myModal" class="modal">
-        <div class="modal-content">
-            <h2>Update Status</h2>
-            <h1 id="deliveryNumber" class="card-text"><b>Delivery Number : </b><span id="deliveryNumberText"></span></h1> <br>
-            <p><b>Current Status: </b><span id="currentStatus"></span></p>
-            <h3>รายละเอียดสินค้า</h3>
-            <hr><br>
-            <div id="itemDetails">
-                <!-- Add container to show item details here -->
-            </div>
-            <button id="updateStatusBtn" class="btn-custom">อัพเดทสถานะการจัดส่งสินค้า</button>
-            <button id="reportProblemBtn" class="btn-custom btn-red">แจ้งว่าสินค้ามีปัญหา</button>
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Update Status</h2>
+        <h1 id="deliveryNumber" class="card-text"><b>Delivery Number : </b><span id="deliveryNumberText"></span></h1> <br>
+        <p><b>Current Status: </b><span id="currentStatus"></span></p>
+        <h3>รายละเอียดสินค้า</h3>
+        <hr><br>
+        <div id="itemDetails">
+            <!-- Add container to show item details here -->
         </div>
+        <button id="updateStatusBtn" class="btn-custom">อัพเดทสถานะการจัดส่งสินค้า</button>
+        <button id="reportProblemBtn" class="btn-custom btn-red">แจ้งว่าสินค้ามีปัญหา</button>
     </div>
+</div>
 
     <!-- Include SweetAlert for modal notifications -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
@@ -635,18 +732,16 @@ $user_id = $_SESSION['user_id'];
         var modal = document.getElementById("myModal");
         var span = document.getElementsByClassName("close")[0];
 
-        // Open modal and set current status text
         function openModal(statusText, deliveryId, deliveryNumber) {
             var currentStatus = document.getElementById("currentStatus");
             currentStatus.textContent = statusText;
             modal.dataset.deliveryId = deliveryId;
-            document.getElementById("deliveryNumber").getElementsByTagName("span")[0].textContent = deliveryNumber;
+            document.getElementById("deliveryNumberText").textContent = deliveryNumber;
 
             // Fetch data for the modal
             fetchModalData(deliveryId);
         }
 
-        // Fetch data from the server
         function fetchModalData(deliveryId) {
             fetch('function/fetch_modal_data.php', {
                     method: 'POST',
@@ -663,31 +758,25 @@ $user_id = $_SESSION['user_id'];
                         console.error(data.error);
                         return;
                     }
-                    // Assuming the data structure is data.items array
+
                     // Assuming the data structure is data.items array
                     if (data.items && data.items.length > 0) {
                         var itemDetailsContainer = document.getElementById('itemDetails');
                         itemDetailsContainer.innerHTML = ''; // Clear previous content
 
-                        // Initialize a counter for bill numbers
-                        var billNumber = 1;
-
                         data.items.forEach(item => {
                             var itemHTML = `
-                                <div class="item-detail">
-                                    <p><b># ${billNumber}</b></p>
-                                    <p><b>เลขบิล:</b> ${item['TRIM(di.bill_number)']}</p>
-                                    <p><b>ชื่อลูกค้า:</b> ${item['TRIM(di.bill_customer_name)']}</p>
-                                    <p><b>รายละเอียดสินค้า:</b> ${item['TRIM(di.item_desc)']}</p>
-                                    <p><b>ราคา:</b> ${item['TRIM(di.item_price)']}</p>
-                                    <p><b>ราคารวม:</b> ${item['TRIM(di.line_total)']}</p>
-                                    <br> <hr> <br>
-                                </div>
-                            `;
+                    <p>Bill Number: ${item.bill_number}</p>
+                    <p>Customer Name: ${item.bill_customer_name}</p>
+                    <p>Item Code: ${item.item_code}</p>
+                    <p>Item Description: ${item.item_desc}</p>
+                    <p>Quantity: ${item.item_quantity}</p>
+                    <p>Unit: ${item.item_unit}</p>
+                    <p>Price: ${item.item_price}</p>
+                    <p>Total: ${item.line_total}</p>
+                    <hr>
+                `;
                             itemDetailsContainer.insertAdjacentHTML('beforeend', itemHTML);
-
-                            // Increment the bill number for the next item
-                            billNumber++;
                         });
                     }
 
@@ -697,6 +786,7 @@ $user_id = $_SESSION['user_id'];
         }
 
         // Close modal when clicking on <span> (x)
+        var span = document.getElementsByClassName("close")[0];
         span.onclick = function() {
             modal.style.display = "none";
         }
@@ -849,42 +939,56 @@ $user_id = $_SESSION['user_id'];
         });
     </script>
 
-<!-- Modal section -->
-<div class="modal" id="manageModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Update Status</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body" id="modalContent">
-                <!-- Content will be added here -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary">Update</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    <!-- Modal section -->
+    <div class="modal" id="manageModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Status All</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="modalContent">
+                    <p>Here is the modal content. You can put any HTML here.</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="updateStatusBtn2" class="btn-custom">อัพเดทสถานะการจัดส่งสินค้า</button>
+                    <button id="reportProblemBtn2" class="btn-custom btn-red">แจ้งว่าสินค้ามีปัญหา</button>
+
+                </div>
             </div>
         </div>
     </div>
-</div>
+
+    <!-- Include jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Include Bootstrap JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Include DataTables JS -->
+    <!-- <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script> -->
 
     <script>
-    function openModal2(data) {
-        console.log('openModal2 called with data:', data);
+        function openModal2(data) {
+            console.log('openModal2 called with data:', data);
 
-        if (!data || !data.items) {
-            console.error('Data or items is missing', data);
-            return;
-        }
+            if (!data || !data.items) {
+                console.error('Data or items is missing', data);
+                return;
+            }
 
-        let modalContent = document.getElementById('modalContent');
-        modalContent.innerHTML = '';
+            let modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = '';
 
-        data.items.forEach(function(item) {
-            modalContent.innerHTML += `
-                <p>Delivery Number: ${item.bill_number}</p>
+            for (const [deliveryNumber, items] of Object.entries(data.items)) {
+                let deliveryHTML = `
+            <h3>Delivery Number: ${deliveryNumber}</h3>
+            <hr>
+        `;
+
+                items.forEach(function(item) {
+                    deliveryHTML += `
+                <p>Bill Number: ${item.bill_number}</p>
                 <p>Customer Name: ${item.bill_customer_name}</p>
                 <p>Item Code: ${item.item_code}</p>
                 <p>Item Description: ${item.item_desc}</p>
@@ -894,19 +998,25 @@ $user_id = $_SESSION['user_id'];
                 <p>Total: ${item.line_total}</p>
                 <hr>
             `;
-        });
+                });
 
-        $('#manageModal').modal('show');
-    }
+                modalContent.innerHTML += deliveryHTML;
+            }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const manageAllBtn = document.getElementById('manageAllBtn');
-        if (!manageAllBtn) {
-            console.error('Element with ID "manageAllBtn" not found');
-            return;
+            $('#manageModal').modal('show');
         }
 
-        manageAllBtn.addEventListener('click', function() {
+        document.addEventListener('DOMContentLoaded', function() {
+            const manageAllBtn = document.getElementById('manageAllBtn');
+            if (!manageAllBtn) {
+                console.error('Element with ID "manageAllBtn" not found');
+                return;
+            }
+
+            manageAllBtn.addEventListener('click', handleSelectedItems);
+        });
+
+        function handleSelectedItems() {
             let selectedDeliveryIds = [];
             document.querySelectorAll('input[type="checkbox"]:checked').forEach(function(checkbox) {
                 selectedDeliveryIds.push(checkbox.value);
@@ -919,35 +1029,169 @@ $user_id = $_SESSION['user_id'];
 
             console.log('Selected delivery IDs:', selectedDeliveryIds);
 
-            fetch('function/fetch_modal_data.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
+            $.ajax({
+                url: 'function/fetch_modal_data.php',
+                type: 'POST',
+                data: {
+                    deliveryIds: selectedDeliveryIds.join(',')
                 },
-                body: 'deliveryIds=' + selectedDeliveryIds.join(',')
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Received data:', data);
+                success: function(data) {
+                    console.log('Received data:', data);
 
-                if (data.error) {
-                    alert(data.error);
-                    return;
+                    if (data.error) {
+                        alert(data.error);
+                        return;
+                    }
+
+                    if (!data.items) {
+                        alert('No data available');
+                        return;
+                    }
+
+                    openModal2(data);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                    alert('Error fetching data');
                 }
-
-                if (!data.items) {
-                    alert('No data available');
-                    return;
-                }
-
-                openModal2(data);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error fetching data');
             });
-        });
-    });
+        }
+
+        // Update status button click handler
+        document.getElementById("updateStatusBtn2").onclick = function() {
+            var deliveryId = modal.dataset.deliveryId;
+
+            // Ask for confirmation using SweetAlert
+            Swal.fire({
+                title: 'คุณแน่ใจไหม?',
+                text: 'คุณแน่ใจหรือไม่ที่จะอัพเดทสถานะการขนส่งครั้งนี้ คุณจะไม่สามารถแก้ไขได้หากคุณได้ทำการอัพเดทไปแล้ว?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'ใช่, อัพเดท',
+                cancelButtonText: 'ไม่, ยกเลิก',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // User confirmed, proceed with updating status
+
+                    // Example AJAX request for updating status
+                    fetch('function/update_status.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                deliveryId: deliveryId
+                            }),
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log("Response from server:", data);
+
+                            // Handle response
+                            if (data.status === 'success') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success!',
+                                    text: 'Delivery status updated successfully.',
+                                });
+                                location.reload(); // Reload the page after successful update
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error!',
+                                    text: data.message || 'Failed to update delivery status.',
+                                });
+                            }
+                            modal.style.display = "none"; // Close modal after action
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: 'Failed to update delivery status.',
+                            });
+                            modal.style.display = "none"; // Close modal on error
+                        });
+                }
+            });
+        }
+
+
+        document.getElementById("reportProblemBtn2").onclick = function() {
+            var deliveryId = modal.dataset.deliveryId;
+
+            // Ask for confirmation using SweetAlert
+            Swal.fire({
+                title: 'คุณแน่ใจไหม?',
+                text: 'คุณแน่ใจหรือไม่ที่จะแจ้งว่าการจัดส่งครั้งนี้มีปัญหา คุณจะไม่สามารถแก้ไขได้หากคุณได้ทำการแจ้งว่าการจัดส่งครั้งนี้มีปัญหา?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'ใช่, แจ้งปัญหา',
+                cancelButtonText: 'ไม่, ยกเลิก',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // User confirmed, proceed with reporting problem
+
+                    // Example AJAX request for updating status
+                    fetch('function/problem_status.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                deliveryId: deliveryId,
+                                problem: 'Specify the problem here if needed'
+                            }),
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log("Response from server:", data);
+
+                            // Handle response
+                            if (data.status === 'success') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success!',
+                                    text: 'Parcel problem reported successfully.',
+                                });
+                                location.reload();
+                                // Optionally, you can reload the page or update UI here
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error!',
+                                    text: data.message || 'Failed to report parcel problem.',
+                                });
+                            }
+                            modal.style.display = "none"; // Close modal after action
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: 'Failed to update status.',
+                            });
+                            modal.style.display = "none"; // Close modal on error
+                        });
+                }
+            });
+        }
     </script>
 </body>
 

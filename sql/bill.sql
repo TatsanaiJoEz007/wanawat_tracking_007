@@ -48,11 +48,12 @@ CREATE TABLE IF NOT EXISTS tb_line {
 
 -- Create tb_delivery table ไว้เก็บข้อมูลการส่งสินค้า
 CREATE TABLE IF NOT EXISTS tb_delivery (
-    delivery_id         INT(11)         NOT NULL AUTO_INCREMENT,
-    delivery_number     VARCHAR(255)    CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-    delivery_date       TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    delivery_status     INT(11)         NOT NULL DEFAULT 1,
-    created_by          INT(11)        NULL DEFAULT NULL,   
+    delivery_id                 INT(11)         NOT NULL AUTO_INCREMENT,
+    delivery_number             VARCHAR(255)    CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+    delivery_weight_total       VARCHAR(255)    CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 0,
+    delivery_date               TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    delivery_status             INT(11)         NOT NULL DEFAULT 1,
+    created_by                  INT(11)         NULL DEFAULT NULL,   
 
     PRIMARY KEY (delivery_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
@@ -69,6 +70,7 @@ CREATE TABLE IF NOT EXISTS tb_delivery_items (
     item_unit           VARCHAR(255)    CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
     item_price          VARCHAR(255)    CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
     line_total          VARCHAR(255)    CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+    item_weight         VARCHAR(255)    CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 0,
     transfer_type       VARCHAR(255)    CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
     create_by           INT(11)         NULL DEFAULT NULL,
     

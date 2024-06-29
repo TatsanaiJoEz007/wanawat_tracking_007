@@ -8,23 +8,23 @@ try {
 
     // Check connection
     if (!$conn) {
-        throw new Exception('Connection failed: '. mysqli_connect_error());
+        throw new Exception('Connection failed: ' . mysqli_connect_error());
     }
 
     $deliveryIds = [];
-    
+
     // Check if deliveryId is set in POST
     if (isset($_POST['deliveryId'])) {
         $deliveryIds[] = $_POST['deliveryId'];
     }
-    
+
     // Check if deliveryIds is set in POST
     if (isset($_POST['deliveryIds'])) {
         $additionalIds = explode(',', $_POST['deliveryIds']);
         $additionalIds = array_map('trim', $additionalIds);
         $deliveryIds = array_merge($deliveryIds, $additionalIds);
     }
-    
+
     // If no deliveryId or deliveryIds were set, throw an error
     if (empty($deliveryIds)) {
         throw new Exception('Delivery ID(s) are not set in POST');
@@ -35,17 +35,20 @@ try {
 
     // Prepare the SQL query
     $query = "SELECT 
-                TRIM(di.bill_number),
-                TRIM(di.bill_customer_name),
-                TRIM(di.item_code), 
-                TRIM(di.item_desc), 
-                TRIM(di.item_quantity), 
-                TRIM(di.item_unit), 
-                TRIM(di.item_price), 
-                TRIM(di.line_total),
-                TRIM(di.delivery_id) 
+                TRIM(di.bill_number) AS bill_number,
+                TRIM(di.bill_customer_name) AS bill_customer_name,
+                TRIM(di.item_code) AS item_code,
+                TRIM(di.item_desc) AS item_desc,
+                TRIM(di.item_quantity) AS item_quantity,
+                TRIM(di.item_unit) AS item_unit,
+                TRIM(di.item_price) AS item_price,
+                TRIM(di.line_total) AS line_total,
+                TRIM(di.delivery_id) AS delivery_id,
+                TRIM(d.delivery_number) AS delivery_number
             FROM 
-                tb_delivery_items di 
+                tb_delivery_items di
+            INNER JOIN
+                tb_delivery d ON di.delivery_id = d.delivery_id
             WHERE 
                 TRIM(di.delivery_id) IN ($placeholders)";
 
@@ -62,13 +65,17 @@ try {
     $result = $stmt->get_result();
 
     if (!$result) {
-        throw new Exception('Query failed: '. mysqli_error($conn));
+        throw new Exception('Query failed: ' . mysqli_error($conn));
     }
 
-    // Fetch the data
-    $data = array();
+    // Fetch the data and group by delivery number
+    $data = array('items' => []);
     while ($row = mysqli_fetch_assoc($result)) {
-        $data['items'][] = $row;
+        $deliveryNumber = $row['delivery_number'];
+        if (!isset($data['items'][$deliveryNumber])) {
+            $data['items'][$deliveryNumber] = [];
+        }
+        $data['items'][$deliveryNumber][] = $row;
     }
 
     // Check for any output before the JSON data
@@ -81,7 +88,7 @@ try {
     header('Content-Type: application/json');
     $json_data = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     if (json_last_error() !== JSON_ERROR_NONE) {
-        throw new Exception('JSON encoding error: '. json_last_error_msg());
+        throw new Exception('JSON encoding error: ' . json_last_error_msg());
     }
     echo $json_data;
 
