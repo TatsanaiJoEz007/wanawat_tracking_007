@@ -1,6 +1,6 @@
         // Update status button click handler
         document.getElementById("updateStatusBtn2").onclick = function() {
-            var deliveryId = modal.dataset.deliveryId;
+            var deliveryIds = modal.dataset.deliveryIds;
 
             // Ask for confirmation using SweetAlert
             Swal.fire({
@@ -23,7 +23,7 @@
                                 'Content-Type': 'application/json',
                             },
                             body: JSON.stringify({
-                                deliveryId: deliveryId
+                                deliveryIds: deliveryIds
                             }),
                         })
                         .then(response => {

@@ -449,7 +449,15 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
             <span class="logo_name">Employee</span>
         </div>
         <ul class="nav-links">
-
+            <li>
+                <a href="../employee/dashboard.php">
+                    <i class="bx bx-grid-alt nav_icon"></i>
+                    <span class="link_name">หน้าหลัก</span>
+                </a>
+                <ul class="sub-menu blank">
+                    <li><a class="link_name" href="../employee/dashboard.php">Dashboard</a></li>
+                </ul>
+            </li>
             <li>
                 <div class="iocn-link">
                     <a href="#">

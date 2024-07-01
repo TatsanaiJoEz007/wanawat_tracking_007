@@ -12,7 +12,7 @@ if (mysqli_num_rows($result) > 0) {
                 $status_class = 'status-yellow';
                 break;
             case 3:
-                $status_text = 'สถานะสินค้าอยู่ที่ศูนย์กระจายสินค้าปลายทาง';
+                $status_text = 'สถานะสินค้าอยู่ที่ศูนย์กระจายสินค้าปลาย';
                 $status_class = 'status-grey';
                 break;
             case 4:
@@ -32,15 +32,15 @@ if (mysqli_num_rows($result) > 0) {
                 break;
         }
 
+        // Output the row in the table
+
         echo '<tr class="' . $status_class . '">';
-        echo '<td><center><input type="checkbox" name="select" value="' . $row['delivery_id'] . '" data-status-text="' . $status_text . '" data-delivery-number="' . $row['delivery_number'] . '"></center></td>';
         echo '<td>' . $i . '</td>';
         echo '<td>' . $row['delivery_number'] . '</td>';
         echo '<td>' . $row['item_count'] . '</td>';
         echo '<td>' . $status_text . '</td>';
         echo '<td>' . $row['delivery_date'] . '</td>';
         echo '<td>' . $row['transfer_type'] . '</td>';
-        // echo '<td><button class="btn-custom" onclick="openModal(\'' . $status_text . '\', \'' . $row['delivery_id'] . '\', \'' . $row['delivery_number'] . '\')">Manage</button></td>';
         echo '</tr>';
 
         $i++;
