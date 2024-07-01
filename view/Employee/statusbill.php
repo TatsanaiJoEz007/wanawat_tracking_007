@@ -1,22 +1,21 @@
 <?php
-session_start();
+    session_start();
 
-// db.php
-$servername = "localhost";  // Usually 'localhost' if running on the same server
-$username = "root";  // Replace with your database username
-$password = "";  // Replace with your database password
-$dbname = "wanawat_tracking";  // Replace with your database name
+    // db.php
+    $servername = "localhost";  // Usually 'localhost' if running on the same server
+    $username = "root";  // Replace with your database username
+    $password = "";  // Replace with your database password
+    $dbname = "wanawat_tracking";  // Replace with your database name
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+    // Create connection
+    $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
 
-$user_id = $_SESSION['user_id'];
-
+    $user_id = $_SESSION['user_id'];
 ?>
 
 <!DOCTYPE html>
@@ -32,420 +31,7 @@ $user_id = $_SESSION['user_id'];
     <!-- Include DataTables CSS and JS -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #fff;
-        }
-
-        .container {
-            margin: 20px auto;
-            max-width: 1200px;
-            padding: 0 20px;
-            background-color: #ffff;
-        }
-
-        h2 {
-            font-size: 2.5em;
-            text-align: center;
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        .search-bar {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .search-bar input {
-            width: 80%;
-            padding: 10px;
-            font-size: 1rem;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .table-container {
-            width: 100%;
-            margin: 0 auto;
-
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-
-        table,
-        th,
-        td {
-            border: 1px solid #ccc;
-        }
-
-        th,
-        td {
-            padding: 10px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #ff9967;
-            color: white;
-        }
-
-        .search {
-            background-color: #f0592e;
-            color: white;
-            margin-top: 20px;
-            margin-left: 20px;
-            margin-right: 20px;
-            padding: 10px;
-            font-size: 1rem;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .search:hover {
-            background-color: #F1693E;
-            cursor: pointer;
-            transition: 0.3s ease-in-out;
-        }
-
-        .status-red {
-            background-color: #ffcccc;
-        }
-
-        .status-green {
-            background-color: #ccffcc;
-        }
-
-        .status-yellow {
-            background-color: #ffffcc;
-        }
-
-        .status-blue {
-            background-color: #cce5ff;
-        }
-
-        .status-purple {
-            background-color: #dfe2fb;
-        }
-
-        .status-grey {
-            background-color: #f0f2f5;
-        }
-
-        .btn-custom {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 0.25rem;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            text-decoration: none;
-        }
-
-        .btn-custom:hover {
-            background-color: #0056b3;
-        }
-
-        .btn-red {
-            background-color: #dc3545;
-        }
-
-        .btn-red:hover {
-            background-color: #c82333;
-        }
-
-        /* Modal Styles */
-        .modal,
-        .modal2 {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4);
-        }
-
-        .modal-content,
-        .modal-content2 {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 600px;
-            border-radius: 10px;
-            position: relative;
-        }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        ::-webkit-scrollbar {
-            width: 9px;
-            /* Adjust width for vertical scrollbar */
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background-color: #FF5722;
-            /* Color for scrollbar thumb */
-            border-radius: 10px;
-            /* Rounded corners for scrollbar thumb */
-        }
-
-        .home-section {
-            max-height: 100vh;
-            /* Adjust height as needed */
-            overflow-y: auto;
-            /* Allow vertical scroll */
-            overflow-x: hidden;
-            /* Prevent horizontal scroll */
-            padding: 20px;
-            background-color: #f9f9f9;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-        }
-
-        .instruction-box {
-            background-color: #FFA84C;
-            /* Light grey background */
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            cursor: pointer;
-        }
-
-        .instruction-box h2 {
-            font-size: 24px;
-            margin-bottom: 15px;
-            color: #333;
-        }
-
-        .instruction-list {
-            list-style-type: none;
-            padding-left: 20px;
-            margin: 0;
-            color: #555;
-            /* Text color */
-            display: none;
-        }
-
-        .instruction-box.active .instruction-list {
-            display: block;
-
-        }
-
-        .expand-icon {
-            font-size: 24px;
-            color: white;
-            float: right;
-            transition: transform 0.3s ease;
-        }
-
-        .active .expand-icon {
-            transform: rotate(45deg);
-        }
-
-        .button-cute {
-            background-color: #f0592e;
-            border: 2px solid #f0600e;
-            border-radius: 12px;
-            padding: 10px 20px;
-            cursor: pointer;
-            transition: transform 0.3s ease-in-out;
-        }
-
-        .button-cute:hover {
-            background-color: #f0500e;
-            transform: translateY(-3px);
-        }
-
-        .button-cute a {
-            text-decoration: none;
-            color: #fff;
-            font-size: 18px;
-            transition: color 0.3s ease-in-out;
-        }
-
-        .button-cute:hover a {
-            color: #ffdeeb;
-        }
-
-        .button-cute a::after {
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-            transform: translateX(-5px);
-        }
-
-        .button-cute:hover a::after {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .pagination a {
-            margin: 0 5px;
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            text-decoration: none;
-            color: #333;
-        }
-
-        .pagination a.active {
-            background-color: #007bff;
-            color: white;
-            border-color: #007bff;
-        }
-
-        .collapsible {
-            background-color: #f1f1f1;
-            color: #444;
-            cursor: pointer;
-            padding: 18px;
-            width: 100%;
-            border: none;
-            text-align: left;
-            outline: none;
-            font-size: 15px;
-        }
-
-        .active,
-        .collapsible:hover {
-            background-color: #ddd;
-        }
-
-        .content {
-            padding: 0 18px;
-            display: none;
-            overflow: hidden;
-            background-color: #f1f1f1;
-            max-height: 0;
-            transition: max-height 0.2s ease-out;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.5);
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-dialog {
-            width: 90%;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .modal-content {
-            background-color: #fff;
-            border-radius: 8px;
-            padding: 20px;
-            border: 1px solid #888;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #dee2e6;
-            padding-bottom: 10px;
-        }
-
-        .modal-title {
-            font-size: 1.75rem;
-            font-weight: bold;
-        }
-
-        .close {
-            color: #aaa;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .modal-body {
-            padding: 20px 0;
-            font-size: 1rem;
-        }
-
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            border-top: 1px solid #dee2e6;
-            padding-top: 10px;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            margin: 5px;
-            cursor: pointer;
-            border: none;
-            border-radius: 4px;
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-
-        .btn-secondary {
-            background-color: #6c757d;
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background-color: #5a6268;
-        }
-
-        #openModal:checked~.modal {
-            display: flex;
-        }
-    </style>
-
+    <link rel="stylesheet" href="function/statusbill/css/style.css">
 </head>
 
 <body>
@@ -455,119 +41,17 @@ $user_id = $_SESSION['user_id'];
         <!-- Search bar -->
         <div class="search-bar">
             <h2>สถานะการขนส่ง</h2>
-            <div class="instruction-box" onclick="toggleInstructions()">
-                <h2 style="color:black;">ความหมายของสีสถานะสินค้า <span class="expand-icon" style="color:black;">+</span></h2>
-                <ol class="instruction-list" style="display:none;">
-                    <li>
-                        <b style="color: red;">สีแดง</b>
-                        <i style="color:black;">: สถานะสินค้าที่เกิดปัญหา</i>
-                    </li>
-                    <li>
-                        <b style="color: green;">สีเขียว</b>
-                        <i style="color:black;">: สถานะสินค้าที่ถึงนำส่งให้ลูกค้าสำเร็จ</i>
-                    </li>
-                    <li>
-                        <b style="color: blue;">สีน้ำเงิน</b>
-                        <i style="color:black;">: สถานะสินค้าที่คำสั่งซื้อเข้าสู่ระบบ</i>
-                    </li>
-                    <li>
-                        <b style="color: yellow;">สีเหลือง</b>
-                        <i style="color:black;">: สถานะสินค้าที่กำลังจัดส่งไปยังศูนย์กระจายสินค้า</i>
-                    </li>
-                    <li>
-                        <b style="color: grey;">สีเทา</b>
-                        <i style="color:black;">: สถานะสินค้าอยู่ที่ศูนย์กระจายสินค้าปลาย</i>
-                    </li>
-                    <li>
-                        <b style="color: purple;">สีม่วง</b>
-                        <i style="color:black;">: สถานะสินค้าที่กำลังนำส่งให้ลูกค้า</i>
-                </ol>
-            </div>
-            <script>
-                function toggleInstructions() {
-                    var instructions = document.querySelector('.instruction-list');
-                    instructions.style.display = instructions.style.display === 'none' ? 'block' : 'none';
-                    var expandIcon = document.querySelector('.expand-icon');
-                    expandIcon.textContent = expandIcon.textContent === '+' ? '-' : '+';
-                }
-
-                window.onscroll = function() {
-                    myFunction();
-                };
-
-                var instructionsbox = document.querySelector('.instruction-box');
-                var sticky = instructionsbox.offsetTop;
-
-                function myFunction() {
-                    if (window.pageYOffset >= sticky) {
-                        instructionsbox.classList.add("sticky");
-                    } else {
-                        instructionsbox.classList.remove("sticky");
-                    }
-                }
-            </script>
+            <?php require_once "function/instruction.php" ?>
 
             <form method="GET" action="">
                 <input class="insearch" type="text" name="search" placeholder="Search by delivery number" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
                 <button type="submit" class="search">Search</button>
             </form>
         </div>
+        <?php require_once "function/statusbill/searchterm.php" ?>
 
-        <?php
-        $search_term = isset($_GET['search']) ? $_GET['search'] : '';
-
-        // Query to get total number of items
-        $total_items_query = "SELECT COUNT(DISTINCT d.delivery_id) as total 
-                                FROM tb_delivery d 
-                                INNER JOIN tb_delivery_items di ON d.delivery_id  = di.delivery_id 
-                                WHERE d.created_by = $user_id";
-
-        // Append search term filter if provided
-        if ($search_term) {
-            $search_term_escaped = mysqli_real_escape_string($conn, $search_term);
-            $total_items_query .= " AND d.delivery_number LIKE '%$search_term_escaped%'";
-        }
-
-        // Execute query to get total count
-        $total_items_result = mysqli_query($conn, $total_items_query);
-
-        if (!$total_items_result) {
-            echo "Error fetching total items: " . mysqli_error($conn);
-            exit;
-        }
-
-        $total_items = mysqli_fetch_assoc($total_items_result)['total'];
-
-        $items_per_page = 20;
-        $total_pages = ceil($total_items / $items_per_page);
-        $current_page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
-
-        $offset = ($current_page - 1) * $items_per_page;
-
-        $query = "SELECT d.delivery_id, d.delivery_number, d.delivery_date, COUNT(di.item_code) AS item_count, d.delivery_status, di.transfer_type 
-            FROM tb_delivery d 
-            INNER JOIN tb_delivery_items di ON d.delivery_id = di.delivery_id 
-            WHERE d.created_by = $user_id";
-
-        // Append search term filter if provided
-        if ($search_term) {
-            $search_term_escaped = mysqli_real_escape_string($conn, $search_term);
-            $query .= " AND d.delivery_number LIKE '%$search_term_escaped%'";
-        }
-
-        $query .= " GROUP BY d.delivery_id, di.transfer_type LIMIT $items_per_page OFFSET $offset";
-
-
-        // Execute query to fetch data
-        $result = mysqli_query($conn, $query);
-
-        if (!$result) {
-            echo "Error fetching data: " . mysqli_error($conn);
-            exit;
-        }
-        ?>
         <div id="action-buttons" style="display: none;">
-            <button class="btn-custom" id="manageAllBtn">Manage All</button>
+            <button class="btn-custom" id="manageAllBtn">Manage</button>
         </div>
 
         <script>
@@ -614,61 +98,10 @@ $user_id = $_SESSION['user_id'];
                         <th>สถานะ</th>
                         <th>วันที่สร้างบิล</th>
                         <th>ประเภทการขนย้าย</th>
-                        <th>จัดการสถานะ</th>
+                        <!-- <th>จัดการสถานะ</th> -->
                 </thead>
                 <tbody>
-                    <?php
-                    if (mysqli_num_rows($result) > 0) {
-                        $i = 1;
-                        while ($row = mysqli_fetch_assoc($result)) {
-                            switch ($row['delivery_status']) {
-                                case 1:
-                                    $status_text = 'สถานะสินค้าที่คำสั่งซื้อเข้าสู่ระบบ';
-                                    $status_class = 'status-blue';
-                                    break;
-                                case 2:
-                                    $status_text = 'สถานะสินค้าที่กำลังจัดส่งไปยังศูนย์กระจายสินค้า';
-                                    $status_class = 'status-yellow';
-                                    break;
-                                case 3:
-                                    $status_text = 'สถานะสินค้าอยู่ที่ศูนย์กระจายสินค้าปลาย';
-                                    $status_class = 'status-grey';
-                                    break;
-                                case 4:
-                                    $status_text = 'สถานะสินค้าที่กำลังนำส่งให้ลูกค้า';
-                                    $status_class = 'status-purple';
-                                    break;
-                                case 5:
-                                    $status_text = 'สถานะสินค้าที่ถึงนำส่งให้ลูกค้าสำเร็จ';
-                                    $status_class = 'status-green';
-                                    break;
-                                case 99:
-                                    $status_text = 'สถานะสินค้าที่เกิดปัญหา';
-                                    $status_class = 'status-red';
-                                    break;
-                                default:
-                                    $status_text = 'Unknown';
-                                    break;
-                            }
-
-                            echo '<tr class="' . $status_class . '">';
-                            echo '<td><center><input type="checkbox" name="select" value="' . $row['delivery_id'] . '" data-status-text="' . $status_text . '" data-delivery-number="' . $row['delivery_number'] . '"></center></td>';
-                            echo '<td>' . $i . '</td>';
-                            echo '<td>' . $row['delivery_number'] . '</td>';
-                            echo '<td>' . $row['item_count'] . '</td>';
-                            echo '<td>' . $status_text . '</td>';
-                            echo '<td>' . $row['delivery_date'] . '</td>';
-                            echo '<td>' . $row['transfer_type'] . '</td>';
-                            echo '<td><button class="btn-custom" onclick="openModal(\'' . $status_text . '\', \'' . $row['delivery_id'] . '\', \'' . $row['delivery_number'] . '\')">Manage</button></td>';
-                            echo '</tr>';
-
-                            $i++;
-                        }
-                    } else {
-                        echo "<tr><td colspan='6'>No delivery bills found.</td></tr>";
-                    }
-                    ?>
-
+                    <?php require_once "function/statusbill/fetchdelivery.php" ?>
                 </tbody>
             </table>
         </div>
@@ -708,254 +141,51 @@ $user_id = $_SESSION['user_id'];
     </div>
 
     <!-- Modal section -->
-<div id="myModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Update Status</h2>
-        <h1 id="deliveryNumber" class="card-text"><b>Delivery Number : </b><span id="deliveryNumberText"></span></h1> <br>
-        <p><b>Current Status: </b><span id="currentStatus"></span></p>
-        <h3>รายละเอียดสินค้า</h3>
-        <hr><br>
-        <div id="itemDetails">
-            <!-- Add container to show item details here -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Update Status</h2>
+            <h1 id="deliveryNumber" class="card-text"><b>Delivery Number : </b><span id="deliveryNumberText"></span></h1> <br>
+            <p><b>Current Status: </b><span id="currentStatus"></span></p>
+            <h3>รายละเอียดสินค้า</h3>
+            <hr><br>
+            <div id="itemDetails">
+
+            </div>
+            <button id="updateStatusBtn" class="btn-custom">อัพเดทสถานะการจัดส่งสินค้า</button>
+            <button id="reportProblemBtn" class="btn-custom btn-red">แจ้งว่าสินค้ามีปัญหา</button>
         </div>
-        <button id="updateStatusBtn" class="btn-custom">อัพเดทสถานะการจัดส่งสินค้า</button>
-        <button id="reportProblemBtn" class="btn-custom btn-red">แจ้งว่าสินค้ามีปัญหา</button>
     </div>
-</div>
 
     <!-- Include SweetAlert for modal notifications -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
 
     <!-- JavaScript section for modal interaction -->
-    <script>
-        var modal = document.getElementById("myModal");
-        var span = document.getElementsByClassName("close")[0];
+    <script src="function/statusbill/js/modal.js"></script>
 
-        function openModal(statusText, deliveryId, deliveryNumber) {
-            var currentStatus = document.getElementById("currentStatus");
-            currentStatus.textContent = statusText;
-            modal.dataset.deliveryId = deliveryId;
-            document.getElementById("deliveryNumberText").textContent = deliveryNumber;
+    <script src="function/statusbill/js/updatestatusbtn.js"></script>
 
-            // Fetch data for the modal
-            fetchModalData(deliveryId);
-        }
-
-        function fetchModalData(deliveryId) {
-            fetch('function/fetch_modal_data.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: new URLSearchParams({
-                        'deliveryId': deliveryId
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        console.error(data.error);
-                        return;
-                    }
-
-                    // Assuming the data structure is data.items array
-                    if (data.items && data.items.length > 0) {
-                        var itemDetailsContainer = document.getElementById('itemDetails');
-                        itemDetailsContainer.innerHTML = ''; // Clear previous content
-
-                        data.items.forEach(item => {
-                            var itemHTML = `
-                    <p>Bill Number: ${item.bill_number}</p>
-                    <p>Customer Name: ${item.bill_customer_name}</p>
-                    <p>Item Code: ${item.item_code}</p>
-                    <p>Item Description: ${item.item_desc}</p>
-                    <p>Quantity: ${item.item_quantity}</p>
-                    <p>Unit: ${item.item_unit}</p>
-                    <p>Price: ${item.item_price}</p>
-                    <p>Total: ${item.line_total}</p>
-                    <hr>
-                `;
-                            itemDetailsContainer.insertAdjacentHTML('beforeend', itemHTML);
-                        });
-                    }
-
-                    modal.style.display = "block";
-                })
-                .catch(error => console.error('Error:', error));
-        }
-
-        // Close modal when clicking on <span> (x)
-        var span = document.getElementsByClassName("close")[0];
-        span.onclick = function() {
-            modal.style.display = "none";
-        }
-
-        // Close modal when clicking outside modal
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
-
-        // Update status button click handler
-        document.getElementById("updateStatusBtn").onclick = function() {
-            var deliveryId = modal.dataset.deliveryId;
-
-            // Ask for confirmation using SweetAlert
-            Swal.fire({
-                title: 'คุณแน่ใจไหม?',
-                text: 'คุณแน่ใจหรือไม่ที่จะอัพเดทสถานะการขนส่งครั้งนี้ คุณจะไม่สามารถแก้ไขได้หากคุณได้ทำการอัพเดทไปแล้ว?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'ใช่, อัพเดท',
-                cancelButtonText: 'ไม่, ยกเลิก',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // User confirmed, proceed with updating status
-
-                    // Example AJAX request for updating status
-                    fetch('function/update_status.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                deliveryId: deliveryId
-                            }),
-                        })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Network response was not ok');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            console.log("Response from server:", data);
-
-                            // Handle response
-                            if (data.status === 'success') {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Success!',
-                                    text: 'Delivery status updated successfully.',
-                                });
-                                location.reload(); // Reload the page after successful update
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error!',
-                                    text: data.message || 'Failed to update delivery status.',
-                                });
-                            }
-                            modal.style.display = "none"; // Close modal after action
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error!',
-                                text: 'Failed to update delivery status.',
-                            });
-                            modal.style.display = "none"; // Close modal on error
-                        });
-                }
-            });
-        }
-
-
-        document.getElementById("reportProblemBtn").onclick = function() {
-            var deliveryId = modal.dataset.deliveryId;
-
-            // Ask for confirmation using SweetAlert
-            Swal.fire({
-                title: 'คุณแน่ใจไหม?',
-                text: 'คุณแน่ใจหรือไม่ที่จะแจ้งว่าการจัดส่งครั้งนี้มีปัญหา คุณจะไม่สามารถแก้ไขได้หากคุณได้ทำการแจ้งว่าการจัดส่งครั้งนี้มีปัญหา?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'ใช่, แจ้งปัญหา',
-                cancelButtonText: 'ไม่, ยกเลิก',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // User confirmed, proceed with reporting problem
-
-                    // Example AJAX request for updating status
-                    fetch('function/problem_status.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                deliveryId: deliveryId,
-                                problem: 'Specify the problem here if needed'
-                            }),
-                        })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Network response was not ok');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            console.log("Response from server:", data);
-
-                            // Handle response
-                            if (data.status === 'success') {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Success!',
-                                    text: 'Parcel problem reported successfully.',
-                                });
-                                location.reload();
-                                // Optionally, you can reload the page or update UI here
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error!',
-                                    text: data.message || 'Failed to report parcel problem.',
-                                });
-                            }
-                            modal.style.display = "none"; // Close modal after action
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error!',
-                                text: 'Failed to update status.',
-                            });
-                            modal.style.display = "none"; // Close modal on error
-                        });
-                }
-            });
-        }
-
-        $(document).ready(function() {
-            $("#myTable").DataTable();
-        });
-    </script>
+    <script src="function/statusbill/js/reportstatusbtn.js"></script>
 
     <!-- Modal section -->
     <div class="modal" id="manageModal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Update Status All</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <h5 class="modal-title">Update Status</h5>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body" id="modalContent">
-                    <p>Here is the modal content. You can put any HTML here.</p>
+                    <!-- Modal body content -->
                 </div>
                 <div class="modal-footer">
-                    <button id="updateStatusBtn2" class="btn-custom">อัพเดทสถานะการจัดส่งสินค้า</button>
+                    <button id="updateStatusBtn2" class="btn-custom">อัพเดทสถานะการจัดส่งสินค้า</button> 
+                    <p>&nbsp;</p> 
+                    <p>&nbsp;</p> 
+                    <p>&nbsp;</p>
                     <button id="reportProblemBtn2" class="btn-custom btn-red">แจ้งว่าสินค้ามีปัญหา</button>
-
                 </div>
             </div>
         </div>
@@ -966,233 +196,12 @@ $user_id = $_SESSION['user_id'];
     <!-- Include Bootstrap JS -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <!-- Include DataTables JS -->
-    <!-- <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script> -->
 
-    <script>
-        function openModal2(data) {
-            console.log('openModal2 called with data:', data);
+    <script src="function/statusbill/js/modal2.js"></script>
 
-            if (!data || !data.items) {
-                console.error('Data or items is missing', data);
-                return;
-            }
+    <script src="function/statusbill/js/updatestatusbtn2.js"></script>
 
-            let modalContent = document.getElementById('modalContent');
-            modalContent.innerHTML = '';
-
-            for (const [deliveryNumber, items] of Object.entries(data.items)) {
-                let deliveryHTML = `
-            <h3>Delivery Number: ${deliveryNumber}</h3>
-            <hr>
-        `;
-
-                items.forEach(function(item) {
-                    deliveryHTML += `
-                <p>Bill Number: ${item.bill_number}</p>
-                <p>Customer Name: ${item.bill_customer_name}</p>
-                <p>Item Code: ${item.item_code}</p>
-                <p>Item Description: ${item.item_desc}</p>
-                <p>Quantity: ${item.item_quantity}</p>
-                <p>Unit: ${item.item_unit}</p>
-                <p>Price: ${item.item_price}</p>
-                <p>Total: ${item.line_total}</p>
-                <hr>
-            `;
-                });
-
-                modalContent.innerHTML += deliveryHTML;
-            }
-
-            $('#manageModal').modal('show');
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const manageAllBtn = document.getElementById('manageAllBtn');
-            if (!manageAllBtn) {
-                console.error('Element with ID "manageAllBtn" not found');
-                return;
-            }
-
-            manageAllBtn.addEventListener('click', handleSelectedItems);
-        });
-
-        function handleSelectedItems() {
-            let selectedDeliveryIds = [];
-            document.querySelectorAll('input[type="checkbox"]:checked').forEach(function(checkbox) {
-                selectedDeliveryIds.push(checkbox.value);
-            });
-
-            if (selectedDeliveryIds.length === 0) {
-                alert('Please select at least one delivery.');
-                return;
-            }
-
-            console.log('Selected delivery IDs:', selectedDeliveryIds);
-
-            $.ajax({
-                url: 'function/fetch_modal_data.php',
-                type: 'POST',
-                data: {
-                    deliveryIds: selectedDeliveryIds.join(',')
-                },
-                success: function(data) {
-                    console.log('Received data:', data);
-
-                    if (data.error) {
-                        alert(data.error);
-                        return;
-                    }
-
-                    if (!data.items) {
-                        alert('No data available');
-                        return;
-                    }
-
-                    openModal2(data);
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error:', error);
-                    alert('Error fetching data');
-                }
-            });
-        }
-
-        // Update status button click handler
-        document.getElementById("updateStatusBtn2").onclick = function() {
-            var deliveryId = modal.dataset.deliveryId;
-
-            // Ask for confirmation using SweetAlert
-            Swal.fire({
-                title: 'คุณแน่ใจไหม?',
-                text: 'คุณแน่ใจหรือไม่ที่จะอัพเดทสถานะการขนส่งครั้งนี้ คุณจะไม่สามารถแก้ไขได้หากคุณได้ทำการอัพเดทไปแล้ว?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'ใช่, อัพเดท',
-                cancelButtonText: 'ไม่, ยกเลิก',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // User confirmed, proceed with updating status
-
-                    // Example AJAX request for updating status
-                    fetch('function/update_status.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                deliveryId: deliveryId
-                            }),
-                        })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Network response was not ok');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            console.log("Response from server:", data);
-
-                            // Handle response
-                            if (data.status === 'success') {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Success!',
-                                    text: 'Delivery status updated successfully.',
-                                });
-                                location.reload(); // Reload the page after successful update
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error!',
-                                    text: data.message || 'Failed to update delivery status.',
-                                });
-                            }
-                            modal.style.display = "none"; // Close modal after action
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error!',
-                                text: 'Failed to update delivery status.',
-                            });
-                            modal.style.display = "none"; // Close modal on error
-                        });
-                }
-            });
-        }
-
-
-        document.getElementById("reportProblemBtn2").onclick = function() {
-            var deliveryId = modal.dataset.deliveryId;
-
-            // Ask for confirmation using SweetAlert
-            Swal.fire({
-                title: 'คุณแน่ใจไหม?',
-                text: 'คุณแน่ใจหรือไม่ที่จะแจ้งว่าการจัดส่งครั้งนี้มีปัญหา คุณจะไม่สามารถแก้ไขได้หากคุณได้ทำการแจ้งว่าการจัดส่งครั้งนี้มีปัญหา?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'ใช่, แจ้งปัญหา',
-                cancelButtonText: 'ไม่, ยกเลิก',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // User confirmed, proceed with reporting problem
-
-                    // Example AJAX request for updating status
-                    fetch('function/problem_status.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                deliveryId: deliveryId,
-                                problem: 'Specify the problem here if needed'
-                            }),
-                        })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Network response was not ok');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            console.log("Response from server:", data);
-
-                            // Handle response
-                            if (data.status === 'success') {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Success!',
-                                    text: 'Parcel problem reported successfully.',
-                                });
-                                location.reload();
-                                // Optionally, you can reload the page or update UI here
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error!',
-                                    text: data.message || 'Failed to report parcel problem.',
-                                });
-                            }
-                            modal.style.display = "none"; // Close modal after action
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error!',
-                                text: 'Failed to update status.',
-                            });
-                            modal.style.display = "none"; // Close modal on error
-                        });
-                }
-            });
-        }
-    </script>
+    <script src="function/statusbill/js/reportstatusbtn2.js"></script>
 </body>
 
 </html>
