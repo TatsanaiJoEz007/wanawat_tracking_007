@@ -1,10 +1,36 @@
-
 <?php 
-require_once ('config/connect.php'); 
+require_once('config/connect.php'); 
 session_start();
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
+if(!isset($_SESSION['customer_id'])) {
+    die("Customer ID is not set.");
+}
 
+$customer_id = $_SESSION['customer_id'];
+
+$query = "SELECT 
+            tb_line.line_bill_number, 
+            tb_line.item_desc, 
+            tb_delivery.delivery_status, 
+            tb_header.bill_date
+          FROM 
+            tb_line 
+          JOIN 
+            tb_delivery ON tb_line.bill_id = tb_delivery.bill_id
+          JOIN 
+            tb_header ON tb_line.header_id = tb_header.header_id
+          WHERE 
+            tb_header.customer_id = '$customer_id'"; // ใช้ tb_header.customer_id แทน
+
+$result = mysqli_query($conn, $query);
+
+if(!$result) {
+    die("Query failed: " . mysqli_error($conn));
+}
 ?>
 
 <!DOCTYPE html>
@@ -17,17 +43,12 @@ session_start();
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
     <?php require_once('function/head.php'); ?>
     <style>
-        /* ปรับแต่ง modal ให้อยู่ตรงกลางจอ */
         .modal-dialog {
             display: flex;
             justify-content: center;
-            /* จัดกลางแนวนอน */
             align-items: center;
-            /* จัดกลางแนวตั้ง */
             min-height: 100vh;
-            /* ตั้งค่าความสูงขั้นต่ำของ modal dialog */
             margin: 0 auto !important;
-            /* ใช้ margin auto และ !important เพื่อให้การจัดกลางแน่นอน */
         }
         .modal {
             position: fixed;
@@ -38,7 +59,6 @@ session_start();
         }
         .modal-content {
             margin: auto !important;
-            /* จัดกลาง modal-content ใน modal-dialog */
         }
         .modal-backdrop.show {
             position: fixed;
@@ -47,21 +67,15 @@ session_start();
             width: 100vw !important;
             height: 100vh !important;
         }
-
-     
         ::-webkit-scrollbar {
-    width: 9px; /* Adjust width for vertical scrollbar */
-}
-
-::-webkit-scrollbar-thumb {
-    background-color: #FF5722; /* Color for scrollbar thumb */
-    border-radius: 10px; /* Rounded corners for scrollbar thumb */
-}
-
-    
+            width: 9px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #FF5722;
+            border-radius: 10px;
+        }
     </style>
 </head>
-
 
 <?php require_once('function/navindex.php'); ?>
 <body>
@@ -75,8 +89,6 @@ session_start();
                 <div class="app-card app-card-settings shadow-sm p-4">
                     <div class="app-card-body">
 
-
-                        <!-- Table of Order History -->
                         <div class="table-responsive">
                             <table class="table table-striped" id="Tableall">
                                 <thead>
@@ -86,49 +98,25 @@ session_start();
                                         <th scope="col" style="text-align: center;">สินค้า</th>
                                         <th scope="col" style="text-align: center;">สถานะ</th>
                                         <th scope="col" style="text-align: center;">วันที่สั่งซื้อ</th>
-                                        <th scope="col" style="text-align: center;">จัดการ</th>
                                     </tr>
                                 </thead>
                                 <tbody class="text-center">
-                                    <?php
-                                    $sql = "SELECT * FROM tb_line ";
-                                    $result = $conn->query($sql);
-                                    if ($result->num_rows > 0) {
-                                        while ($row = $result->fetch_assoc()) {
-                                            $bill_number = $row["line_bill_number"];
-                                            $sql2 = "SELECT * FROM tb_header WHERE bill_number = '$bill_number'";
-                                            $result2 = $conn->query($sql2);
-                                            $row2 = $result2->fetch_assoc();
-                                            $bill_status = $row2["bill_status"];
-                                            $status = "";
-                                            if ($bill_status == 1) {
-                                                $status = "รอการชำระเงิน";
-                                            } else if ($bill_status == 2) {
-                                                $status = "ชำระเงินแล้ว";
-                                            } else if ($bill_status == 3) {
-                                                $status = "กำลังจัดส่ง";
-                                            } else if ($bill_status == 4) {
-                                                $status = "จัดส่งแล้ว";
-                                            } else if ($bill_status == 5) {
-                                                $status = "ยกเลิก";
-                                            }
+                                    <?php 
+                                    if ($result && mysqli_num_rows($result) > 0) {
+                                        $i = 1;
+                                        while ($row = mysqli_fetch_assoc($result)) {
                                             echo "<tr>";
-                                            echo "<td>" . $row["line_id"] . "</td>";
-                                            echo "<td>" . $row["line_bill_number"] . "</td>";
-                                            echo "<td>" . $row["item_desc"] . "</td>";
-                                            echo "<td>" . $status . "</td>";
-                                            echo "<td>" . $row2["bill_date"] . "</td>";
-                                            echo "<td>";
-                                            if ($bill_status == 1) {
-                                                echo "<a href='function/orderhistory/cancelorder.php?line_id={$row['line_id']}' class='btn btn-danger'>ยกเลิก</a>";
-                                            }
-                                            echo "</td>";
+                                            echo "<td>" . $i++ . "</td>";
+                                            echo "<td>" . $row['line_bill_number'] . "</td>";
+                                            echo "<td>" . $row['item_desc'] . "</td>";
+                                            echo "<td>" . $row['delivery_status'] . "</td>";
+                                            echo "<td>" . $row['bill_date'] . "</td>";
                                             echo "</tr>";
                                         }
+                                    } else {
+                                        echo "<tr><td colspan='5'>ไม่มีประวัติการสั่งซื้อ</td></tr>";
                                     }
                                     ?>
-
-
                                 </tbody>
                             </table>
                         </div>
@@ -140,4 +128,4 @@ session_start();
 
     <script src="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
+</html>

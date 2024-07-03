@@ -36,6 +36,7 @@ if (isset($_POST['login'])) {
                 // กำหนดค่า Session ตามประเภทผู้ใช้งาน
                 $_SESSION['login'] = true;
                 $_SESSION['user_id'] = $user['user_id'];
+                $_SESSION['customer_id'] = $user['customer_id'];
                 $_SESSION['user_firstname'] = $user['user_firstname'];
                 $_SESSION['user_lastname'] = $user['user_lastname'];
                 $_SESSION['user_email'] = $user['user_email'];
@@ -43,6 +44,7 @@ if (isset($_POST['login'])) {
                 $_SESSION['user_address'] = $user['user_address'];
                 $_SESSION['user_tel'] = $user['user_tel'];
                 $_SESSION['user_create_at'] = $user['user_create_at'];
+                
                 $user_type = $user['user_type'];
 
                 // บันทึกการล็อกอินใน log_activity
