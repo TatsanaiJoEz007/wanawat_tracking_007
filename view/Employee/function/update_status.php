@@ -1,82 +1,90 @@
 <?php
-// Step 1: Connect to your database
-$servername = "localhost";  // Change this if your database is on a different server
-$username = "root";
-$password = "";
-$dbname = "wanawat_tracking";
+header('Content-Type: application/json');
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+$input = file_get_contents('php://input');
+error_log("Received input: " . $input);
 
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+$data = json_decode($input, true);
+error_log("Parsed data: " . print_r($data, true));
 
-// Check if the request is a POST request
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Decode JSON data sent from frontend
-    $data = json_decode(file_get_contents('php://input'), true);
+if (isset($data['deliveryIds']) && is_array($data['deliveryIds'])) {
+    $deliveryIds = $data['deliveryIds'];
+    error_log("Delivery IDs: " . implode(", ", $deliveryIds));
 
-    // Check if deliveryId is provided in JSON data
-    if (isset($data['deliveryId'])) {
-        // Sanitize and validate deliveryId (example)
-        $deliveryId = mysqli_real_escape_string($conn, $data['deliveryId']);
+    // Assuming you have a database connection in $conn
+    include '../../../view/config/connect.php';
 
-        // Fetch current delivery status
-        $selectQuery = "SELECT delivery_status FROM tb_delivery WHERE delivery_id = ?";
-        $stmt = $conn->prepare($selectQuery);
-        $stmt->bind_param('i', $deliveryId);
-        $stmt->execute();
-        $stmt->store_result();
-        
-        if ($stmt->num_rows > 0) {
-            $stmt->bind_result($currentStatus);
-            $stmt->fetch();
-
-            // Determine new status, ensuring it doesn't exceed 5
-            if ($currentStatus == 99) {
-                $newStatus = 1; // Reset to 1 if it was 99
-            } else {
-                $newStatus = min($currentStatus + 1, 5); // Increment by 1, max 5
-            }
-
-            // Update delivery status in database
-            $updateQuery = "UPDATE tb_delivery SET delivery_status = ? WHERE delivery_id = ?";
-            $stmt = $conn->prepare($updateQuery);
-            $stmt->bind_param('ii', $newStatus, $deliveryId);
-
-            if ($stmt->execute()) {
-                // Return success response if update was successful
-                $response = ['status' => 'success', 'message' => 'Delivery status updated successfully.'];
-                http_response_code(200);
-                echo json_encode($response);
-                exit;
-            } else {
-                // Return error response if update failed
-                $response = ['status' => 'error', 'message' => 'Failed to update delivery status.'];
-                http_response_code(500); // Internal Server Error
-                echo json_encode($response);
-                exit;
-            }
-        } else {
-            // Return error response if deliveryId is not found
-            $response = ['status' => 'error', 'message' => 'Delivery ID not found.'];
-            http_response_code(404); // Not Found
-            echo json_encode($response);
-            exit;
-        }
-    } else {
-        // Return error response if deliveryId is not provided
-        $response = ['status' => 'error', 'message' => 'Delivery ID not provided.'];
-        http_response_code(400); // Bad Request
-        echo json_encode($response);
+    // Check if connection is established
+    if ($conn->connect_error) {
+        error_log("Connection failed: " . $conn->connect_error);
+        echo json_encode(['status' => 'error', 'message' => 'Connection failed']);
         exit;
     }
+
+    $conn->begin_transaction();
+
+    // Prepare the SQL query with placeholders
+    $placeholders = implode(',', array_fill(0, count($deliveryIds), '?'));
+    $sql = "SELECT delivery_id, delivery_status FROM tb_delivery WHERE delivery_id IN ($placeholders) FOR UPDATE";
+    $stmt = $conn->prepare($sql);
+
+    // Log prepared statement
+    if ($stmt === false) {
+        error_log("Prepare failed: (" . $conn->errno . ") " . $conn->error);
+        echo json_encode(['status' => 'error', 'message' => 'Prepare failed']);
+        exit;
+    }
+
+    // Bind the delivery IDs to the placeholders
+    $types = str_repeat('i', count($deliveryIds));
+    error_log("Bind param types: " . $types);
+    $stmt->bind_param($types, ...$deliveryIds);
+
+    // Execute the statement and log the result
+    if ($stmt->execute()) {
+        $result = $stmt->get_result();
+        $deliveries = $result->fetch_all(MYSQLI_ASSOC);
+        error_log("Fetched deliveries: " . print_r($deliveries, true));
+
+        // Prepare the update statement
+        $updateSql = "UPDATE tb_delivery SET delivery_status = ? WHERE delivery_id = ?";
+        $updateStmt = $conn->prepare($updateSql);
+
+        if ($updateStmt === false) {
+            error_log("Update prepare failed: (" . $conn->errno . ") " . $conn->error);
+            echo json_encode(['status' => 'error', 'message' => 'Update prepare failed']);
+            $conn->rollback();
+            exit;
+        }
+
+        // Update each delivery status
+        foreach ($deliveries as $delivery) {
+            $status = $delivery['delivery_status'];
+
+            if ($status == 99) {
+                $status = 1;
+            } elseif ($status >= 5) {
+                echo json_encode(['status' => 'error', 'code' => 'status_limit', 'message' => 'Status cannot be more than 5.']);
+                $conn->rollback();
+                exit;
+            } else {
+                $status++;
+            }
+
+            error_log("Updating delivery_id: " . $delivery['delivery_id'] . " to status: " . $status);
+            $updateStmt->bind_param('ii', $status, $delivery['delivery_id']);
+            $updateStmt->execute();
+        }
+
+        $conn->commit();
+        echo json_encode(['status' => 'success']);
+    } else {
+        error_log("Execute failed: (" . $stmt->errno . ") " . $stmt->error);
+        echo json_encode(['status' => 'error', 'message' => 'Failed to fetch delivery statuses.']);
+        $conn->rollback();
+    }
 } else {
-    // Return error response if request method is not POST
-    http_response_code(405); // Method Not Allowed
-    echo json_encode(['status' => 'error', 'message' => 'Method not allowed.']);
-    exit;
+    error_log("Invalid delivery IDs format or empty delivery IDs.");
+    echo json_encode(['status' => 'error', 'message' => 'Invalid delivery IDs.']);
 }
 ?>
