@@ -164,6 +164,7 @@ $total_delivery_box = $total_delivery;
                 <a href="../admin/table_header.php" class="small-box-footer">ดูบิลทั้งหมด <i class="fas fa-arrow-circle-right"></i></a>
             </div>
         </div>
+        
         <div class="col-lg-3 col-6">
             <div class="small-box bg-red">
                 <div class="inner">

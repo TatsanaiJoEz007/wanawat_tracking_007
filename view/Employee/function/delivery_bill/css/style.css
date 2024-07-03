@@ -1,0 +1,152 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    height: 100vh;
+    background-color: #f0f0f0;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.product-list {
+    width: 70%;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-right: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-table-container {
+    flex-grow: 1;
+    overflow: auto;
+    overflow-y: auto;
+    max-height: 600px;
+    /* กำหนดความสูงคงที่ให้กับตาราง */
+}
+
+.cart {
+    width: 30%;
+    background-color: #f9f9f9;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    max-height: 600px;
+    /* กำหนดความสูงคงที่ให้กับ cart */
+    overflow: auto;
+    /* กำหนดการเลื่อนภายใน cart */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th,
+td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+th {
+    background-color: #f9f9f9;
+}
+
+thead th {
+    /* Target table header cells directly */
+    position: sticky;
+    top: 0;
+    /* Stick to the top */
+    background-color: #f9f9f9;
+    /* Keep the background color */
+    z-index: 1;
+    /* Ensure it's above the table body when scrolling */
+}
+
+.cart-title {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.cart-items {
+    list-style-type: none;
+    padding: 0;
+    flex-grow: 1;
+}
+
+.create-bill-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+    align-self: center;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.create-bill-btn:hover {
+    background-color: #45a049;
+}
+
+::-webkit-scrollbar {
+    width: 9px;
+    /* Adjust width for vertical scrollbar */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #FF5722;
+    /* Color for scrollbar thumb */
+    border-radius: 10px;
+    /* Rounded corners for scrollbar thumb */
+}
+
+.home-section {
+    max-height: 100vh;
+    /* Adjust height as needed */
+    overflow-y: auto;
+    /* Allow vertical scroll */
+    overflow-x: hidden;
+    /* Prevent horizontal scroll */
+    padding: 20px;
+    background-color: #f9f9f9;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.instruction-box {
+    background-color: #e9ecef;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.instruction-box h2 {
+    font-size: 24px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.instruction-box ol {
+    padding-left: 20px;
+}
+
+.instruction-box li {
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #555;
+}

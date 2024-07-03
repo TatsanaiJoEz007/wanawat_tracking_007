@@ -1,0 +1,91 @@
+  /* Add your custom styles here */
+  body {
+    padding-top: 20px;
+}
+
+.small-box {
+    margin-bottom: 20px;
+    border: 1px solid #dcdcdc;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    transition: transform 0.3s;
+}
+
+.small-box:hover {
+    transform: translateY(-5px);
+}
+
+.small-box .inner {
+    padding: 20px;
+}
+
+.small-box h3,
+.small-box p {
+    color: #333333;
+}
+
+.small-box .icon {
+    padding: 15px;
+    border-radius: 0 10px 10px 0;
+}
+
+.small-box a.small-box-footer {
+    color: #333333;
+    display: block;
+    padding: 10px;
+    text-align: right;
+    text-decoration: none;
+}
+
+.status-red {
+    background-color: #ffcccc;
+}
+
+.status-green {
+    background-color: #ccffcc;
+}
+
+.status-yellow {
+    background-color: #ffffcc;
+}
+
+.status-blue {
+    background-color: #cce5ff;
+}
+
+.status-purple {
+    background-color: #dfe2fb;
+}
+
+.status-grey {
+    background-color: #f0f2f5;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 12px;
+    /* Adjust width for vertical scrollbar */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #FF5722;
+    /* Color for scrollbar thumb */
+    border-radius: 10px;
+    /* Rounded corners for scrollbar thumb */
+}
+
+/* Container Styling */
+.home-section {
+    max-height: 100vh;
+    /* Adjust height as needed */
+    overflow-y: auto;
+    /* Allow vertical scroll */
+    overflow-x: hidden;
+    /* Prevent horizontal scroll */
+    padding: 20px;
+    background-color: #f9f9f9;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
