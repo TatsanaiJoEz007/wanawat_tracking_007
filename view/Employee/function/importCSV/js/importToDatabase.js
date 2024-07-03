@@ -1,20 +1,25 @@
 function importToDatabase() {
-    if (convertedCSVData) {
+    if (convertedCSVDataHeader) {
         const formData = new FormData();
-        formData.append('csvData', convertedCSVData); // Pass converted CSV data
+        formData.append('csvData', convertedCSVDataHeader); // Pass converted CSV data
 
-        fetch('', { // Use current file path
+        fetch('../importHeader.php', { // ชื่อไฟล์ PHP ที่จะรับข้อมูล
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.text())
-            .then(message => {
-                const output = document.getElementById('output1');
-                output.innerText = '';
+            .then(response => response.json())
+            .then(data => {
+                const { duplicateRows, importedRows } = data;
+
+                let message = `Header Imported Rows:\n${importedRows.join('\n')}\n\nHeader Duplicate Rows:\n${duplicateRows.join('\n')}`;
+
+                const output = document.getElementById('outputHeader');
+                output.innerText = message;
+
                 Swal.fire({
                     icon: 'success',
-                    title: 'Success',
-                    text: "Importing data successfully!"
+                    title: 'Import Result',
+                    text: message
                 });
             })
             .catch(error => console.error('Error:', error));

@@ -1,8 +1,10 @@
 document.getElementById("updateStatusBtn2").onclick = function() {
     let selectedDeliveryIds = [];
     document.querySelectorAll('input[type="checkbox"]:checked').forEach(function(checkbox) {
-        selectedDeliveryIds.push(checkbox.value);
+        selectedDeliveryIds.push(parseInt(checkbox.value)); // Ensure values are integers
     });
+
+    console.log("Selected delivery IDs:", selectedDeliveryIds); // Log delivery IDs
 
     if (selectedDeliveryIds.length === 0) {
         alert('Please select at least one delivery.');
@@ -46,8 +48,9 @@ document.getElementById("updateStatusBtn2").onclick = function() {
                             icon: 'success',
                             title: 'Success!',
                             text: 'Delivery status updated successfully.',
+                        }).then(() => {
+                            location.reload(); // Reload the page after successful update
                         });
-                        location.reload(); // Reload the page after successful update
                     } else if (data.status === 'error' && data.code === 'status_limit') {
                         Swal.fire({
                             icon: 'error',

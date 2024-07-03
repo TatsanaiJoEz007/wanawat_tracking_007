@@ -8,8 +8,16 @@ $data = json_decode($input, true);
 error_log("Parsed data: " . print_r($data, true));
 
 if (isset($data['deliveryIds']) && is_array($data['deliveryIds'])) {
-    $deliveryIds = $data['deliveryIds'];
-    error_log("Delivery IDs: " . implode(", ", $deliveryIds));
+    // แปลง deliveryIds เป็น integer และตรวจสอบว่ามีค่าเป็น integer จริงๆ
+    $deliveryIds = array_map('intval', $data['deliveryIds']);
+    error_log("Converted Delivery IDs: " . implode(", ", $deliveryIds));
+
+    // ตรวจสอบว่า deliveryIds นั้นมีค่าและเป็น array หรือไม่
+    if (empty($deliveryIds)) {
+        error_log("Empty or invalid delivery IDs.");
+        echo json_encode(['status' => 'error', 'message' => 'Invalid delivery IDs.']);
+        exit;
+    }
 
     // Assuming you have a database connection in $conn
     include '../../../view/config/connect.php';
@@ -38,6 +46,7 @@ if (isset($data['deliveryIds']) && is_array($data['deliveryIds'])) {
     // Bind the delivery IDs to the placeholders
     $types = str_repeat('i', count($deliveryIds));
     error_log("Bind param types: " . $types);
+    error_log("Delivery IDs to bind: " . implode(", ", $deliveryIds));
     $stmt->bind_param($types, ...$deliveryIds);
 
     // Execute the statement and log the result
@@ -73,7 +82,14 @@ if (isset($data['deliveryIds']) && is_array($data['deliveryIds'])) {
 
             error_log("Updating delivery_id: " . $delivery['delivery_id'] . " to status: " . $status);
             $updateStmt->bind_param('ii', $status, $delivery['delivery_id']);
-            $updateStmt->execute();
+            if ($updateStmt->execute() === false) {
+                error_log("Update execute failed: (" . $updateStmt->errno . ") " . $updateStmt->error);
+                echo json_encode(['status' => 'error', 'message' => 'Update execute failed']);
+                $conn->rollback();
+                exit;
+            } else {
+                error_log("Updated delivery_id: " . $delivery['delivery_id'] . " to status: " . $status);
+            }
         }
 
         $conn->commit();
