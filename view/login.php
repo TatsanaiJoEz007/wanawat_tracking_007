@@ -127,7 +127,7 @@ $(document).ready(function() {
                         timer: 1500
                     });
                     setTimeout(function() {
-                        window.location.href = "../view/employee/statusbill"; // Redirect ไปยังหน้า sending.php หรือหน้าที่ต้องการ
+                        window.location.href = "../view/employee/dashboard"; // Redirect ไปยังหน้า sending.php หรือหน้าที่ต้องการ
                     }, 1500);
                 } else if (response === 'clerk') {
                     // เข้าสู่ระบบสำเร็จ
