@@ -20,11 +20,9 @@ $query = "SELECT
           FROM 
             tb_line 
           JOIN 
-            tb_delivery ON tb_line.bill_id = tb_delivery.bill_id
-          JOIN 
-            tb_header ON tb_line.header_id = tb_header.header_id
+            tb_delivery ON tb_line.header_id = tb_delivery.bill_id 
           WHERE 
-            tb_header.customer_id = '$customer_id'"; // ใช้ tb_header.customer_id แทน
+            tb_header.bill_customer_id = '$customer_id'";
 
 $result = mysqli_query($conn, $query);
 
@@ -107,7 +105,7 @@ if(!$result) {
                                         while ($row = mysqli_fetch_assoc($result)) {
                                             echo "<tr>";
                                             echo "<td>" . $i++ . "</td>";
-                                            echo "<td>" . $row['line_bill_number'] . "</td>";
+                                            echo "<td>" . $row['bill_number'] . "</td>";
                                             echo "<td>" . $row['item_desc'] . "</td>";
                                             echo "<td>" . $row['delivery_status'] . "</td>";
                                             echo "<td>" . $row['bill_date'] . "</td>";
