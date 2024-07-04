@@ -1,28 +1,36 @@
 document.getElementById("updateStatusBtn").onclick = function() {
-    var deliveryId = modal.dataset.deliveryId;
+    let selectedDeliveryIds = [];
+    document.querySelectorAll('input[type="checkbox"]:checked').forEach(function(checkbox) {
+        selectedDeliveryIds.push(parseInt(checkbox.value)); // Ensure values are integers
+    });
+
+    console.log("Selected delivery IDs:", selectedDeliveryIds); // Log delivery IDs
+
+    if (selectedDeliveryIds.length === 0) {
+        alert('Please select at least one delivery.');
+        return;
+    }
 
     // Ask for confirmation using SweetAlert
     Swal.fire({
-        title: 'คุณแน่ใจไหม?',
-        text: 'คุณแน่ใจหรือไม่ที่จะอัพเดทสถานะการขนส่งครั้งนี้ คุณจะไม่สามารถแก้ไขได้หากคุณได้ทำการอัพเดทไปแล้ว?',
+        title: 'Are you sure?',
+        text: 'Do you want to update the status of these deliveries?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'ใช่, อัพเดท',
-        cancelButtonText: 'ไม่, ยกเลิก',
+        confirmButtonText: 'Yes, update',
+        cancelButtonText: 'No, cancel',
     }).then((result) => {
         if (result.isConfirmed) {
             // User confirmed, proceed with updating status
-
-            // Example AJAX request for updating status
             fetch('function/update_status.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        deliveryId: deliveryId
+                        deliveryIds: selectedDeliveryIds
                     }),
                 })
                 .then(response => {
@@ -40,8 +48,15 @@ document.getElementById("updateStatusBtn").onclick = function() {
                             icon: 'success',
                             title: 'Success!',
                             text: 'Delivery status updated successfully.',
+                        }).then(() => {
+                            location.reload(); // Reload the page after successful update
                         });
-                        location.reload(); // Reload the page after successful update
+                    } else if (data.status === 'error' && data.code === 'status_limit') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Status cannot be more than 5.',
+                        });
                     } else {
                         Swal.fire({
                             icon: 'error',
@@ -49,7 +64,6 @@ document.getElementById("updateStatusBtn").onclick = function() {
                             text: data.message || 'Failed to update delivery status.',
                         });
                     }
-                    modal.style.display = "none"; // Close modal after action
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -58,7 +72,6 @@ document.getElementById("updateStatusBtn").onclick = function() {
                         title: 'Error!',
                         text: 'Failed to update delivery status.',
                     });
-                    modal.style.display = "none"; // Close modal on error
                 });
         }
     });
