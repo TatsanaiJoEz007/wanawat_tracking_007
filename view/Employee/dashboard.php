@@ -18,7 +18,12 @@
     <?php require_once "function/sidebar_employee.php" ?>
     <br>
     <?php require_once "function/dashboard/employee_box.php" ?>
-    
+    <br>
+    <?php require_once "function/dashboard/date.php" ?>
+    <br>
+    <br>
+    <br>
+    <br>
    
 </body>    
 </html>

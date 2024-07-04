@@ -64,6 +64,7 @@ CREATE TABLE IF NOT EXISTS tb_delivery_items (
     delivery_id         INT(11)         NOT NULL,
     bill_number         VARCHAR(255)    CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
     bill_customer_name  VARCHAR(255)    CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+    bill_customer_id    VARCHAR(255)    CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
     item_code           VARCHAR(255)    CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
     item_desc           VARCHAR(255)    CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
     item_quantity       VARCHAR(255)    CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,

@@ -44,6 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['selected_items']) && i
         foreach ($selectedItems as $item) {
             $billNumber = $item['billnum'];
             $billCus = $item['billcus'];
+            $billCusid = $item['billcusid'];
             $itemcode = $item['itemcode'];
             $name = $item['name'];
             $quantity = $item['quantity'];
@@ -51,8 +52,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['selected_items']) && i
             $price = $item['price'];
             $total = $item['total'];
 
-            $deliveryItemsInsertSql = "INSERT INTO tb_delivery_items (delivery_id, bill_number, bill_customer_name, item_code, item_desc, item_quantity, item_unit, item_price, line_total, created_by, transfer_type) 
-                                       VALUES ('$deliveryId', '$billNumber', '$billCus', '$itemcode', '$name', '$quantity', '$unit', '$price', '$total', '$user_id', '$transferType')";
+            $deliveryItemsInsertSql = "INSERT INTO tb_delivery_items (delivery_id, bill_number, bill_customer_name, bill_customer_id, item_code, item_desc, item_quantity, item_unit, item_price, line_total, created_by, transfer_type) 
+                                       VALUES ('$deliveryId', '$billNumber', '$billCus', '$billCusid', '$itemcode', '$name', '$quantity', '$unit', '$price', '$total', '$user_id', '$transferType')";
 
             $conn->query($deliveryItemsInsertSql);
         }

@@ -13,23 +13,23 @@
 
 <body>
 
-<?php
-// db.php
-$servername = "localhost";  // Usually 'localhost' if running on the same server
-$username = "root";  // Replace with your database username
-$password = "";  // Replace with your database password
-$dbname = "wanawat_tracking";  // Replace with your database name
+    <?php
+    // db.php
+    $servername = "localhost";  // Usually 'localhost' if running on the same server
+    $username = "root";  // Replace with your database username
+    $password = "";  // Replace with your database password
+    $dbname = "wanawat_tracking";  // Replace with your database name
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+    // Create connection
+    $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
 
 
-?>
+    ?>
 
     <?php require_once('function/sidebar_employee.php'); ?>
 
@@ -65,7 +65,7 @@ if ($conn->connect_error) {
                         <?php
 
                         // Your SQL query
-                        $sql = "SELECT DISTINCT tb_header.bill_number, tb_header.bill_customer_name, 
+                        $sql = "SELECT DISTINCT tb_header.bill_number, tb_header.bill_customer_name, tb_header.bill_customer_id,
                                 tb_line.item_code, tb_line.item_desc, tb_line.item_quantity, 
                                 tb_line.item_unit, tb_line.item_price, tb_line.line_total
                                 FROM tb_header
@@ -84,6 +84,7 @@ if ($conn->connect_error) {
                                     $merged_rows[$bill_number] = [
                                         "bill_number" => $bill_number,
                                         "bill_customer_name" => $row["bill_customer_name"],
+                                        "bill_customer_id" => $row["bill_customer_id"],
 
                                         "item_details" => []
                                     ];
@@ -104,6 +105,7 @@ if ($conn->connect_error) {
                             echo "<tr>";
                             echo "<td rowspan='" . count($row["item_details"]) . "'>" . $row["bill_number"] . "</td>";
                             echo "<td rowspan='" . count($row["item_details"]) . "'>" . $row["bill_customer_name"] . "</td>";
+                            echo "<input type='hidden' name='bill_customer_id' value='" . $row["bill_customer_id"] . "'>";
                             // echo "<td rowspan='" . count($row["item_details"]) . "'>" . $row["bill_total"] . "</td>";
                             // Loop through item_details array to output each item detail
                             foreach ($row["item_details"] as $index => $item) {
@@ -116,12 +118,14 @@ if ($conn->connect_error) {
                                 echo "<td>" . $item["item_unit"] . "</td>";
                                 echo "<td>" . $item["item_price"] . "</td>";
                                 echo "<td>" . $item["line_total"] . "</td>";
+
                                 echo "<input type='hidden' name='item_sequence[]' value='" . $index . "'>";
                                 echo "<td>";
                                 echo "<center>";
                                 echo "<input type='checkbox' class='product-checkbox' 
                                     data-bill-number='" . $row["bill_number"] . "'
                                     data-bill-customer='" . $row["bill_customer_name"] . "'
+                                    data-bill-customer-id='" . $row["bill_customer_id"] . "'
                                     data-item-code='" . $item["item_code"] . "'
                                     data-name='" . $item["item_desc"] . "' 
                                     data-quantity='" . $item["item_quantity"] . "'
@@ -131,7 +135,7 @@ if ($conn->connect_error) {
                                     data-item-sequence='" . $item["line_sequence"] . "'>";
                                 echo "</center>";
                                 echo "</td>";
-                        
+
                                 echo "</tr>";
                             }
                         }
@@ -143,26 +147,26 @@ if ($conn->connect_error) {
                 </table>
             </div>
         </div>
-            <div class="cart">
-                <h2 class="cart-title">ตะกร้าสินค้า</h2>
-                <ul class="cart-items" id="cart-items">
-                    <!-- สินค้าที่เลือกจะปรากฏที่นี่ -->
-                </ul>
-                <hr>
+        <div class="cart">
+            <h2 class="cart-title">ตะกร้าสินค้า</h2>
+            <ul class="cart-items" id="cart-items">
+                <!-- สินค้าที่เลือกจะปรากฏที่นี่ -->
+            </ul>
+            <hr>
 
-                <h7 class="cart-total">ราคารวม: <span id="total-price">฿0</span></h7>
-                
-                <!-- เพิ่ม radio buttons สำหรับเลือกประเภทการขนส่ง -->
-                <div>
-                    <label><input type="radio" name="transfer_type" value="Human" checked> Human</label>
-                    <label><input type="radio" name="transfer_type" value="Forklift"> Forklift</label>
-                </div>
+            <h7 class="cart-total">ราคารวม: <span id="total-price">฿0</span></h7>
 
-                <button class="create-bill-btn" id="create-bill-btn">สร้างบิล</button>
-             </div>
+            <!-- เพิ่ม radio buttons สำหรับเลือกประเภทการขนส่ง -->
+            <div>
+                <label><input type="radio" name="transfer_type" value="Human" checked> Human</label>
+                <label><input type="radio" name="transfer_type" value="Forklift"> Forklift</label>
+            </div>
+
+            <button class="create-bill-btn" id="create-bill-btn">สร้างบิล</button>
+        </div>
     </div>
 
-    <script src="function/delivery_bill/js/selectbill.js"></script>       
+    <script src="function/delivery_bill/js/selectbill.js"></script>
     <script src="function/delivery_bill/js/updateStatusToZero.js"></script>
 
 

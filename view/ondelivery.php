@@ -40,7 +40,7 @@ if (!$result) {
 <html lang="th">
 
 <head>
-    <title>Order history</title>
+    <title>On Delivery</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
@@ -84,7 +84,7 @@ if (!$result) {
 <?php require_once('function/navindex.php'); ?>
 <br>
 <br>
- <h1 class="app-page-title">    &nbsp;&nbsp;ประวัติการสั่งซื้อ</h1>
+ <h1 class="app-page-title">    &nbsp;&nbsp;กำลังจัดส่ง</h1>
     <hr class="mb-4">
     <div class="container">
         <div class="row g-4 settings-section">

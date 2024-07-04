@@ -196,23 +196,45 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
       cursor: pointer;
     }
 
-    .highlighted-text {
-      font-family: 'Kanit', sans-serif; /* Ensure consistent font */
-      font-size: 16px; /* Adjust size if necessary */
-      color: #000; /* Ensure the color is consistent */
+    ::-webkit-scrollbar {
+      width: 9px;
+      /* Adjust width for vertical scrollbar */
     }
 
-  
-        ::-webkit-scrollbar {
-    width: 9px; /* Adjust width for vertical scrollbar */
-}
+    ::-webkit-scrollbar-thumb {
+      background-color: #FF5722;
+      /* Color for scrollbar thumb */
+      border-radius: 10px;
+      /* Rounded corners for scrollbar thumb */
+    }
 
-::-webkit-scrollbar-thumb {
-    background-color: #FF5722; /* Color for scrollbar thumb */
-    border-radius: 10px; /* Rounded corners for scrollbar thumb */
-}
+    .highlighted-text {
+      font-family: 'Kanit', sans-serif !important;
+      font-size: 16px;
+      color: #F0592E !important;
+      /* Ensure the color is set correctly */
+      text-decoration: none;
+      /* Remove underline from links */
+    }
 
-  
+    .highlighted-text:hover {
+      color: #FF5722;
+      /* Ensure color stays the same on hover */
+      text-decoration: none;
+
+      font-family: 'Kanit', sans-serif !important;
+      /* Ensure underline does not appear on hover */
+    }
+
+    .highlighted-text a:link,
+    .highlighted-text a:visited,
+    .highlighted-text a:hover,
+    .highlighted-text a:active {
+      color: #F0592E !important;
+      text-decoration: none !important;
+
+      font-family: 'Kanit', sans-serif !important;
+    }
   </style>
 </head>
 
@@ -240,12 +262,16 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
 
         <div class="card mb-4">
           <div class="card-body text-center">
-            <div class="mb-2">
-              <a href="orderhistory" class="fas fa-history highlighted-text">ประวัติการสั่งซื้อ</a> 
+            <div class="mb-2 highlighted-text">
+              <i class="fas fa-history">
+              <a href="orderhistory">&nbsp; ประวัติการสั่งซื้อ</a>
+              </i>
             </div>
             <hr>
-            <div class="mb-2">
-              <i class="fas fa-shipping-fast"></i> กำลังจัดส่ง
+            <div class="mb-2 highlighted-text">
+              <i class="fas fa-truck">
+              <a href="ondelivery">&nbsp; กำลังจัดส่ง</a>
+              </i>
             </div>
           </div>
         </div>
