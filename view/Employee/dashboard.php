@@ -16,6 +16,7 @@
 <body>
 
     <?php require_once "function/sidebar_employee.php" ?>
+    <br>
     <?php require_once "function/dashboard/employee_box.php" ?>
     
    

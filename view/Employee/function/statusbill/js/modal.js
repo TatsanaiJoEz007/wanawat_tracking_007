@@ -1,75 +1,90 @@
 var modal = document.getElementById("myModal");
 var span = document.getElementsByClassName("close")[0];
 
-// Open modal and set current status text
-function openModal(statusText, deliveryId, deliveryNumber) {
-    var currentStatus = document.getElementById("currentStatus");
-    currentStatus.textContent = statusText;
-    modal.dataset.deliveryId = deliveryId;
-    document.getElementById("deliveryNumber").getElementsByTagName("span")[0].textContent = deliveryNumber;
+function openModal(data) {
+    console.log('openModal called with data:', data);
 
-    // Fetch data for the modal
-    fetchModalData(deliveryId);
+    if (!data || !data.items) {
+        console.error('Data or items is missing', data);
+        return;
+    }
+
+    let modalContent = document.getElementById('modalContent');
+    modalContent.innerHTML = '';
+
+    for (const [deliveryNumber, items] of Object.entries(data.items)) {
+        let deliveryHTML = `
+    <h3>Delivery Number: ${deliveryNumber}</h3>
+    <hr>
+`;
+
+        items.forEach(function(item) {
+            deliveryHTML += `
+        <p>Bill Number: ${item.bill_number}</p>
+        <p>Customer Name: ${item.bill_customer_name}</p>
+        <p>Item Code: ${item.item_code}</p>
+        <p>Item Description: ${item.item_desc}</p>
+        <p>Quantity: ${item.item_quantity}</p>
+        <p>Unit: ${item.item_unit}</p>
+        <p>Price: ${item.item_price}</p>
+        <p>Total: ${item.line_total}</p>
+        <hr>
+    `;
+        });
+
+        modalContent.innerHTML += deliveryHTML;
+    }
+
+    $('#manageModal').modal('show');
 }
 
-// Fetch data from the server
-function fetchModalData(deliveryId) {
-    fetch('../../view/Employee/function/fetch_modal_data.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams({
-                'deliveryId': deliveryId
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
+document.addEventListener('DOMContentLoaded', function() {
+    const manageAllBtn = document.getElementById('manageAllBtn');
+    if (!manageAllBtn) {
+        console.error('Element with ID "manageAllBtn" not found');
+        return;
+    }
+
+    manageAllBtn.addEventListener('click', handleSelectedItems);
+});
+
+function handleSelectedItems() {
+    let selectedDeliveryIds = [];
+    document.querySelectorAll('input[type="checkbox"]:checked').forEach(function(checkbox) {
+        selectedDeliveryIds.push(checkbox.value);
+    });
+
+    if (selectedDeliveryIds.length === 0) {
+        alert('Please select at least one delivery.');
+        return;
+    }
+
+    console.log('Selected delivery IDs:', selectedDeliveryIds);
+
+    $.ajax({
+        url: '../../view/Employee/function/fetch_modal_data.php',
+        type: 'POST',
+        data: {
+            deliveryIds: selectedDeliveryIds.join(',')
+        },
+        success: function(data) {
+            console.log('Received data:', data);
+
             if (data.error) {
-                console.error(data.error);
+                alert(data.error);
                 return;
             }
-            // Assuming the data structure is data.items array
-            // Assuming the data structure is data.items array
-            if (data.items && data.items.length > 0) {
-                var itemDetailsContainer = document.getElementById('itemDetails');
-                itemDetailsContainer.innerHTML = ''; // Clear previous content
 
-                // Initialize a counter for bill numbers
-                var billNumber = 1;
-
-                data.items.forEach(item => {
-                    var itemHTML = `
-                        <div class="item-detail">
-                            <p><b># ${billNumber}</b></p>
-                            <p><b>เลขบิล:</b> ${item['TRIM(di.bill_number)']}</p>
-                            <p><b>ชื่อลูกค้า:</b> ${item['TRIM(di.bill_customer_name)']}</p>
-                            <p><b>รายละเอียดสินค้า:</b> ${item['TRIM(di.item_desc)']}</p>
-                            <p><b>ราคา:</b> ${item['TRIM(di.item_price)']}</p>
-                            <p><b>ราคารวม:</b> ${item['TRIM(di.line_total)']}</p>
-                            <br> <hr> <br>
-                        </div>
-                    `;
-                    itemDetailsContainer.insertAdjacentHTML('beforeend', itemHTML);
-
-                    // Increment the bill number for the next item
-                    billNumber++;
-                });
+            if (!data.items) {
+                alert('No data available');
+                return;
             }
 
-            modal.style.display = "block";
-        })
-        .catch(error => console.error('Error:', error));
-}
-
-// Close modal when clicking on <span> (x)
-span.onclick = function() {
-    modal.style.display = "none";
-}
-
-// Close modal when clicking outside modal
-window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
-    }
+            openModal(data);
+        },
+        error: function(xhr, status, error) {
+            console.error('Error:', error);
+            alert('Error fetching data');
+        }
+    });
 }

@@ -60,6 +60,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['csvData'])) {
                     text: "' . $e->getMessage() . '"
                 });
               </script>';
+
+              
     }
 }
 ?>

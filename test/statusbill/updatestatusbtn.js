@@ -1,29 +1,28 @@
-document.getElementById("reportProblemBtn2").onclick = function() {
+document.getElementById("updateStatusBtn").onclick = function() {
     var deliveryId = modal.dataset.deliveryId;
 
     // Ask for confirmation using SweetAlert
     Swal.fire({
         title: 'คุณแน่ใจไหม?',
-        text: 'คุณแน่ใจหรือไม่ที่จะแจ้งว่าการจัดส่งครั้งนี้มีปัญหา คุณจะไม่สามารถแก้ไขได้หากคุณได้ทำการแจ้งว่าการจัดส่งครั้งนี้มีปัญหา?',
+        text: 'คุณแน่ใจหรือไม่ที่จะอัพเดทสถานะการขนส่งครั้งนี้ คุณจะไม่สามารถแก้ไขได้หากคุณได้ทำการอัพเดทไปแล้ว?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'ใช่, แจ้งปัญหา',
+        confirmButtonText: 'ใช่, อัพเดท',
         cancelButtonText: 'ไม่, ยกเลิก',
     }).then((result) => {
         if (result.isConfirmed) {
-            // User confirmed, proceed with reporting problem
+            // User confirmed, proceed with updating status
 
             // Example AJAX request for updating status
-            fetch('function/problem_status.php', {
+            fetch('function/update_status.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        deliveryId: deliveryId,
-                        problem: 'Specify the problem here if needed'
+                        deliveryId: deliveryId
                     }),
                 })
                 .then(response => {
@@ -40,15 +39,14 @@ document.getElementById("reportProblemBtn2").onclick = function() {
                         Swal.fire({
                             icon: 'success',
                             title: 'Success!',
-                            text: 'Parcel problem reported successfully.',
+                            text: 'Delivery status updated successfully.',
                         });
-                        location.reload();
-                        // Optionally, you can reload the page or update UI here
+                        location.reload(); // Reload the page after successful update
                     } else {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error!',
-                            text: data.message || 'Failed to report parcel problem.',
+                            text: data.message || 'Failed to update delivery status.',
                         });
                     }
                     modal.style.display = "none"; // Close modal after action
@@ -58,7 +56,7 @@ document.getElementById("reportProblemBtn2").onclick = function() {
                     Swal.fire({
                         icon: 'error',
                         title: 'Error!',
-                        text: 'Failed to update status.',
+                        text: 'Failed to update delivery status.',
                     });
                     modal.style.display = "none"; // Close modal on error
                 });
