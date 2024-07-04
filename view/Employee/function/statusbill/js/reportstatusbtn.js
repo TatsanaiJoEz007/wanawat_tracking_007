@@ -1,5 +1,28 @@
 document.getElementById("reportProblemBtn").onclick = function() {
-    var deliveryId = modal.dataset.deliveryId;
+    var modal = document.getElementById("manageModal");
+
+    if (!modal) {
+        console.error("Modal element not found");
+        return;
+    }
+
+    // Collect selected delivery IDs from checkboxes
+    const checkboxes = document.querySelectorAll('input[name="select"]:checked');
+    const deliveryIds = Array.from(checkboxes).map(checkbox => parseInt(checkbox.value));
+
+    if (deliveryIds.length === 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'No Selection',
+            text: 'Please select at least one delivery to report a problem.',
+        });
+        return;
+    }
+
+    const deliveries = deliveryIds.map(id => ({
+        deliveryId: id,
+        problem: 'Specify the problem here if needed'
+    }));
 
     // Ask for confirmation using SweetAlert
     Swal.fire({
@@ -22,8 +45,7 @@ document.getElementById("reportProblemBtn").onclick = function() {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        deliveryId: deliveryId,
-                        problem: 'Specify the problem here if needed'
+                        deliveries: deliveries
                     }),
                 })
                 .then(response => {
@@ -36,22 +58,38 @@ document.getElementById("reportProblemBtn").onclick = function() {
                     console.log("Response from server:", data);
 
                     // Handle response
-                    if (data.status === 'success') {
+                    let successCount = 0;
+                    let errorCount = 0;
+
+                    data.forEach(result => {
+                        if (result.status === 'success') {
+                            successCount++;
+                        } else {
+                            errorCount++;
+                        }
+                    });
+
+                    if (errorCount === 0) {
                         Swal.fire({
                             icon: 'success',
                             title: 'Success!',
-                            text: 'Parcel problem reported successfully.',
+                            text: 'All parcel problems reported successfully.',
                         });
-                        location.reload();
-                        // Optionally, you can reload the page or update UI here
+                    } else if (successCount > 0) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Partial Success!',
+                            text: `${successCount} problems reported successfully, ${errorCount} failed.`,
+                        });
                     } else {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error!',
-                            text: data.message || 'Failed to report parcel problem.',
+                            text: 'Failed to report any parcel problems.',
                         });
                     }
-                    modal.style.display = "none"; // Close modal after action
+
+                    location.reload(); // Optionally, you can reload the page or update UI here
                 })
                 .catch(error => {
                     console.error('Error:', error);

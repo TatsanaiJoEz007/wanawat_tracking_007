@@ -114,7 +114,7 @@
         <div class="tracking-input-group">
             <img src="../view/assets/img/logo/mascot.png" alt="Mascot" class="mascot">
             <p>&nbsp; &nbsp;</p>
-            <input type="text" class="form-control tracking-input" id="trackingIdInput" name="trackingId" placeholder="<?php echo htmlspecialchars($lang_track); ?> (Ex. ED#############)" required>
+            <input type="text" class="form-control tracking-input" id="trackingIdInput" name="trackingId" placeholder="<?php echo htmlspecialchars($lang_track); ?> (Ex. WDL or IC #############)" required>
             <button class="track-button">Track</button>
         </div>
     </div>

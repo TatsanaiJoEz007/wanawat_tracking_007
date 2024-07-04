@@ -1,0 +1,211 @@
+body {
+    color: #000;
+    overflow-x: hidden;
+    height: 100%;
+    background-color: #FFF;
+    background-repeat: no-repeat;
+}
+
+.card {
+    background-color: #FFE3BF;
+    padding-bottom: 20px;
+    margin-top: 90px;
+    margin-bottom: 90px;
+    border-radius: 10px;
+}
+
+.top {
+    padding-top: 40px;
+    padding-left: 13%;
+    padding-right: 13%;
+}
+
+.order {
+    color: #FF7043;
+}
+
+#progressbar {
+    margin-bottom: 30px;
+    overflow: hidden;
+    color: #FF7043;
+    padding-left: 0px;
+    margin-top: 30px;
+    border-radius: 10px;
+    position: relative;
+}
+
+#progressbar li {
+    list-style-type: none;
+    font-size: 13px;
+    width: 20%;
+    float: left;
+    position: relative;
+    font-weight: 400;
+}
+
+#progressbar li:before {
+    width: 40px;
+    height: 40px;
+    line-height: 45px;
+    display: block;
+    font-size: 20px;
+    background: #FFAB91;
+    border-radius: 50%;
+    margin: auto;
+    padding: 0px;
+    content: "\f10c";
+    color: #fff;
+    font-family: FontAwesome;
+}
+
+#progressbar li:after {
+    content: '';
+    width: 100%;
+    height: 12px;
+    background: #FFAB91;
+    position: absolute;
+    left: 50%;
+    top: 16px;
+    z-index: -1;
+}
+
+#progressbar li.active:before,
+#progressbar li.active:after {
+    background: #FF7043;
+}
+
+#progressbar li.active:before {
+    content: "\f00c";
+}
+
+/* Remove the line for the last step */
+#progressbar li.active.step5:after {
+    display: none;
+}
+
+.icon {
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.icon-content {
+    text-align: center;
+    margin-top: 10px;
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+    /* Adjust width for vertical scrollbar */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #FF5722;
+    /* Color for scrollbar thumb */
+    border-radius: 10px;
+    /* Rounded corners for scrollbar thumb */
+}
+
+/* Container Styling */
+.home-section {
+    max-height: 100vh;
+    /* Adjust height as needed */
+    overflow-y: auto;
+    /* Allow vertical scroll */
+    overflow-x: hidden;
+    /* Prevent horizontal scroll */
+    padding: 20px;
+    background-color: #f9f9f9;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+@media screen and (max-width: 1024px) {
+    .top {
+        padding-left: 5%;
+        padding-right: 5%;
+    }
+
+    #progressbar li {
+        font-size: 11px;
+        width: 20%;
+    }
+
+    #progressbar li:before {
+        width: 30px;
+        height: 30px;
+        line-height: 35px;
+        font-size: 16px;
+    }
+
+    .icon {
+        width: 30px;
+        height: 30px;
+        top: -45px;
+    }
+
+    .icon-content {
+        margin-top: 45px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .top {
+        padding-left: 3%;
+        padding-right: 3%;
+    }
+
+    #progressbar li {
+        font-size: 10px;
+        width: 20%;
+    }
+
+    #progressbar li:before {
+        width: 25px;
+        height: 25px;
+        line-height: 30px;
+        font-size: 14px;
+    }
+
+    .icon {
+        width: 25px;
+        height: 25px;
+        top: -40px;
+    }
+
+    .icon-content {
+        margin-top: 40px;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    .top {
+        padding-left: 1%;
+        padding-right: 1%;
+    }
+
+    #progressbar li {
+        font-size: 9px;
+        width: 20%;
+    }
+
+    #progressbar li:before {
+        width: 20px;
+        height: 20px;
+        line-height: 25px;
+        font-size: 12px;
+    }
+
+    .icon {
+        width: 20px;
+        height: 20px;
+        top: -35px;
+    }
+
+    .icon-content {
+        margin-top: 35px;
+    }
+}

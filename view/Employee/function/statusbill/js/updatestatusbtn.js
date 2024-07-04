@@ -55,7 +55,7 @@ document.getElementById("updateStatusBtn").onclick = function() {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error!',
-                            text: 'Status cannot be more than 5.',
+                            text: 'อยู่ในสถานะสำเร็จแล้ว ไม่สามารถอัพเดทได้อีก',
                         });
                     } else {
                         Swal.fire({

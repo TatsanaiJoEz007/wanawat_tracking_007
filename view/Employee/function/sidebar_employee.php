@@ -545,7 +545,8 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
     </div>
     <section class="home-section">
         <div class="home-content">
-            <i class='bx bx-menu'></i>
+            <i class='bx bx-menu'>
+            </i>
             <span class="text"></span>
         </div>
 
