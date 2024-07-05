@@ -105,7 +105,7 @@
 </head>
 
 <body>
-    <?php require_once('config/connect.php'); ?>
+    <?php require_once('../view/config/connect.php'); ?>
 
     <div class="container text-center">
         <div class="tracking-input-group">

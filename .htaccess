@@ -6,7 +6,7 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^([^\.]+)$ $1.php [NC,L]
 
 # Disable PHP display_errors
-php_flag display_errors off
+php_flag display_errors on
 
 # Prevent directory browsing
 Options -Indexes

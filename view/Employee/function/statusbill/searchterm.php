@@ -1,4 +1,6 @@
 <?php
+            require_once('../../view/config/connect.php');
+
         $search_term = isset($_GET['search']) ? $_GET['search'] : '';
 
         // Query to get total number of items

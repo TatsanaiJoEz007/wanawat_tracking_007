@@ -1,6 +1,8 @@
 <?php
-require_once('function/database.php');
-?>
+        require_once('../../view/config/connect.php');
+
+        $user_id = $_SESSION['user_id'];
+    ?>
 
 <!DOCTYPE html>
 <html lang="en">

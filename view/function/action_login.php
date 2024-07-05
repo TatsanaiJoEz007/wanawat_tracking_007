@@ -7,7 +7,7 @@ if (!isset($_SESSION)) {
 }
 
 // เชื่อมต่อกับฐานข้อมูล
-require_once('../config/connect.php');
+require_once('../../view/config/connect.php');
 require_once('../admin/function/action_activity_log/log_activity.php'); // Include log_activity.php
 
 // ตรวจสอบว่ามีการส่งค่า POST มาจากฟอร์มหรือไม่
