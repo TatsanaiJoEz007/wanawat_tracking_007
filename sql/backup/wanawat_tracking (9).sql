@@ -10335,7 +10335,9 @@ INSERT INTO `provinces` (`id`, `code`, `name_th`, `name_en`, `geography_id`) VAL
 CREATE TABLE `tb_banner` (
   `banner_id` int(10) NOT NULL,
   `banner_name` varchar(100) NOT NULL,
-  `banner_img` longblob NOT NULL DEFAULT 'NON-IMAGE'
+  `banner_img` longblob NOT NULL,
+
+  PRIMARY KEY(banner_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
