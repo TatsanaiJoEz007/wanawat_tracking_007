@@ -1,7 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<?php session_start() ?>
+<?php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+?>
+
 <head>
     <meta charset="UTF-8">
     <title>CSV Language Converter</title>
@@ -79,7 +84,7 @@
         </div>
     </div>
 
-    
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script src="function/importCSV/js/convertCSV.js"></script>

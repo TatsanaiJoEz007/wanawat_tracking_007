@@ -1,8 +1,12 @@
 <?php
-        require_once('../../view/config/connect.php');
+require_once('../../view/config/connect.php');
 
-        $user_id = $_SESSION['user_id'];
-    ?>
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+$user_id = $_SESSION['user_id'];
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -15,7 +19,6 @@
     <script src="https://cdn.lordicon.com/lordicon.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="style/style.css">
-
 </head>
 
 <body>
@@ -35,9 +38,9 @@
 
         // Query to get total number of items
         $total_items_query = "SELECT COUNT(DISTINCT d.delivery_id) as total 
-                                FROM tb_delivery d 
-                                INNER JOIN tb_delivery_items di ON d.delivery_id  = di.delivery_id 
-                                WHERE d.created_by = $user_id";
+                              FROM tb_delivery d 
+                              INNER JOIN tb_delivery_items di ON d.delivery_id  = di.delivery_id 
+                              WHERE d.created_by = $user_id";
 
         // Append search term filter if provided
         if ($search_term) {
@@ -62,9 +65,9 @@
         $offset = ($current_page - 1) * $items_per_page;
 
         $query = "SELECT d.delivery_id, d.delivery_number, d.delivery_date, COUNT(di.item_code) AS item_count, d.delivery_status, di.transfer_type 
-            FROM tb_delivery d 
-            INNER JOIN tb_delivery_items di ON d.delivery_id = di.delivery_id 
-            WHERE d.created_by = $user_id AND d.delivery_status = 1";
+                  FROM tb_delivery d 
+                  INNER JOIN tb_delivery_items di ON d.delivery_id = di.delivery_id 
+                  WHERE d.created_by = $user_id AND d.delivery_status = 1";
 
         // Append search term filter if provided
         if ($search_term) {
@@ -72,8 +75,9 @@
             $query .= " AND d.delivery_number LIKE '%$search_term_escaped%'";
         }
 
-        $query .= " GROUP BY d.delivery_id, di.transfer_type LIMIT $items_per_page OFFSET $offset";
-
+        // Add all non-aggregated columns to the GROUP BY clause
+        $query .= " GROUP BY d.delivery_id, d.delivery_number, d.delivery_date, d.delivery_status, di.transfer_type 
+                    LIMIT $items_per_page OFFSET $offset";
 
         // Execute query to fetch data
         $result = mysqli_query($conn, $query);
@@ -94,10 +98,11 @@
                         <th>สถานะ</th>
                         <th>วันที่สร้างบิล</th>
                         <th>ประเภทการขนย้าย</th>
+                    </tr>
                 </thead>
                 <tbody>
                     <?php
-                        require_once "../..//view/Employee/function/get_tabledata.php"
+                        require_once "../../view/Employee/function/get_tabledata.php"
                     ?>
                 </tbody>
             </table>
@@ -116,14 +121,9 @@
                 <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $current_page + 1])); ?>" class="btn-custom">Next &raquo;</a>
             <?php endif; ?>
         </div>
-
     </div>
 
     <!-- Include SweetAlert for modal notifications -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
-
-
-
 </body>
-
 </html>

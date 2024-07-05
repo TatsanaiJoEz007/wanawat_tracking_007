@@ -1,6 +1,9 @@
 <?php
-require_once('config/connect.php'); 
-session_start();
+require_once('../config/connect.php'); 
+
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 // ดึงข้อมูลวันที่
 $sql = "SELECT delivery_date FROM tb_delivery ORDER BY delivery_date DESC";

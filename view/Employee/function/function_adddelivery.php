@@ -1,24 +1,7 @@
 <?php
 session_start();
 
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "wanawat_tracking";
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Check if the user is logged in
-if (!isset($_SESSION['user_id'])) {
-    echo "Error: User not logged in";
-    exit();
-}
+require_once('../../../view/config/connect.php');
 
 // Get the user ID from the session
 $user_id = $_SESSION['user_id'];

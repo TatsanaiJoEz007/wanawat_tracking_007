@@ -66,28 +66,27 @@ session_start();
 <script src="https://fastly.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 $(document).ready(function() {
+    // Login form submit
     $('#login').submit(function(e) {
         e.preventDefault();
 
-        // รับค่าจากฟอร์ม
         let user_email = $('#signin-email').val();
         let user_pass = $('#signin-password').val();
         let remember = $('#remember').is(':checked');
 
-        // ส่งค่าผ่าน AJAX ไปยัง action_login.php
         $.ajax({
             url: 'function/action_login.php',
             type: 'post',
-            data: {
+            contentType: 'application/json',  // Ensure JSON is sent
+            data: JSON.stringify({
                 user_email: user_email,
                 user_pass: user_pass,
                 remember: remember,
                 login: 1
-            },
+            }),
             success: function(response) {
-                // ตรวจสอบค่าที่ส่งกลับจาก action_login.php
+                console.log(response); // Log the response for debugging
                 if (response === 'user') {
-                    // เข้าสู่ระบบสำเร็จ
                     if (remember) {
                         document.cookie = "username=" + user_email + "; max-age=" + (86400 * 30) + "; path=/";
                         document.cookie = "password=" + user_pass + "; max-age=" + (86400 * 30) + "; path=/";
@@ -103,10 +102,9 @@ $(document).ready(function() {
                         timer: 1500
                     });
                     setTimeout(function() {
-                        window.location.href = "../view/mainpage"; // Redirect ไปยังหน้า index.php หรือหน้าที่ต้องการ
+                        window.location.href = "../view/mainpage";
                     }, 1500);
                 } else if (response === 'admin') {
-                    // เข้าสู่ระบบสำเร็จ
                     Swal.fire({
                         position: 'center',
                         icon: 'success',
@@ -115,10 +113,9 @@ $(document).ready(function() {
                         timer: 1500
                     });
                     setTimeout(function() {
-                        window.location.href = "../view/admin/permission_admin"; // Redirect ไปยังหน้า index.php หรือหน้าที่ต้องการ
+                        window.location.href = "../view/admin/permission_admin";
                     }, 1500);
                 } else if (response === 'employee') {
-                    // เข้าสู่ระบบสำเร็จ
                     Swal.fire({
                         position: 'center',
                         icon: 'success',
@@ -127,22 +124,9 @@ $(document).ready(function() {
                         timer: 1500
                     });
                     setTimeout(function() {
-                        window.location.href = "../view/employee/dashboard"; // Redirect ไปยังหน้า sending.php หรือหน้าที่ต้องการ
-                    }, 1500);
-                } else if (response === 'clerk') {
-                    // เข้าสู่ระบบสำเร็จ
-                    Swal.fire({
-                        position: 'center',
-                        icon: 'success',
-                        title: 'เข้าสู่ระบบสำเร็จ!!',
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                    setTimeout(function() {
-                        window.location.href = "../view/clerk/index"; // Redirect ไปยังหน้า index.php หรือหน้าที่ต้องการ
+                        window.location.href = "../view/employee/dashboard";
                     }, 1500);
                 } else if (response === 'failuser') {
-                    // ไม่มีบัญชีนี้ในระบบ
                     Swal.fire({
                         position: 'center',
                         icon: 'error',
@@ -152,7 +136,6 @@ $(document).ready(function() {
                     });
                     $('#signin-password').val('');
                 } else if (response === 'failpass') {
-                    // รหัสผ่านไม่ถูกต้อง
                     Swal.fire({
                         position: 'center',
                         icon: 'error',
@@ -162,7 +145,6 @@ $(document).ready(function() {
                     });
                     $('#signin-password').val('');
                 } else if (response === 'close') {
-                    // บัญชีนี้ถูกระงับการใช้งาน
                     Swal.fire({
                         position: 'center',
                         icon: 'error',
@@ -170,7 +152,13 @@ $(document).ready(function() {
                         showConfirmButton: false,
                         timer: 1500
                     });
+                } else {
+                    console.log('Unexpected response:', response);
                 }
+            },
+            error: function(xhr, status, error) {
+                console.log('AJAX Error:', status, error);
+                console.log(xhr.responseText); // Log the actual response
             }
         });
     });

@@ -1,55 +1,81 @@
 <?php
-            require_once('../../view/config/connect.php');
+require_once('../../view/config/connect.php');
 
-        $search_term = isset($_GET['search']) ? $_GET['search'] : '';
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
-        // Query to get total number of items
-        $total_items_query = "SELECT COUNT(DISTINCT d.delivery_id) as total 
-                                FROM tb_delivery d 
-                                INNER JOIN tb_delivery_items di ON d.delivery_id  = di.delivery_id 
-                                WHERE d.created_by = $user_id";
+$user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
 
-        // Append search term filter if provided
-        if ($search_term) {
-            $search_term_escaped = mysqli_real_escape_string($conn, $search_term);
-            $total_items_query .= " AND d.delivery_number LIKE '%$search_term_escaped%'";
-        }
+// Check if user_id is set
+if ($user_id === null) {
+    die("User ID is not set in session.");
+}
 
-        // Execute query to get total count
-        $total_items_result = mysqli_query($conn, $total_items_query);
+$search_term = isset($_GET['search']) ? $_GET['search'] : '';
 
-        if (!$total_items_result) {
-            echo "Error fetching total items: " . mysqli_error($conn);
-            exit;
-        }
+// Prepare the query to get the total number of items
+$total_items_query = "SELECT COUNT(DISTINCT d.delivery_id) as total 
+                      FROM tb_delivery d 
+                      INNER JOIN tb_delivery_items di ON d.delivery_id = di.delivery_id 
+                      WHERE d.created_by = ?";
 
-        $total_items = mysqli_fetch_assoc($total_items_result)['total'];
+// Append search term filter if provided
+if ($search_term) {
+    $total_items_query .= " AND d.delivery_number LIKE ?";
+}
 
-        $items_per_page = 20;
-        $total_pages = ceil($total_items / $items_per_page);
-        $current_page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+$stmt = $conn->prepare($total_items_query);
 
-        $offset = ($current_page - 1) * $items_per_page;
+if ($search_term) {
+    $search_term_escaped = "%" . $search_term . "%";
+    $stmt->bind_param("is", $user_id, $search_term_escaped);
+} else {
+    $stmt->bind_param("i", $user_id);
+}
 
-        $query = "SELECT d.delivery_id, d.delivery_number, d.delivery_date, COUNT(di.item_code) AS item_count, d.delivery_status, di.transfer_type 
-            FROM tb_delivery d 
-            INNER JOIN tb_delivery_items di ON d.delivery_id = di.delivery_id 
-            WHERE d.created_by = $user_id";
+$stmt->execute();
+$total_items_result = $stmt->get_result();
 
-        // Append search term filter if provided
-        if ($search_term) {
-            $search_term_escaped = mysqli_real_escape_string($conn, $search_term);
-            $query .= " AND d.delivery_number LIKE '%$search_term_escaped%'";
-        }
+if (!$total_items_result) {
+    echo "Error fetching total items: " . $stmt->error;
+    exit;
+}
 
-        $query .= " GROUP BY d.delivery_id, di.transfer_type LIMIT $items_per_page OFFSET $offset";
+$total_items = $total_items_result->fetch_assoc()['total'];
 
+$items_per_page = 20;
+$total_pages = ceil($total_items / $items_per_page);
+$current_page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 
-        // Execute query to fetch data
-        $result = mysqli_query($conn, $query);
+$offset = ($current_page - 1) * $items_per_page;
 
-        if (!$result) {
-            echo "Error fetching data: " . mysqli_error($conn);
-            exit;
-        }
-        ?>
+// Prepare the query to fetch data
+$query = "SELECT d.delivery_id, d.delivery_number, d.delivery_date, COUNT(di.item_code) AS item_count, d.delivery_status, di.transfer_type 
+          FROM tb_delivery d 
+          INNER JOIN tb_delivery_items di ON d.delivery_id = di.delivery_id 
+          WHERE d.created_by = ?";
+
+// Append search term filter if provided
+if ($search_term) {
+    $query .= " AND d.delivery_number LIKE ?";
+}
+
+$query .= " GROUP BY d.delivery_id, d.delivery_number, d.delivery_date, d.delivery_status, di.transfer_type LIMIT ? OFFSET ?";
+
+$stmt = $conn->prepare($query);
+
+if ($search_term) {
+    $stmt->bind_param("isii", $user_id, $search_term_escaped, $items_per_page, $offset);
+} else {
+    $stmt->bind_param("iii", $user_id, $items_per_page, $offset);
+}
+
+$stmt->execute();
+$result = $stmt->get_result();
+
+if (!$result) {
+    echo "Error fetching data: " . $stmt->error;
+    exit;
+}
+?>

@@ -1,5 +1,7 @@
 <?php
-    session_start();
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
 
     // db.php
     $servername = "localhost";  // Usually 'localhost' if running on the same server

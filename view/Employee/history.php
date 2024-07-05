@@ -1,6 +1,10 @@
 <?php
         require_once('../../view/config/connect.php');
 
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+
         $user_id = $_SESSION['user_id'];
     ?>
 
@@ -71,7 +75,7 @@
                 $query .= " AND d.delivery_number LIKE '%$search_term_escaped%'";
             }
 
-            $query .= " GROUP BY d.delivery_id, di.transfer_type LIMIT $items_per_page OFFSET $offset";
+            $query .= " GROUP BY d.delivery_id, d.delivery_number, d.delivery_date, d.delivery_status, di.transfer_type LIMIT $items_per_page OFFSET $offset";
 
 
             // Execute query to fetch data
