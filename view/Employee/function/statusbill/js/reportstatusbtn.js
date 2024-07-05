@@ -1,4 +1,7 @@
-document.getElementById("reportProblemBtn").onclick = function() {
+document.getElementById("reportProblemBtn").onclick = function(event) {
+    // Prevent default form submission if inside a form
+    event.preventDefault();
+
     var modal = document.getElementById("manageModal");
 
     if (!modal) {
@@ -52,10 +55,17 @@ document.getElementById("reportProblemBtn").onclick = function() {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
-                    return response.json();
+                    return response.text(); // Get text response to inspect it
                 })
-                .then(data => {
-                    console.log("Response from server:", data);
+                .then(text => {
+                    console.log("Raw response from server:", text);
+
+                    let data;
+                    try {
+                        data = JSON.parse(text);
+                    } catch (e) {
+                        throw new Error('Invalid JSON response');
+                    }
 
                     // Handle response
                     let successCount = 0;
@@ -74,22 +84,26 @@ document.getElementById("reportProblemBtn").onclick = function() {
                             icon: 'success',
                             title: 'Success!',
                             text: 'All parcel problems reported successfully.',
+                        }).then(() => {
+                            location.reload(); // Reload the page after user confirms the success message
                         });
                     } else if (successCount > 0) {
                         Swal.fire({
                             icon: 'warning',
                             title: 'Partial Success!',
                             text: `${successCount} problems reported successfully, ${errorCount} failed.`,
+                        }).then(() => {
+                            location.reload(); // Reload the page after user confirms the warning message
                         });
                     } else {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error!',
                             text: 'Failed to report any parcel problems.',
+                        }).then(() => {
+                            location.reload(); // Reload the page after user confirms the error message
                         });
                     }
-
-                    location.reload(); // Optionally, you can reload the page or update UI here
                 })
                 .catch(error => {
                     console.error('Error:', error);

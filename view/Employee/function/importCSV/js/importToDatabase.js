@@ -1,9 +1,9 @@
 function importToDatabase() {
-    if (convertedCSVDataHeader) {
+    if (convertedCSVData) {
         const formData = new FormData();
-        formData.append('csvData', convertedCSVDataHeader); // Pass converted CSV data
+        formData.append('csvData', convertedCSVData); // Pass converted CSV data
 
-        fetch('../importHeader.php', { // ชื่อไฟล์ PHP ที่จะรับข้อมูล
+        fetch('../../view/Employee/function/importCSV/importHeader.php', { // ชื่อไฟล์ PHP ที่จะรับข้อมูล
                 method: 'POST',
                 body: formData
             })

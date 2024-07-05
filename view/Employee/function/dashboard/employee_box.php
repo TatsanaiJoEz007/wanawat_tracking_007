@@ -129,7 +129,6 @@ require_once('../config/connect.php');
 ?>
 
 <script src="https://cdn.lordicon.com/lordicon.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <head>
     <link rel="stylesheet" href="../../view/Employee/function/dashboard/css/style.css">

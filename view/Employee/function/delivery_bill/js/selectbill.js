@@ -4,19 +4,19 @@ const totalPriceElement = document.getElementById('total-price');
 const createBillBtn = document.getElementById('create-bill-btn');
 let itemCounter = 1;
 const maxItems = 15;
-let selectedItems = []; // Array to store selected items
+let selectedItems = [];
 
 checkboxes.forEach(checkbox => {
     checkbox.addEventListener('change', () => {
         if (checkbox.checked && itemCounter > maxItems) {
             Swal.fire('เกิดข้อผิดพลาด!', 'เลือกสินค้าได้มากที่สุด 15 ชิ้นต่อการขนส่ง 1 ครั้ง', 'error');
-            checkbox.checked = false; // Uncheck the box
+            checkbox.checked = false;
             return;
         }
 
         const billnum = checkbox.getAttribute('data-bill-number');
         const billcus = checkbox.getAttribute('data-bill-customer');
-        const billcusid = checkbox.getAttribute('data-bill-customer-id'); // Ensure this is retrieved
+        const billcusid = checkbox.getAttribute('data-bill-customer-id');
         const itemcode = checkbox.getAttribute('data-item-code');
         const name = checkbox.getAttribute('data-name');
         const quantity = checkbox.getAttribute('data-quantity');
@@ -28,12 +28,11 @@ checkboxes.forEach(checkbox => {
         if (checkbox.checked) {
             const li = document.createElement('li');
             li.classList.add('cart-item');
-            li.textContent = `${itemCounter}. ${name} - ฿${total} - ${unit}`; // Add item number
+            li.textContent = `${itemCounter}. ${name} - ฿${total} - ${unit}`;
             li.setAttribute('data-price', total);
             li.setAttribute('data-unit', unit);
             cartItems.appendChild(li);
-            itemCounter++; // Increment the counter
-            // Add the selected item to the array
+            itemCounter++;
             selectedItems.push({
                 name,
                 price,
@@ -44,20 +43,18 @@ checkboxes.forEach(checkbox => {
                 total,
                 billcus,
                 transferType,
-                billcusid // Ensure this is included
+                billcusid
             });
         } else {
             cartItems.querySelectorAll('.cart-item').forEach(item => {
                 if (item.textContent.includes(name)) {
                     cartItems.removeChild(item);
-                    itemCounter--; // Decrement when unchecked
-                    // Re-number the remaining items:
+                    itemCounter--;
                     cartItems.querySelectorAll('.cart-item').forEach((item, index) => {
                         item.textContent = `${index + 1}. ${item.textContent.substring(item.textContent.indexOf(".") + 2)}`;
                     });
                 }
             });
-            // Remove the unselected item from the array
             selectedItems = selectedItems.filter(item => item.name !== name);
         }
 
@@ -66,10 +63,8 @@ checkboxes.forEach(checkbox => {
 });
 
 createBillBtn.addEventListener('click', () => {
-    // Get the selected transfer type
     const transferType = document.querySelector('input[name="transfer_type"]:checked').value;
 
-    // Prepare the summary message
     let summary = '<ul>';
     selectedItems.forEach(item => {
         summary += `<li>${item.name} - ฿${item.total} - ${item.unit}</li>`;
@@ -77,7 +72,6 @@ createBillBtn.addEventListener('click', () => {
     summary += '</ul>';
     console.log(selectedItems);
 
-    // Show the SweetAlert with the summary
     Swal.fire({
         title: '<span style="color: red;">ยืนยันการสร้างบิล</span>',
         html: '<span style="color: red;">คุณจะไม่สามารถแก้ไขบิลได้อีกต่อไปหากกดยืนยันแล้ว</span> ระบบจะทำการสร้างบิลดังต่อไปนี้ :<br>' + summary,
@@ -87,7 +81,6 @@ createBillBtn.addEventListener('click', () => {
         cancelButtonText: 'ยกเลิก',
     }).then((result) => {
         if (result.isConfirmed) {
-            // Proceed with form submission
             const selectedItemsJSON = JSON.stringify(selectedItems);
             const form = document.createElement('form');
             form.setAttribute('method', 'POST');
@@ -98,7 +91,6 @@ createBillBtn.addEventListener('click', () => {
             hiddenField.setAttribute('value', selectedItemsJSON);
             form.appendChild(hiddenField);
 
-            // Add transfer type as a hidden input field
             const transferTypeField = document.createElement('input');
             transferTypeField.setAttribute('type', 'hidden');
             transferTypeField.setAttribute('name', 'transfer_type');

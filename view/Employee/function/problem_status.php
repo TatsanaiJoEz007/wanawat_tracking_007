@@ -1,23 +1,15 @@
 <?php
 // Step 1: Connect to your database
-$servername = "localhost";  // Change this if your database is on a different server
-$username = "root";
-$password = "";
-$dbname = "wanawat_tracking";
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+require_once('../../../view/config/connect.php');
 
 // Step 2: Retrieve POST data
 $data = json_decode(file_get_contents("php://input"), true);
 
+header('Content-Type: application/json');
+
 if (!isset($data['deliveries']) || !is_array($data['deliveries'])) {
-    die("Invalid request. Missing deliveries data.");
+    echo json_encode(['status' => 'error', 'message' => 'Invalid request. Missing deliveries data.']);
+    exit;
 }
 
 $response = array();

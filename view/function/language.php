@@ -1,6 +1,8 @@
 <?php
 
-session_start(); // Start the session
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 if (isset($_POST['lang'])) {
     $lang = $_POST['lang'];

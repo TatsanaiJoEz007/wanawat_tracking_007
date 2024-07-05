@@ -4,14 +4,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['csvData'])) {
     $rows = str_getcsv($csvData, "\n");
 
     // Database connection settings
-    $dbHost = 'localhost';
-    $dbName = 'wanawat_tracking';
-    $dbUser = 'root';
-    $dbPass = '';
+    require_once('../../../../view/config/connect.php');
 
     try {
         // Connect to the database
-        $pdo = new PDO("mysql:host=$dbHost;dbname=$dbName", $dbUser, $dbPass);
+        $pdo = new PDO("mysql:host=$host;dbname=$db", $username, $pass);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         // Start a transaction
