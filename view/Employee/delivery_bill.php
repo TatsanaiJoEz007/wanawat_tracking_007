@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <?php 
-            if (session_status() == PHP_SESSION_NONE) {
-                session_start();
-            }
+    require_once('../../view/config/connect.php'); // ปรับเส้นทางให้ถูกต้อง
+
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 ?>
 <html lang="en">
 
@@ -10,16 +12,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Delivery Bill</title>
-    <!-- //mockup stuff fix it later broooo -->
     <link rel="stylesheet" href="function/delivery_bill/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
 
-    <?php
-        require_once('../../view/config/connect.php');
-    ?>
+
 
     <?php require_once('function/sidebar_employee.php'); ?>
 
@@ -97,8 +96,6 @@
                             echo "<td rowspan='" . count($row["item_details"]) . "'>" . $row["bill_number"] . "</td>";
                             echo "<td rowspan='" . count($row["item_details"]) . "'>" . $row["bill_customer_name"] . "</td>";
                             echo "<input type='hidden' name='bill_customer_id' value='" . $row["bill_customer_id"] . "'>";
-                            // echo "<td rowspan='" . count($row["item_details"]) . "'>" . $row["bill_total"] . "</td>";
-                            // Loop through item_details array to output each item detail
                             foreach ($row["item_details"] as $index => $item) {
                                 if ($index > 0) {
                                     echo "<tr>";
@@ -122,46 +119,43 @@
                                     data-quantity='" . $item["item_quantity"] . "'
                                     data-unit='" . $item["item_unit"] . "' 
                                     data-price='" . $item["item_price"] . "'
-                                    data-total='" . $item["line_total"] . "' 
+                                    data-total='" . $item["line_total"] . "'
                                     data-item_sequence='" . $item["item_sequence"] . "'>";
-                                echo "</center>";
-                                echo "</td>";
+                            echo "</center>";
+                            echo "</td>";
 
-                                echo "</tr>";
-                            }
+                            echo "</tr>";
                         }
+                    }
 
-                        $conn->close();
-                        ?>
+                    $conn->close();
+                    ?>
 
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div class="cart">
-            <h2 class="cart-title">ตะกร้าสินค้า</h2>
-            <ul class="cart-items" id="cart-items">
-                <!-- สินค้าที่เลือกจะปรากฏที่นี่ -->
-            </ul>
-            <hr>
-
-            <h7 class="cart-total">ราคารวม: <span id="total-price">฿0</span></h7>
-
-            <!-- เพิ่ม radio buttons สำหรับเลือกประเภทการขนส่ง -->
-            <div>
-                <label><input type="radio" name="transfer_type" value="Human" checked> Human</label>
-                <label><input type="radio" name="transfer_type" value="Forklift"> Forklift</label>
-            </div>
-
-            <button class="create-bill-btn" id="create-bill-btn">สร้างบิล</button>
+                </tbody>
+            </table>
         </div>
     </div>
+    <div class="cart">
+        <h2 class="cart-title">ตะกร้าสินค้า</h2>
+        <ul class="cart-items" id="cart-items">
+            <!-- สินค้าที่เลือกจะปรากฏที่นี่ -->
+        </ul>
+        <hr>
 
-    <script src="function/delivery_bill/js/selectbill.js"></script>
-    <script src="function/delivery_bill/js/updateStatusToZero.js"></script>
+        <h7 class="cart-total">ราคารวม: <span id="total-price">฿0</span></h7>
 
+        <!-- เพิ่ม radio buttons สำหรับเลือกประเภทการขนส่ง -->
+        <div>
+            <label><input type="radio" name="transfer_type" value="Human" checked> Human</label>
+            <label><input type="radio" name="transfer_type" value="Forklift"> Forklift</label>
+        </div>
 
+        <button class="create-bill-btn" id="create-bill-btn">สร้างบิล</button>
+    </div>
+</div>
+
+<script src="function/delivery_bill/js/selectbill.js"></script>
+<script src="function/delivery_bill/js/updateStatusToZero.js"></script>
 
 </body>
-
 </html>

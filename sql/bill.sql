@@ -79,6 +79,8 @@ CREATE TABLE IF NOT EXISTS tb_delivery_items (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 
+
+
 SELECT DISTINCT d.delivery_number , d.delivery_id , di.bill_number, di.bill_customer_name, 
                 di.item_code, di.item_desc, di.item_quantity, 
                 di.item_unit, di.item_price, di.line_total

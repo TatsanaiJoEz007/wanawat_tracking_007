@@ -15,6 +15,7 @@ function updateStatusToZero(billNumber) {
 }
 
 // Call this function when a checkbox is checked or unchecked
+const checkboxes = document.querySelectorAll('.product-checkbox');
 checkboxes.forEach(checkbox => {
     checkbox.addEventListener('change', () => {
         if (checkbox.checked) {

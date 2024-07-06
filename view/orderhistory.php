@@ -9,25 +9,17 @@ if (!isset($_SESSION['customer_id'])) {
 $customer_id = $_SESSION['customer_id'];
 
 $query = "SELECT 
-    TRIM(h.bill_id) AS bill_id,
-    TRIM(h.bill_date) AS bill_date,
-    TRIM(h.bill_number) AS bill_number,
-    TRIM(h.bill_customer_id) AS bill_customer_id,
-    TRIM(h.bill_customer_name) AS bill_customer_name,
-    TRIM(h.bill_total) AS bill_total,
-    TRIM(h.bill_isCanceled) AS bill_isCanceled,
-    TRIM(h.bill_status) AS bill_status,
-    TRIM(h.create_at) AS create_at,
-    TRIM(l.item_desc) AS item_desc,
-    TRIM(l.line_status) AS delivery_status
+    TRIM(d.delivery_number) AS delivery_number,
+    TRIM(d.delivery_date) AS delivery_date,
+    TRIM(d.delivery_status) AS delivery_status,
+    TRIM(di.bill_number) AS bill_number,
+    TRIM(di.item_desc) AS item_desc
 FROM 
-    tb_header h
+    tb_delivery d
 JOIN 
-    tb_user u ON TRIM(h.bill_customer_id) = TRIM(u.customer_id)
-JOIN 
-    tb_line l ON TRIM(h.bill_number) = TRIM(l.line_bill_number)
+    tb_delivery_items di ON d.delivery_id = di.delivery_id
 WHERE 
-    TRIM(u.customer_id) = '$customer_id';";
+    TRIM(di.bill_customer_id) = '$customer_id' AND d.delivery_status = 5;";
 
 $result = mysqli_query($conn, $query);
 
@@ -40,36 +32,12 @@ if (!$result) {
 <html lang="th">
 
 <head>
-    <title>Order history</title>
+    <title>Order History</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
     <?php require_once('function/head.php'); ?>
     <style>
-        .modal-dialog {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0 auto !important;
-        }
-        .modal {
-            position: fixed;
-            top: 50% !important;
-            left: 50% !important;
-            transform: translate(-50%, -50%) !important;
-            width: auto !important;
-        }
-        .modal-content {
-            margin: auto !important;
-        }
-        .modal-backdrop.show {
-            position: fixed;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-        }
         ::-webkit-scrollbar {
             width: 9px;
         }
@@ -108,12 +76,13 @@ if (!$result) {
                                     if ($result && mysqli_num_rows($result) > 0) {
                                         $i = 1;
                                         while ($row = mysqli_fetch_assoc($result)) {
+                                            $status_text = 'สถานะสินค้าที่ถึงนำส่งให้ลูกค้าสำเร็จ'; // Since delivery_status is 5
                                             echo "<tr>";
                                             echo "<td>" . $i++ . "</td>";
-                                            echo "<td>" . $row['bill_number'] . "</td>";
-                                            echo "<td>" . $row['item_desc'] . "</td>";
-                                            echo "<td>" . $row['delivery_status'] . "</td>";
-                                            echo "<td>" . $row['bill_date'] . "</td>";
+                                            echo "<td>" . htmlspecialchars($row['bill_number']) . "</td>";
+                                            echo "<td>" . htmlspecialchars($row['item_desc']) . "</td>";
+                                            echo "<td>" . $status_text . "</td>";
+                                            echo "<td>" . htmlspecialchars($row['delivery_date']) . "</td>";
                                             echo "</tr>";
                                         }
                                     } else {

@@ -1,10 +1,15 @@
 <?php
+header('Content-Type: application/json'); // Ensure the response is JSON
+
+require_once('../../../../view/config/connect.php');
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['csvData'])) {
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+
     $csvData = $_POST['csvData'];
     $rows = str_getcsv($csvData, "\n");
-
-    // Database connection settings
-    require_once('../../../../view/config/connect.php');
 
     try {
         // Connect to the database
@@ -14,51 +19,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['csvData'])) {
         // Start a transaction
         $pdo->beginTransaction();
 
-        $duplicateRows = [];
-        $importedRows = [];
-
         foreach ($rows as $row) {
             $data = str_getcsv($row);
             if (count($data) === 6) { // Check if the row has all 6 columns
-                // Check if the data already exists in the database
-                $stmt = $pdo->prepare("SELECT COUNT(*) FROM tb_header WHERE bill_number = ?");
-                $stmt->execute([$data[1]]);
-                $count = $stmt->fetchColumn();
-
-                if ($count > 0) {
-                    // If data exists, add to duplicateRows
-                    $duplicateRows[] = $row;
-                } else {
-                    // If data does not exist, insert into database
-                    $stmt = $pdo->prepare("INSERT INTO tb_header (bill_date, bill_number, bill_customer_id, bill_customer_name, bill_total, bill_isCanceled) VALUES (?, ?, ?, ?, ?, ?)");
-                    $stmt->execute($data);
-                    $importedRows[] = $row;
-                }
+                $stmt = $pdo->prepare("INSERT INTO tb_header (bill_date, bill_number, bill_customer_id, bill_customer_name, bill_total, bill_isCanceled) VALUES (?, ?, ?, ?, ?, ?)");
+                $stmt->execute($data);
             }
         }
 
         // Commit the transaction
         $pdo->commit();
 
-        // Return the result as JSON
-        echo json_encode([
-            'duplicateRows' => $duplicateRows,
-            'importedRows' => $importedRows
-        ]);
-
+        // Return a success message
+        echo json_encode(['status' => 'success', 'message' => 'Data imported successfully']);
     } catch (PDOException $e) {
         // Rollback the transaction on error
         $pdo->rollBack();
-        // Display an error message using SweetAlert2
-        echo '<script>
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: "' . $e->getMessage() . '"
-                });
-              </script>';
-
-              
+        // Return an error message
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
     }
+} else {
+    echo json_encode(['status' => 'error', 'message' => 'Invalid request method or missing csvData']);
 }
 ?>
