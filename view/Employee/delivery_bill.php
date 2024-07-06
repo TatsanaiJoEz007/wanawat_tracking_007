@@ -155,7 +155,6 @@ if (session_status() == PHP_SESSION_NONE) {
 </div>
 
 <script src="function/delivery_bill/js/selectbill.js"></script>
-<script src="function/delivery_bill/js/updateStatusToZero.js"></script>
 
 </body>
 </html>

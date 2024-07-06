@@ -15,15 +15,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const billnum = checkbox.getAttribute('data-bill-number');
-            const billcus = checkbox.getAttribute('data-bill-customer');
-            const billcusid = checkbox.getAttribute('data-bill-customer-id');
-            const itemcode = checkbox.getAttribute('data-item-code');
-            const name = checkbox.getAttribute('data-name');
-            const quantity = checkbox.getAttribute('data-quantity');
-            const unit = checkbox.getAttribute('data-unit');
-            const price = checkbox.getAttribute('data-price');
-            const total = checkbox.getAttribute('data-total');
+            const billnum = checkbox.getAttribute('data-bill-number').trim();
+            const billcus = checkbox.getAttribute('data-bill-customer').trim();
+            const billcusid = checkbox.getAttribute('data-bill-customer-id').trim();
+            const itemcode = checkbox.getAttribute('data-item-code').trim();
+            const name = checkbox.getAttribute('data-name').trim();
+            const quantity = checkbox.getAttribute('data-quantity').trim();
+            const unit = checkbox.getAttribute('data-unit').trim();
+            const price = checkbox.getAttribute('data-price').trim();
+            const total = checkbox.getAttribute('data-total').trim();
             const transferType = document.querySelector('input[name="transfer_type"]:checked').value;
 
             if (checkbox.checked) {
@@ -46,9 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     transferType,
                     billcusid
                 });
-
-                // Call the function to update status
-                updateStatusToZero(billnum);
             } else {
                 cartItems.querySelectorAll('.cart-item').forEach(item => {
                     if (item.textContent.includes(name)) {
@@ -86,23 +83,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }).then((result) => {
             if (result.isConfirmed) {
                 const selectedItemsJSON = JSON.stringify(selectedItems);
-                const form = document.createElement('form');
-                form.setAttribute('method', 'POST');
-                form.setAttribute('action', 'function/function_adddelivery.php');
-                const hiddenField = document.createElement('input');
-                hiddenField.setAttribute('type', 'hidden');
-                hiddenField.setAttribute('name', 'selected_items');
-                hiddenField.setAttribute('value', selectedItemsJSON);
-                form.appendChild(hiddenField);
 
-                const transferTypeField = document.createElement('input');
-                transferTypeField.setAttribute('type', 'hidden');
-                transferTypeField.setAttribute('name', 'transfer_type');
-                transferTypeField.setAttribute('value', transferType);
-                form.appendChild(transferTypeField);
-
-                document.body.appendChild(form);
-                form.submit();
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', 'function/function_adddelivery.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                        if (xhr.status === 200) {
+                            Swal.fire('สำเร็จ!', 'บิลได้ถูกสร้างเรียบร้อยแล้ว', 'success').then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire('เกิดข้อผิดพลาด!', 'ไม่สามารถสร้างบิลได้', 'error');
+                        }
+                    }
+                };
+                xhr.send(`selected_items=${encodeURIComponent(selectedItemsJSON)}&transfer_type=${encodeURIComponent(transferType)}`);
             }
         });
     });
@@ -119,20 +115,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.addEventListener('DOMContentLoaded', calculateTotal);
-
-    function updateStatusToZero(billNumber) {
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', '../status_zero.php', true); // ปรับให้เป็น URL ที่ถูกต้อง
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                if (xhr.status === 200) {
-                    console.log('Status updated to 0 for bill number ' + billNumber);
-                } else {
-                    console.error('Failed to update status');
-                }
-            }
-        };
-        xhr.send('bill_number=' + encodeURIComponent(billNumber));
-    }
 });

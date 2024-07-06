@@ -54,14 +54,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['selected_items']) && i
         }
         $stmt->close();
 
+        // Update status to 0 for all selected bill numbers
+        $billNumbers = array_column($selectedItems, 'billnum');
+        $billNumbers = array_unique($billNumbers); // Ensure unique bill numbers
+
+        foreach ($billNumbers as $billnum) {
+            $stmt = $conn->prepare("UPDATE tb_header SET bill_status = 0 WHERE TRIM(bill_number) = ?");
+            $stmt->bind_param("s", $billnum);
+            $stmt->execute();
+            $stmt->close();
+
+            $stmt = $conn->prepare("UPDATE tb_line SET line_status = 0 WHERE TRIM(line_bill_number) = ?");
+            $stmt->bind_param("s", $billnum);
+            $stmt->execute();
+            $stmt->close();
+        }
+
         // Commit transaction
         $conn->commit();
 
-        echo "<script type='text/javascript'>
-                setTimeout(function() {
-                    location.href = '../delivery_bill.php';
-                }, 10);
-              </script>";
+        echo "success";
     } catch (Exception $e) {
         // Rollback transaction
         $conn->rollback();
