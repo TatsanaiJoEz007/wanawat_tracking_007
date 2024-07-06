@@ -4,7 +4,10 @@
 
 <?php
 require_once('../../view/config/connect.php');
-session_start();
+
+if (session_status() == PHP_SESSION_NONE) {
+  session_start();
+}
 
 
 if (!isset($_SESSION['login'])) {
@@ -477,21 +480,6 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
           <li><a href="../admin/permission_user">ลูกค้า</a></li>
           <li><a href="../admin/permission_employee">พนักงาน</a></li>
 
-        </ul>
-      </li>
-      <li>
-        <div class="iocn-link">
-          <a href="#">
-            <i class="bx bx-cloud-upload nav_icon"></i>
-            <span class="link_name">เพิ่ม บิล จาก CSV</span>
-          </a>
-          <i class='bx bxs-chevron-down arrow'></i>
-        </div>
-        <ul class="sub-menu">
-          <li><a href="../admin/importCSV.php">เพิ่ม CSV</a></li>
-          <li><a href="../admin/table_header.php">หัวบิลที่เพิ่มแล้ว</a></li>
-          <li><a href="../admin/table_line.php">รายละเอียดบิลที่เพิ่มแล้ว</a></li>
-          <li><a href="../admin/table_delivery.php">บิลพร้อมส่ง</a></li>
         </ul>
       </li>
       <li>

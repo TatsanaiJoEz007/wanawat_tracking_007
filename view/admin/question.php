@@ -1,4 +1,11 @@
-<?php require_once('../config/connect.php'); ?>
+<?php
+require_once('../config/connect.php'); 
+
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="th">
 
@@ -6,7 +13,6 @@
     <title>Manage - Question</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
-    <!-- เรียกใช้ Bootstrap CSS จาก CDN -->
     <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
@@ -84,43 +90,30 @@
 
     .swal2-textarea {
         resize: vertical;
-        /* Allow vertical resizing */
         min-height: 100px;
-        /* Set a minimum height */
         max-height: 300px;
-        /* Set a maximum height */
         border-radius: 5px;
     }
 
-
-    /* หากต้องการให้ตารางเลื่อนตามความกว้างของหน้าจอ */
     @media (max-width: 100px) {
         .table-scrollable {
             overflow-x: auto;
         }
     }
 
-    /* Scrollbar Styling */
     ::-webkit-scrollbar {
         width: 12px;
-        /* Adjust width for vertical scrollbar */
     }
 
     ::-webkit-scrollbar-thumb {
         background-color: #FF5722;
-        /* Color for scrollbar thumb */
         border-radius: 10px;
-        /* Rounded corners for scrollbar thumb */
     }
 
-    /* Container Styling */
     .home-section {
         max-height: 100vh;
-        /* Adjust height as needed */
         overflow-y: auto;
-        /* Allow vertical scroll */
         overflow-x: hidden;
-        /* Prevent horizontal scroll */
         padding: 20px;
         background-color: #f9f9f9;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -128,63 +121,53 @@
     }
 </style>
 
-</head>
-
 <body>
     <?php require_once('function/sidebar.php'); ?>
     <h1>Admin FAQ Panel</h1>
 
-    <!-- New FAQ Button -->
     <div style="text-align: right; margin-bottom: 20px;">
         <button class="new-faq-btn" id="new-faq-btn">NEW FAQ</button>
-
     </div>
 
     <div class="faq-container">
         <?php
-        // Include database connection
         include '../config/connect.php';
 
         // Fetch all FAQs from the database
         $query = "SELECT * FROM tb_freq";
         $result = mysqli_query($conn, $query);
 
-        // Check if FAQs exist
         if (mysqli_num_rows($result) > 0) {
-            // Output data of each row
             while ($row = mysqli_fetch_assoc($result)) {
                 echo "<div class='faq'>";
-                echo "<h2>" . $row['freq_header'] . "</h2>";
-                echo "<p>" . $row['freq_content'] . "</p>";
-                echo "<p>Created at: " . $row['freq_create_at'] . "</p>";
-                echo "<button class='edit-faq-btn btn btn-primary' data-id='" . $row['freq_id'] . "'>Edit</button> ";
-                echo "&nbsp;"; // Add space between buttons
-                echo "<button class='delete-faq-btn btn btn-danger' data-id='" . $row['freq_id'] . "'>Delete</button>";
+                echo "<h2>" . htmlspecialchars($row['freq_header']) . "</h2>";
+                echo "<p>" . htmlspecialchars($row['freq_content']) . "</p>";
+                echo "<p>Created at: " . htmlspecialchars($row['freq_create_at']) . "</p>";
+                echo "<button class='edit-faq-btn btn btn-primary' data-id='" . htmlspecialchars($row['freq_id']) . "'>Edit</button> ";
+                echo "<button class='delete-faq-btn btn btn-danger' data-id='" . htmlspecialchars($row['freq_id']) . "'>Delete</button>";
+                echo "</div>";
             }
         } else {
-            echo "No FAQs found";
+            echo "<p>No FAQs found</p>";
         }
 
-        // Close database connection
         mysqli_close($conn);
         ?>
     </div>
+
     <script>
-        // Function to handle new FAQ addition
         $('#new-faq-btn').click(function() {
             Swal.fire({
                 title: 'Add New FAQ',
                 html: '<input id="header" class="swal2-input" placeholder="Header">' +
-                    '<input id="content" class="swal2-input" placeholder="Content">',
+                    '<textarea id="content" class="swal2-textarea" placeholder="Content"></textarea>',
                 showCancelButton: true,
                 confirmButtonText: 'Add',
                 showLoaderOnConfirm: true,
                 preConfirm: () => {
-                    // Retrieve input field values
                     var header = $('#header').val();
                     var content = $('#content').val();
 
-                    // AJAX request to add FAQ
                     return $.ajax({
                         url: 'function/new_faq.php',
                         type: 'POST',
@@ -194,45 +177,53 @@
                         }
                     }).done(function(response) {
                         if (response.trim() == "success") {
-                            Swal.fire('FAQ Added!', 'เพิ่มคำถามที่พบบ่อยสำเร็จ', 'success').then(() => {
-                                location.reload(); // Reload page after adding FAQ
+                            Swal.fire({
+                                title: 'FAQ Added!',
+                                text: 'เพิ่มคำถามที่พบบ่อยสำเร็จ',
+                                icon: 'success',
+                                timer: 3000,
+                                showConfirmButton: false
+                            }).then(() => {
+                                location.reload();
                             });
                         } else {
-                            Swal.fire(['FAQ', 'เพิ่มคำถามที่พบบ่อยสำเร็จ', 'Success']);
-                            location.reload();
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'เกิดปัญหาในการเพิ่มคำถามที่พบบ่อย',
+                                icon: 'error',
+                                timer: 3000,
+                                showConfirmButton: false
+                            });
                         }
                     }).fail(function() {
-                        Swal.fire('FAQ Added Fail!.', 'เพิ่มคำถามที่พบบ่อยไม่สำเร็จ', 'Success');
-                        location.reload();
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'เพิ่มคำถามที่พบบ่อยไม่สำเร็จ',
+                            icon: 'error',
+                            timer: 3000,
+                            showConfirmButton: false
+                        });
                     });
                 }
             });
         });
 
-        // Function to handle editing FAQ
         $(document).on('click', '.edit-faq-btn', function() {
             var freq_id = $(this).data('id');
 
-            // Retrieve existing FAQ data
             $.ajax({
                 url: 'function/getfreq.php?id=' + freq_id,
-                type: 'POST',
-                data: {
-                    freq_id: freq_id
-                },
+                type: 'GET',
                 dataType: 'json',
                 success: function(data) {
-                    console.log(data);
                     Swal.fire({
                         title: 'Edit FAQ',
                         html: '<input id="editedHeader" class="swal2-input" placeholder="Header" value="' + data.freq_header + '">' +
                             '<textarea id="editedContent" class="swal2-textarea" placeholder="Content">' + data.freq_content + '</textarea>',
-
                         showCancelButton: true,
                         confirmButtonText: 'Save',
                         showLoaderOnConfirm: true,
                         preConfirm: () => {
-                            // AJAX request to edit FAQ
                             return $.ajax({
                                 url: 'function/edit_faq.php?id=' + freq_id,
                                 type: 'POST',
@@ -241,11 +232,23 @@
                                     content: $('#editedContent').val()
                                 }
                             }).done(function(response) {
-                                Swal.fire('FAQ Edited!', 'แก้ไขสำเร็จ', 'success').then(() => {
-                                    location.reload(); // Reload page after editing FAQ
+                                Swal.fire({
+                                    title: 'FAQ Edited!',
+                                    text: 'แก้ไขสำเร็จ',
+                                    icon: 'success',
+                                    timer: 3000,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    location.reload();
                                 });
                             }).fail(function() {
-                                Swal.fire('ไม่นะ', 'แก้ไขไม่สำเร็จ', 'error');
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: 'แก้ไขไม่สำเร็จ',
+                                    icon: 'error',
+                                    timer: 3000,
+                                    showConfirmButton: false
+                                });
                             });
                         }
                     });
@@ -256,8 +259,7 @@
             });
         });
 
-        // Function to handle deleting FAQ
-        $('.delete-faq-btn').click(function() {
+        $(document).on('click', '.delete-faq-btn', function() {
             var freq_id = $(this).data('id');
             Swal.fire({
                 title: 'คุณแน่ใจหรือไม่?',
@@ -269,19 +271,31 @@
                 confirmButtonText: 'ใช่, ลบเลย!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // AJAX request to delete FAQ
-                    $.ajax({
-                        url: 'function/delete_faq.php?id=' + freq_id,
-                        type: 'POST'
-                    }).done(function(response) {
-                        Swal.fire('ลบสำเร็จ!', 'ลบคำถามที่พบบ่อยสำเร็จ', 'success').then(() => {
-                            location.reload(); // Reload page after deleting FAQ
-                        });
-                    }).fail(function(reload) {
-                        Swal.fire('ลบไม่สำเร็จ', 'เกิดปัญหาในการเพิ่มคำถามที่พบบ่อย', 'error');
+                $.ajax({
+                    url: 'function/delete_faq.php?id=' + freq_id,
+                    type: 'POST'
+                }).done(function(response) {
+                    Swal.fire({
+                        title: 'ลบสำเร็จ!',
+                        text: 'ลบคำถามที่พบบ่อยสำเร็จ',
+                        icon: 'success',
+                        timer: 3000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        location.reload();
                     });
-                }
-            });
+                }).fail(function() {
+                    Swal.fire({
+                        title: 'ลบไม่สำเร็จ',
+                        text: 'เกิดปัญหาในการเพิ่มคำถามที่พบบ่อย',
+                        icon: 'error',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                });
+            }
         });
-    </script>
+    });
+</script>
 </body>
+</html>

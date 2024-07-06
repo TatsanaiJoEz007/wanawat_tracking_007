@@ -109,6 +109,7 @@ $conn->close();
                         <tr>
                             <th>#</th>
                             <th>เลขบิล</th>
+                            <th>จำนวน</th>
                             <th>สถานะ</th>
                             <th>วันที่สร้างบิล</th>
                             <th>ประเภทการขนย้าย</th>
@@ -151,6 +152,7 @@ $conn->close();
                             <tr class="<?php echo $status_class; ?>">
                                 <td><?php echo $index + 1; ?></td>
                                 <td><?php echo htmlspecialchars($row['delivery_number']); ?></td>
+                                <td><?php echo htmlspecialchars($row['delivery_weight_total']); ?></td>
                                 <td><?php echo $status_text; ?></td>
                                 <td><?php echo htmlspecialchars($row['delivery_date']); ?></td>
                                 <td><?php echo htmlspecialchars($row['created_by']); ?></td>
@@ -159,7 +161,7 @@ $conn->close();
                     </tbody>
                 </table>
             </div>
-        <?php else: ?>
+        <?php elseif ($selected_date): ?>
             <h5 class="mt-4">ไม่มีข้อมูลสำหรับวันที่: <?php echo htmlspecialchars($selected_date); ?></h5>
         <?php endif; ?>
     </div>
