@@ -1,5 +1,5 @@
 <?php
-require_once('../config/connect.php'); 
+require_once('../config/connect.php');
 
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -13,7 +13,7 @@ $result = $conn->query($sql);
 
 $dates = array();
 if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
+    while ($row = $result->fetch_assoc()) {
         $dates[] = $row["delivery_date"];
     }
 }
@@ -41,6 +41,7 @@ $conn->close();
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -57,31 +58,52 @@ $conn->close();
             color: #3c763d;
             cursor: pointer;
         }
+
+        .home-section {
+            max-height: 100vh;
+            /* Adjust height as needed */
+            overflow-y: auto;
+            /* Allow vertical scroll */
+            overflow-x: hidden;
+            /* Prevent horizontal scroll */
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
         .datepicker table tr td.disabled-date {
             background-color: #f2dede;
             color: #a94442;
             cursor: not-allowed;
         }
+
         .status-red {
             background-color: #ffcccc;
         }
+
         .status-green {
             background-color: #ccffcc;
         }
+
         .status-yellow {
             background-color: #ffffcc;
         }
+
         .status-blue {
             background-color: #cce5ff;
         }
+
         .status-purple {
             background-color: #dfe2fb;
         }
+
         .status-grey {
             background-color: #f0f2f5;
         }
     </style>
 </head>
+
 <body>
     <?php require_once('function/sidebar_employee.php'); ?>
     <div class="container">
@@ -102,7 +124,7 @@ $conn->close();
                 <button type="submit" class="btn btn-primary mt-3">ดูข้อมูล</button>
             </form>
         </div>
-        <?php if ($data): ?>
+        <?php if ($data) : ?>
             <div class="table-container">
                 <table>
                     <thead>
@@ -116,7 +138,7 @@ $conn->close();
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($data as $index => $row): ?>
+                        <?php foreach ($data as $index => $row) : ?>
                             <?php
                             switch ($row['delivery_status']) {
                                 case 1:
@@ -161,13 +183,13 @@ $conn->close();
                     </tbody>
                 </table>
             </div>
-        <?php elseif ($selected_date): ?>
+        <?php elseif ($selected_date) : ?>
             <h5 class="mt-4">ไม่มีข้อมูลสำหรับวันที่: <?php echo htmlspecialchars($selected_date); ?></h5>
         <?php endif; ?>
     </div>
 
     <script type="text/javascript">
-        jQuery(document).ready(function($){
+        jQuery(document).ready(function($) {
             var enabledDates = <?php echo $dates_json; ?>;
 
             jQuery.fn.datepicker.defaults.language = 'th';
@@ -175,16 +197,21 @@ $conn->close();
                 autoclose: true,
                 todayHighlight: true,
                 format: 'yyyy-mm-dd',
-                beforeShowDay: function(date){
-                    var d = date.getFullYear() + "-" + ('0' + (date.getMonth()+1)).slice(-2) + "-" + ('0' + date.getDate()).slice(-2);
+                beforeShowDay: function(date) {
+                    var d = date.getFullYear() + "-" + ('0' + (date.getMonth() + 1)).slice(-2) + "-" + ('0' + date.getDate()).slice(-2);
                     if (enabledDates.includes(d)) {
-                        return {classes: 'enabled-date'};
+                        return {
+                            classes: 'enabled-date'
+                        };
                     } else {
-                        return {classes: 'disabled-date'};
+                        return {
+                            classes: 'disabled-date'
+                        };
                     }
                 }
             }).datepicker('update', new Date());
         });
     </script>
 </body>
+
 </html>

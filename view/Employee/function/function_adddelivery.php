@@ -32,17 +32,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['selected_items']) && i
         $stmt->close();
 
         // Insert data into tb_delivery_items table
-        $stmt = $conn->prepare("INSERT INTO tb_delivery_items (delivery_id, bill_number, bill_customer_name, bill_customer_id, item_code, item_desc, item_quantity, item_unit, item_price, line_total, created_by, transfer_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO tb_delivery_items (delivery_id, bill_number, bill_customer_name, bill_customer_id, item_code, item_desc, item_sequence, item_quantity, item_unit, item_price, line_total, created_by, transfer_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
         foreach ($selectedItems as $item) {
             $stmt->bind_param(
-                "isssssssssis",
+                "issssssissdis",
                 $deliveryId,
                 $item['billnum'],
                 $item['billcus'],
                 $item['billcusid'],
                 $item['itemcode'],
                 $item['name'],
+                $item['seq'],
                 $item['quantity'],
                 $item['unit'],
                 $item['price'],
@@ -54,21 +55,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['selected_items']) && i
         }
         $stmt->close();
 
-        // Update status to 0 for all selected bill numbers
-        $billNumbers = array_column($selectedItems, 'billnum');
-        $billNumbers = array_unique($billNumbers); // Ensure unique bill numbers
-
-        foreach ($billNumbers as $billnum) {
-            $stmt = $conn->prepare("UPDATE tb_header SET bill_status = 0 WHERE TRIM(bill_number) = ?");
-            $stmt->bind_param("s", $billnum);
+        // Update status to 0 for all selected bill numbers and sequences
+        foreach ($selectedItems as $item) {
+            $stmt = $conn->prepare("UPDATE tb_line SET line_status = 0 WHERE TRIM(line_bill_number) = ? AND item_sequence = ?");
+            $stmt->bind_param("si", $item['billnum'], $item['seq']);
             $stmt->execute();
-            $stmt->close();
-
-            $stmt = $conn->prepare("UPDATE tb_line SET line_status = 0 WHERE TRIM(line_bill_number) = ?");
-            $stmt->bind_param("s", $billnum);
-            $stmt->execute();
-            $stmt->close();
         }
+        $stmt->close();
 
         // Commit transaction
         $conn->commit();

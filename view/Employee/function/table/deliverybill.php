@@ -30,7 +30,7 @@ if ($result->num_rows > 0) {
             "item_unit" => $row["item_unit"],
             "item_price" => $row["item_price"],
             "line_total" => $row["line_total"],
-            "item_weight" => $row["line_weight"]
+            "line_weight" => $row["line_weight"]
         ];
     }
 }

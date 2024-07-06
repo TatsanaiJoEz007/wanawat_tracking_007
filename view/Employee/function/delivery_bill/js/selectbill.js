@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const billcusid = checkbox.getAttribute('data-bill-customer-id').trim();
             const itemcode = checkbox.getAttribute('data-item-code').trim();
             const name = checkbox.getAttribute('data-name').trim();
+            const seq = checkbox.getAttribute('data-item_sequence').trim();
             const quantity = checkbox.getAttribute('data-quantity').trim();
             const unit = checkbox.getAttribute('data-unit').trim();
             const price = checkbox.getAttribute('data-price').trim();
@@ -44,7 +45,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     total,
                     billcus,
                     transferType,
-                    billcusid
+                    billcusid,
+                    seq
                 });
             } else {
                 cartItems.querySelectorAll('.cart-item').forEach(item => {
@@ -71,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
             summary += `<li>${item.name} - ฿${item.total} - ${item.unit}</li>`;
         });
         summary += '</ul>';
-        console.log(selectedItems);
+        console.log('Selected Items:', selectedItems);  // Log the selected items
 
         Swal.fire({
             title: '<span style="color: red;">ยืนยันการสร้างบิล</span>',
@@ -90,10 +92,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState === XMLHttpRequest.DONE) {
                         if (xhr.status === 200) {
+                            console.log('Response:', xhr.responseText);  // Log the response from PHP
                             Swal.fire('สำเร็จ!', 'บิลได้ถูกสร้างเรียบร้อยแล้ว', 'success').then(() => {
                                 location.reload();
                             });
                         } else {
+                            console.error('Error:', xhr.responseText);  // Log any errors
                             Swal.fire('เกิดข้อผิดพลาด!', 'ไม่สามารถสร้างบิลได้', 'error');
                         }
                     }
