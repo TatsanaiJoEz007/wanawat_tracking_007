@@ -1,15 +1,11 @@
 <?php
 header('Content-Type: application/json');
 
-// Database connection settings
-$dbHost = 'localhost';
-$dbName = 'wanawat_tracking';
-$dbUser = 'root';
-$dbPass = '';
+require_once('../../../view/config/connect.php');
 
 try {
     // Connect to the database
-    $pdo = new PDO("mysql:host=$dbHost;dbname=$dbName", $dbUser, $dbPass);
+    $pdo = new PDO("mysql:host=$host;dbname=$db", $username, $pass);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
     echo json_encode(['status' => 'error', 'message' => 'Database connection failed: ' . $e->getMessage()]);
@@ -57,8 +53,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             foreach ($rows as $row) {
                 $rowData = str_getcsv($row);
-                if (count($rowData) === 9) {
-                    $stmt = $pdo->prepare("INSERT INTO tb_line (line_bill_number, item_sequence, item_code, item_desc, item_quantity, item_unit, item_price, line_total, line_weight) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                if (count($rowData) === 8) {
+                    // $stmt = $pdo->prepare("INSERT INTO tb_line (line_bill_number, item_sequence, item_code, item_desc, item_quantity, item_unit, item_price, line_total, line_weight) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    $stmt = $pdo->prepare("INSERT INTO tb_line (line_bill_number, item_sequence, item_code, item_desc, item_quantity, item_unit, item_price, line_total) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
                     $stmt->execute($rowData);
                 }
             }

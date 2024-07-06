@@ -1,25 +1,20 @@
 function importToDatabase() {
-    if (convertedCSVData) {
+    if (convertedCSVData2) {
         const formData = new FormData();
         formData.append('csvData', convertedCSVData); // Pass converted CSV data
 
-        fetch('../../view/Employee/function/importCSV/importHeader.php', { // ชื่อไฟล์ PHP ที่จะรับข้อมูล
+        fetch('', { // Use current file path
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
-            .then(data => {
-                const { duplicateRows, importedRows } = data;
-
-                let message = `Header Imported Rows:\n${importedRows.join('\n')}\n\nHeader Duplicate Rows:\n${duplicateRows.join('\n')}`;
-
-                const output = document.getElementById('outputHeader');
-                output.innerText = message;
-
+            .then(response => response.text())
+            .then(message => {
+                const output = document.getElementById('output1');
+                output.innerText = '';
                 Swal.fire({
                     icon: 'success',
-                    title: 'Import Result',
-                    text: message
+                    title: 'Success',
+                    text: "Importing data successfully!"
                 });
             })
             .catch(error => console.error('Error:', error));

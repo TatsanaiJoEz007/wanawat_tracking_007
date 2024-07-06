@@ -134,13 +134,8 @@ require_once('../config/connect.php');
     <link rel="stylesheet" href="../../view/Employee/function/dashboard/css/style.css">
 </head>
 
-
-
 <div class="container">
-
     <div class="row">
-
-
         <div class="row">
             <div class="col-lg-3 col-6">
                 <div class="small-box" style="background-color: #CBD6CB;">
