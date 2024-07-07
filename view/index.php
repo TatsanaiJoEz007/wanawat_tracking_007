@@ -11,26 +11,56 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            height: auto;
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(0, 0, 0, 0.8);
             color: black;
             z-index: 1000;
-            display: none;
-            top: -50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: slideInUp 0.5s ease-out;
         }
 
         .modal-content {
-            margin: 10px;
+            max-width: 600px;
+            width: 100%;
             padding: 20px;
             background-color: #fff;
             color: #000;
-            border-radius: 5px;
+            border-radius: 10px;
             text-align: center;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
         }
 
         .modal h2 {
             margin-top: 0;
+            color: #333;
+            font-size: 24px;
+        }
+
+        .modal p {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 20px;
         }
 
         .modal button {
@@ -39,6 +69,8 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
         }
 
         .modal button#acceptCookie {
@@ -46,18 +78,44 @@
             color: white;
         }
 
+        .modal button#acceptCookie:hover {
+            background-color: #45a049;
+        }
+
         .modal button#rejectCookie {
             background-color: #f44336;
             color: white;
         }
 
+        .modal button#rejectCookie:hover {
+            background-color: #e63929;
+        }
+
+        .modal .cookie-emoji {
+            font-size: 48px;
+            margin-bottom: 10px;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-20px);
+            }
+            60% {
+                transform: translateY(-10px);
+            }
+        }
+
         ::-webkit-scrollbar {
-            width: 9px; /* Adjust width for vertical scrollbar */
+            width: 9px;
         }
 
         ::-webkit-scrollbar-thumb {
-            background-color: #FF5722; /* Color for scrollbar thumb */
-            border-radius: 10px; /* Rounded corners for scrollbar thumb */
+            background-color: #FF5722;
+            border-radius: 10px;
         }
 
         .home-section {
@@ -91,6 +149,7 @@
     <!-- Cookie Consent Modal -->
     <div id="cookieModal" class="modal">
         <div class="modal-content">
+            <div class="cookie-emoji">🍪</div>
             <h2>ยอมรับคุกกี้</h2>
             <p>เราใช้คุกกี้เพื่อให้แน่ใจว่าคุณได้รับประสบการณ์ที่ดีที่สุดบนเว็บไซต์ของเรา</p>
             <button id="acceptCookie" onclick="acceptCookie()">ยอมรับ</button>
@@ -103,16 +162,14 @@
     </footer>
 
     <script>
-        // Show the cookie modal when the page is loaded
         window.onload = function () {
             var cookieAccepted = getCookie("cookieAccepted");
             if (!cookieAccepted) {
                 var modal = document.getElementById("cookieModal");
-                modal.style.display = "block";
+                modal.style.display = "flex";
             }
         };
 
-        // Function to set a cookie
         function setCookie(cname, cvalue, exdays) {
             var d = new Date();
             d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
@@ -120,7 +177,6 @@
             document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
         }
 
-        // Function to get a cookie
         function getCookie(cname) {
             var name = cname + "=";
             var decodedCookie = decodeURIComponent(document.cookie);
@@ -137,16 +193,14 @@
             return "";
         }
 
-        // Function to accept cookie
         function acceptCookie() {
             setCookie("cookieAccepted", "true", 365);
             var modal = document.getElementById("cookieModal");
             modal.style.display = "none";
         }
 
-        // Function to reject cookie
         function rejectCookie() {
-            swal.fire({
+            swal({
                 title: 'แจ้งเตือน',
                 text: 'คุณจะไม่ได้รับประสบการณ์การใช้งานฟังก์ชั่นในการทำงานต่างๆจากหน้าเว็ป',
                 icon: 'warning',
@@ -154,7 +208,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     var modal = document.getElementById("cookieModal");
-                    modal.style.display = "block";
+                    modal.style.display = "flex";
                 }
             });
         }

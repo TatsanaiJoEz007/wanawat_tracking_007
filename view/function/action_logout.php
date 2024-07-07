@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 require_once('../config/connect.php');
 require_once('../admin/function/action_activity_log/log_activity.php'); // Include log_activity.php
 
