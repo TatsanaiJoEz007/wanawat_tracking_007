@@ -2,6 +2,10 @@
 // Connect to the database
 require_once('../config/connect.php');
 
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Check if trackingId is sent
 if (isset($_POST['trackingId'])) {
     $trackingId = $_POST['trackingId'];
