@@ -2,6 +2,10 @@
 
 <?php
 require_once('function/language.php');
+
+if (session_status() == PHP_SESSION_NONE) {
+  session_start();
+}
 ?>
 
 

@@ -1,10 +1,6 @@
 <?php
 require_once('../view/config/connect.php');
 
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
-
 function imageToBase64($image_data)
 {
     // Get image mime type

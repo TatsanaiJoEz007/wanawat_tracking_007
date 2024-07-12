@@ -1,5 +1,9 @@
 <?php
 require_once ('../view/config/connect.php');
+
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 // Fetch questions from the database
 $query = "SELECT freq_header , freq_content FROM tb_freq";
 $result = mysqli_query($conn, $query);

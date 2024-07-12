@@ -36,7 +36,7 @@ if (mysqli_num_rows($result) > 0) {
         echo '<td><center><input type="checkbox" name="select" value="' . $row['delivery_id'] . '" data-status-text="' . $status_text . '" data-delivery-number="' . $row['delivery_number'] . '"></center></td>';
         echo '<td>' . $i . '</td>';
         echo '<td>' . $row['delivery_number'] . '</td>';
-        echo '<td>' . $row['item_count'] . '</td>';
+        echo '<td><center>' . $row['item_count'] . '</center></td>';
         echo '<td>' . $status_text . '</td>';
         echo '<td>' . $row['delivery_date'] . '</td>';
         echo '<td>' . $row['transfer_type'] . '</td>';

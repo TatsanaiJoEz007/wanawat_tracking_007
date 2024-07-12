@@ -15,16 +15,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const billnum = checkbox.getAttribute('data-bill-number').trim();
-            const billcus = checkbox.getAttribute('data-bill-customer').trim();
-            const billcusid = checkbox.getAttribute('data-bill-customer-id').trim();
-            const itemcode = checkbox.getAttribute('data-item-code').trim();
-            const name = checkbox.getAttribute('data-name').trim();
-            const seq = checkbox.getAttribute('data-item_sequence').trim();
-            const quantity = checkbox.getAttribute('data-quantity').trim();
-            const unit = checkbox.getAttribute('data-unit').trim();
-            const price = checkbox.getAttribute('data-price').trim();
-            const total = checkbox.getAttribute('data-total').trim();
+            const billnum = (checkbox.getAttribute('data-bill-number') ?? '').trim();
+            const billcus = (checkbox.getAttribute('data-bill-customer') ?? '').trim();
+            const billcusid = (checkbox.getAttribute('data-bill-customer-id') ?? '').trim();
+            const billweight = (checkbox.getAttribute('data-bill-weight') ?? '').trim();
+            const itemcode = (checkbox.getAttribute('data-item-code') ?? '').trim();
+            const name = (checkbox.getAttribute('data-name') ?? '').trim();
+            const seq = (checkbox.getAttribute('data-item-sequence') ?? '').trim();
+            const quantity = (checkbox.getAttribute('data-quantity') ?? '').trim();
+            const unit = (checkbox.getAttribute('data-unit') ?? '').trim();
+            const price = (checkbox.getAttribute('data-price') ?? '').trim();
+            const total = (checkbox.getAttribute('data-total') ?? '').trim();
             const transferType = document.querySelector('input[name="transfer_type"]:checked').value;
 
             if (checkbox.checked) {
@@ -46,7 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     billcus,
                     transferType,
                     billcusid,
-                    seq
+                    seq,
+                    billweight
                 });
             } else {
                 cartItems.querySelectorAll('.cart-item').forEach(item => {

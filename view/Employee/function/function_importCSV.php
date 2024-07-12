@@ -31,8 +31,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             foreach ($rows as $row) {
                 $rowData = str_getcsv($row);
                 if (count($rowData) === 6) {
-                    $stmt = $pdo->prepare("INSERT INTO tb_header (bill_date, bill_number, bill_customer_id, bill_customer_name, bill_total, bill_isCanceled) VALUES (?, ?, ?, ?, ?, ?)");
-                    $stmt->execute($rowData);
+                    // Check for duplicates
+                    $stmt = $pdo->prepare("SELECT COUNT(*) FROM tb_header WHERE bill_number = ?");
+                    $stmt->execute([$rowData[1]]);
+                    $count = $stmt->fetchColumn();
+
+                    if ($count == 0) {
+                        $stmt = $pdo->prepare("INSERT INTO tb_header (bill_date, bill_number, bill_customer_id, bill_customer_name, bill_total, bill_isCanceled) VALUES (?, ?, ?, ?, ?, ?)");
+                        $stmt->execute($rowData);
+                    }
                 }
             }
 
@@ -54,9 +61,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             foreach ($rows as $row) {
                 $rowData = str_getcsv($row);
                 if (count($rowData) === 8) {
-                    // $stmt = $pdo->prepare("INSERT INTO tb_line (line_bill_number, item_sequence, item_code, item_desc, item_quantity, item_unit, item_price, line_total, line_weight) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                    $stmt = $pdo->prepare("INSERT INTO tb_line (line_bill_number, item_sequence, item_code, item_desc, item_quantity, item_unit, item_price, line_total) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-                    $stmt->execute($rowData);
+                    // Check for duplicates
+                    $stmt = $pdo->prepare("SELECT COUNT(*) FROM tb_line WHERE line_bill_number = ? AND item_sequence = ?");
+                    $stmt->execute([$rowData[0], $rowData[1]]);
+                    $count = $stmt->fetchColumn();
+
+                    if ($count == 0) {
+                        $stmt = $pdo->prepare("INSERT INTO tb_line (line_bill_number, item_sequence, item_code, item_desc, item_quantity, item_unit, item_price, line_total) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                        $stmt->execute($rowData);
+                    }
                 }
             }
 

@@ -108,7 +108,12 @@
     </style>
 </head>
 <body>
-    <?php require_once('config/connect.php'); ?>
+    <?php 
+        require_once('config/connect.php'); 
+             if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+        }
+    ?>
 
     <div class="container text-center">
         <div class="tracking-input-group">

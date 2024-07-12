@@ -18,7 +18,7 @@ $search_term = isset($_GET['search']) ? $_GET['search'] : '';
 $total_items_query = "SELECT COUNT(DISTINCT d.delivery_id) as total 
                       FROM tb_delivery d 
                       INNER JOIN tb_delivery_items di ON d.delivery_id = di.delivery_id 
-                      WHERE d.created_by = ?";
+                      WHERE d.created_by = ? AND d.delivery_status NOT LIKE 5";
 
 // Append search term filter if provided
 if ($search_term) {
@@ -54,14 +54,16 @@ $offset = ($current_page - 1) * $items_per_page;
 $query = "SELECT d.delivery_id, d.delivery_number, d.delivery_date, COUNT(di.item_code) AS item_count, d.delivery_status, di.transfer_type 
           FROM tb_delivery d 
           INNER JOIN tb_delivery_items di ON d.delivery_id = di.delivery_id 
-          WHERE d.created_by = ?";
+          WHERE d.created_by = ? AND d.delivery_status NOT LIKE 5";
 
 // Append search term filter if provided
 if ($search_term) {
     $query .= " AND d.delivery_number LIKE ?";
 }
 
-$query .= " GROUP BY d.delivery_id, d.delivery_number, d.delivery_date, d.delivery_status, di.transfer_type LIMIT ? OFFSET ?";
+$query .= " GROUP BY d.delivery_id, d.delivery_number, d.delivery_date, d.delivery_status, di.transfer_type 
+            ORDER BY d.delivery_status ASC 
+            LIMIT ? OFFSET ?";
 
 $stmt = $conn->prepare($query);
 
