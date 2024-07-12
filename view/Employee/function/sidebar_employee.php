@@ -37,6 +37,8 @@ function getImageBase64($imageData)
 $userId = $_SESSION['user_id'];
 $myprofile = fetchUserProfile($conn, $userId);
 $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_img']) : '../../view/assets/img/logo/mascot.png'; // Set your default image path here
+
+
 ?>
 
 <!DOCTYPE html>
