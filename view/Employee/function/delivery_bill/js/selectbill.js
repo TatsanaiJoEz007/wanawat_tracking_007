@@ -90,11 +90,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
         Swal.fire({
             title: '<span style="color: red;">ยืนยันการสร้างบิล</span>',
-            html: '<span style="color: red;">คุณจะไม่สามารถแก้ไขบิลได้อีกต่อไปหากกดยืนยันแล้ว</span> ระบบจะทำการสร้างบิลดังต่อไปนี้ :<br>' + summary,
+            Text: 'กรุณาตรวจสอบข้อมูลให้ถูกต้องก่อนกดยืนยัน!!!!',
+            Text: 'คุณจะไม่สามารถแก้ไขบิลได้อีกต่อไปหากกดยืนยันแล้ว',
+            html: '<span style="color: red;">คุณจะไม่สามารถแก้ไขบิลได้อีกต่อไปหากกดยืนยันแล้ว</span> <br>ระบบจะทำการสร้างบิลดังต่อไปนี้ :<br>' + summary,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'ยืนยัน',
             cancelButtonText: 'ยกเลิก',
+            didOpen: () => {
+                Swal.showLoading()
+                const confirmButton = Swal.getConfirmButton()
+                confirmButton.disabled = true
+
+                setTimeout(() => {
+                    Swal.hideLoading()
+                    confirmButton.disabled = false
+                }, 5000) // 5-second delay
+            }
         }).then((result) => {
             if (result.isConfirmed) {
                 const selectedItemsJSON = JSON.stringify(selectedItems);
