@@ -4,7 +4,7 @@ ini_set('display_errors', 1);
 
 $host = "localhost";
 $username = "root";
-$pass = "";
+$pass = "root";
 $db = "wanawat_tracking";
 
 $conn = new mysqli($host, $username, $pass, $db);

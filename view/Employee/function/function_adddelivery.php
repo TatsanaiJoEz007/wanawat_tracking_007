@@ -55,13 +55,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['selected_items']) && i
         }
         $stmt->close();
 
-        // Update status to 0 for all selected bill numbers and sequences
+        // Update status or quantity for all selected bill numbers and sequences
         foreach ($selectedItems as $item) {
-            $stmt = $conn->prepare("UPDATE tb_line SET line_status = 0 WHERE TRIM(line_bill_number) = ? AND item_sequence = ?");
+            // Fetch the current quantity from the database
+            $stmt = $conn->prepare("SELECT item_quantity FROM tb_line WHERE TRIM(line_bill_number) = ? AND item_sequence = ?");
             $stmt->bind_param("si", $item['billnum'], $item['seq']);
             $stmt->execute();
+            $stmt->bind_result($currentQuantity);
+            $stmt->fetch();
+            $stmt->close();
+
+            if ($item['quantity'] == $currentQuantity) {
+                // If the selected quantity equals the current quantity, set the status to 0
+                $stmt = $conn->prepare("UPDATE tb_line SET line_status = 0 WHERE TRIM(line_bill_number) = ? AND item_sequence = ?");
+                $stmt->bind_param("si", $item['billnum'], $item['seq']);
+            } else {
+                // Otherwise, subtract the selected quantity from the current quantity
+                $newQuantity = $currentQuantity - $item['quantity'];
+                $stmt = $conn->prepare("UPDATE tb_line SET item_quantity = ? WHERE TRIM(line_bill_number) = ? AND item_sequence = ?");
+                $stmt->bind_param("isi", $newQuantity, $item['billnum'], $item['seq']);
+            }
+            $stmt->execute();
+            $stmt->close();
         }
-        $stmt->close();
 
         // Commit transaction
         $conn->commit();
