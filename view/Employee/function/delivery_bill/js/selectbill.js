@@ -7,8 +7,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const maxItems = 15;
     let selectedItems = [];
 
+    const calculateTotal = () => {
+        let totalPrice = 0;
+        const cartItemsList = document.querySelectorAll('#cart-items .cart-item');
+        cartItemsList.forEach(item => {
+            totalPrice += parseFloat(item.getAttribute('data-price'));
+        });
+        totalPriceElement.textContent = `฿${totalPrice.toFixed(2)}`;
+    };
+
     checkboxes.forEach(checkbox => {
         checkbox.addEventListener('change', () => {
+            const quantityDropdown = document.querySelector(`.quantity-dropdown[data-item-code="${checkbox.getAttribute('data-item-code')}"]`);
+            const selectedQuantity = parseInt(quantityDropdown.value, 10);
+
             if (checkbox.checked && itemCounter > maxItems) {
                 Swal.fire('เกิดข้อผิดพลาด!', 'เลือกสินค้าได้มากที่สุด 15 ชิ้นต่อการขนส่ง 1 ครั้ง', 'error');
                 checkbox.checked = false;
@@ -22,16 +34,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const itemcode = (checkbox.getAttribute('data-item-code') ?? '').trim();
             const name = (checkbox.getAttribute('data-name') ?? '').trim();
             const seq = (checkbox.getAttribute('data-item-sequence') ?? '').trim();
-            const quantity = (checkbox.getAttribute('data-quantity') ?? '').trim();
             const unit = (checkbox.getAttribute('data-unit') ?? '').trim();
-            const price = (checkbox.getAttribute('data-price') ?? '').trim();
-            const total = (checkbox.getAttribute('data-total') ?? '').trim();
+            const price = parseFloat(checkbox.getAttribute('data-price'));
+            const total = (selectedQuantity * price).toFixed(2);
             const transferType = document.querySelector('input[name="transfer_type"]:checked').value;
 
             if (checkbox.checked) {
                 const li = document.createElement('li');
                 li.classList.add('cart-item');
-                li.textContent = `${itemCounter}. ${name} - ฿${total} - ${unit}`;
+                li.textContent = `${itemCounter}. ${name} - ฿${total} - ${unit} x ${selectedQuantity}`;
                 li.setAttribute('data-price', total);
                 li.setAttribute('data-unit', unit);
                 cartItems.appendChild(li);
@@ -42,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     unit,
                     billnum,
                     itemcode,
-                    quantity,
+                    quantity: selectedQuantity,
                     total,
                     billcus,
                     transferType,
@@ -72,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let summary = '<ul>';
         selectedItems.forEach(item => {
-            summary += `<li>${item.name} - ฿${item.total} - ${item.unit}</li>`;
+            summary += `<li>${item.name} - ฿${item.total} - ${item.unit} x ${item.quantity}</li>`;
         });
         summary += '</ul>';
         console.log('Selected Items:', selectedItems);  // Log the selected items
@@ -109,16 +120,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    function calculateTotal() {
-        const cartItems = document.querySelectorAll('#cart-items .cart-item');
-        let totalPrice = 0;
-
-        cartItems.forEach(item => {
-            const price = parseFloat(item.getAttribute('data-price'));
-            totalPrice += price;
-        });
-        totalPriceElement.textContent = `฿${totalPrice}`;
-    }
-
-    document.addEventListener('DOMContentLoaded', calculateTotal);
+    calculateTotal();
 });

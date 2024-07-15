@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<?php 
-    require_once('../../view/config/connect.php'); // ปรับเส้นทางให้ถูกต้อง
+<?php
+require_once('../../view/config/connect.php'); // ปรับเส้นทางให้ถูกต้อง
 
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -51,15 +51,13 @@ if (session_status() == PHP_SESSION_NONE) {
                     </thead>
                     <tbody>
                         <?php
-
                         // Your SQL query
                         $sql = "SELECT DISTINCT tb_header.bill_number, tb_header.bill_customer_name, tb_header.bill_customer_id, tb_header.bill_weight,
-                                tb_line.item_code, tb_line.item_desc, tb_line.item_quantity, 
-                                tb_line.item_unit, tb_line.item_price, tb_line.line_total, tb_line.item_sequence
-                                FROM tb_header
-                                INNER JOIN tb_line ON TRIM(tb_header.bill_number) = TRIM(tb_line.line_bill_number)
-                                WHERE tb_header.bill_status = 1 AND tb_line.line_status = 1";
-
+            tb_line.item_code, tb_line.item_desc, tb_line.item_quantity, 
+            tb_line.item_unit, tb_line.item_price, tb_line.line_total, tb_line.item_sequence
+            FROM tb_header
+            INNER JOIN tb_line ON TRIM(tb_header.bill_number) = TRIM(tb_line.line_bill_number)
+            WHERE tb_header.bill_status = 1 AND tb_line.line_status = 1";
 
                         $result = $conn->query($sql);
 
@@ -103,10 +101,17 @@ if (session_status() == PHP_SESSION_NONE) {
                                 }
                                 echo "<td>" . $item["item_code"] . "</td>";
                                 echo "<td>" . $item["item_desc"] . "</td>";
-                                echo "<td>" . $item["item_quantity"] . "</td>";
+                                echo "<td>";
+                                echo "<select class='quantity-dropdown' data-item-code='" . $item["item_code"] . "'>";
+                                for ($i = 1; $i <= $item["item_quantity"]; $i++) {
+                                    $selected = ($i == $item["item_quantity"]) ? "selected" : "";
+                                    echo "<option value='$i' $selected>$i</option>";
+                                }
+                                echo "</select>";
+                                echo "</td>";
                                 echo "<td>" . $item["item_unit"] . "</td>";
                                 echo "<td>" . $item["item_price"] . "</td>";
-                                echo "<td>" . $item["line_total"] . "</td>";                                
+                                echo "<td>" . $item["line_total"] . "</td>";
                                 echo "<input type='hidden' name='item_sequence[]' value='" . $index . "'>";
                                 echo "<td>";
                                 echo "<center>";
@@ -124,14 +129,12 @@ if (session_status() == PHP_SESSION_NONE) {
                                     data-item-sequence='" . $item["item_sequence"] . "'>";
                                 echo "</center>";
                                 echo "</td>";
-
                                 echo "</tr>";
                             }
                         }
 
                         $conn->close();
                         ?>
-
                     </tbody>
                 </table>
             </div>
@@ -158,4 +161,5 @@ if (session_status() == PHP_SESSION_NONE) {
     <script src="function/delivery_bill/js/selectbill.js"></script>
 
 </body>
+
 </html>
