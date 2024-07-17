@@ -5,6 +5,8 @@ require_once('../config/connect.php');
 $sort_order = isset($_GET['sort']) && $_GET['sort'] == 'asc' ? 'asc' : 'desc';
 $new_sort_order = $sort_order == 'asc' ? 'desc' : 'asc';
 $icon = $sort_order == 'asc' ? 'fa-sort-up' : 'fa-sort-down';
+
+$search = isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '';
 ?>
 
 <!DOCTYPE html>
@@ -16,7 +18,7 @@ $icon = $sort_order == 'asc' ? 'fa-sort-up' : 'fa-sort-down';
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
     <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
+    
     <style>
         /* ปรับแต่ง modal ให้อยู่ตรงกลางจอ */
         .modal-dialog {
@@ -83,14 +85,46 @@ $icon = $sort_order == 'asc' ? 'fa-sort-up' : 'fa-sort-down';
             text-decoration: none;
             color: inherit;
         }
+
+        .search-form {
+            display: flex;
+            justify-content: center;
+           
+        }
+        .insearch {
+            width: 80%;
+           margin: 0 0 0 90px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px 0 0 4px;
+            outline: none;
+        }
+        .search {
+            padding: 10px 20px;
+            border: none;
+            background-color: #ff5722;
+            color: white;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+        }
+        .search:hover {
+            background-color: #e64a19;
+        }
+
+     
     </style>
 
 </head>
 
 <body>
-    <?php require_once('function/sidebar.php'); ?>
+    <?php include('function/sidebar.php'); ?>
     <br>
     <h1 class="app-page-title">&nbsp;<i class="bx bx-user"></i> Admin Activity Log</h1>
+
+    <form method="GET" action="" class="search-form">
+        <input class="insearch" type="text" name="search" placeholder="Search Activity Log" value="<?php echo $search; ?>">
+        <button type="submit" class="search">Search</button>
+    </form>
     <hr class="mb-4">
     <div class="container">
         <div class="row g-4 settings-section">
@@ -116,7 +150,15 @@ $icon = $sort_order == 'asc' ? 'fa-sort-up' : 'fa-sort-down';
                                 <tbody class="text-center">
                                     <?php
                                     $i = 1;
-                                    $sql = "SELECT * FROM admin_activity_log ORDER BY create_at $sort_order";
+                                    // SQL query with search functionality
+                                    $sql = "SELECT * FROM admin_activity_log 
+                                            WHERE userId LIKE '%$search%' 
+                                               OR action LIKE '%$search%' 
+                                               OR entity LIKE '%$search%' 
+                                               OR entity_id LIKE '%$search%' 
+                                               OR create_at LIKE '%$search%' 
+                                               OR additional_info LIKE '%$search%'
+                                            ORDER BY create_at $sort_order";
                                     $query = $conn->query($sql);
                                     foreach ($query as $row) :
                                     ?>
