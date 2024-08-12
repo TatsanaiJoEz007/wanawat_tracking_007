@@ -80,6 +80,11 @@ function base64img($imageData)
                             เพิ่มผู้ดูแลระบบ
                         </button>
 
+                        <!-- Button to delete selected users -->
+                        <button type="button" class="btn btn-danger" id="deleteSelectedBtn">
+                            ลบผู้ใช้ที่เลือก
+                        </button>
+
                         <!-- Modal -->
                         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -119,14 +124,11 @@ function base64img($imageData)
                                                 </select>
                                             </div>
                                         </form>
-
-
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
                                         <button type="submit" form="register" class="btn btn-primary">บันทึกข้อมูล</button>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
@@ -136,6 +138,7 @@ function base64img($imageData)
                             <table class="table table-striped" id="Tableall">
                                 <thead>
                                     <tr>
+                                        <th scope="col" style="text-align: center;"></th>
                                         <th scope="col" style="text-align: center;">#</th>
                                         <th scope="col" style="text-align: center;">รูปภาพ</th>
                                         <th scope="col" style="text-align: center;">ชื่อ</th>
@@ -163,8 +166,9 @@ function base64img($imageData)
                                             } else {
                                                 $imageBase64 = $defaultAvatarPath;
                                             }
-                                ?>
+                                    ?>
                                         <tr>
+                                            <td><input type="checkbox" class="userCheckbox" value="<?php echo $row['user_id']; ?>"></td>
                                             <td><?php echo $i++; ?></td>
                                             <td class="align-middle"><img src="<?php echo $imageBase64; ?>" alt="admin Image" style="width: 50px; height: auto;"></td>
                                             <td class="align-middle"><?php echo $row['user_firstname'] ?></td>
@@ -189,11 +193,11 @@ function base64img($imageData)
             </div>
         </div>
     </div>
-
     <script src="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function() {
+            // Handle form submission for adding an admin
             $('#register').submit(function(event) {
                 event.preventDefault();
 
@@ -204,15 +208,13 @@ function base64img($imageData)
                     contentType: false,
                     processData: false,
                     success: function(response) {
-                        if (response.success) {
-                            Swal.fire({
+                        if (response.success) {                            Swal.fire({
                                 icon: 'success',
                                 title: 'สำเร็จ',
                                 text: response.message
                             }).then(() => {
                                 $('#exampleModal').modal('hide');
                                 location.reload();
-                                // Optionally: refresh your table or add the new row dynamically
                             });
                         } else {
                             Swal.fire({
@@ -231,96 +233,86 @@ function base64img($imageData)
                     }
                 });
             });
-        });
 
-        function delUser(id) {
-            let option = {
-                url: 'function/action_admin/action_deladmin.php',
-                type: 'post',
-                dataType: 'json',
-                data: {
-                    id: id,
-                    delUser: 1
-                },
-                success: function(res) {
-                    if (res.status === 'success') {
-                        // Display success message using Swal.fire
-                        Swal.fire({
-                            title: 'Success!',
-                            text: 'ลบผู้ใช้งานสำเร็จ',
-                            icon: 'success',
-                            confirmButtonText: 'ตกลง'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                location.reload(); // Reload the page after successful deletion
-                            }
-                        });
-                    } else {
-                        // Display error message using Swal.fire
-                        Swal.fire({
-                            title: 'Error!',
-                            text: res.message,
-                            icon: 'error',
-                            confirmButtonText: 'ตกลง'
-                        });
-                    }
-                },
-                error: function(xhr, status, error) {
-                    // Display error message using Swal.fire
+            // Handle delete selected users
+            $('#deleteSelectedBtn').click(function() {
+                let selectedIds = [];
+                $('.userCheckbox:checked').each(function() {
+                    selectedIds.push($(this).val());
+                });
+
+                if (selectedIds.length > 0) {
                     Swal.fire({
-                        title: 'Error!',
-                        text: 'เกิดข้อผิดพลาดในการลบผู้ใช้งาน',
-                        icon: 'error',
-                        confirmButtonText: 'ตกลง'
+                        title: 'ต้องการลบผู้ใช้ที่เลือกใช่ไหม?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'ตกลง',
+                        cancelButtonText: 'ยกเลิก',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: 'function/action_admin/action_deladmin.php',
+                                type: 'POST',
+                                data: {
+                                    ids: selectedIds,
+                                    delUser: 1
+                                },
+                                success: function(response) {
+                                    if (response.status === 'success') {
+                                        Swal.fire({
+                                            title: 'สำเร็จ!',
+                                            text: 'ลบผู้ใช้ที่เลือกเรียบร้อยแล้ว',
+                                            icon: 'success',
+                                            confirmButtonText: 'ตกลง'
+                                        }).then(() => {
+                                            location.reload();
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            title: 'ผิดพลาด!',
+                                            text: response.message,
+                                            icon: 'error',
+                                            confirmButtonText: 'ตกลง'
+                                        });
+                                    }
+                                },
+                                error: function() {
+                                    Swal.fire({
+                                        title: 'ผิดพลาด!',
+                                        text: 'เกิดข้อผิดพลาดในการลบผู้ใช้',
+                                        icon: 'error',
+                                        confirmButtonText: 'ตกลง'
+                                    });
+                                }
+                            });
+                        }
                     });
-                    console.error(xhr.responseText); // Log the error response for debugging
-                }
-            };
-
-            // Show confirmation dialog before proceeding with the deletion
-            Swal.fire({
-                title: 'ต้องการลบข้อมูลใช่ไหม?',
-                text: "",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'ตกลง',
-                cancelButtonText: 'ยกเลิก',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Proceed with AJAX request to delete the user
-                    $.ajax(option);
+                } else {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'โปรดเลือกผู้ใช้ที่ต้องการลบ',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
                 }
             });
-        }
-    </script>
-    <script>
-        $(document).ready(function() {
+
+            // Select/Deselect all checkboxes
+            $('#selectAll').click(function() {
+                $('.userCheckbox').prop('checked', this.checked);
+            });
+
+            // Handle reset password
             let userId = null;
-            let userIdSet = false;
-
-            if ($('#user_id').val()) {
-                userId = $('#user_id').val();
-                userIdSet = true;
-            }
-
             $(document).on('click', '.reset-password-btn', function() {
-                if (!userIdSet) {
-                    userId = $(this).data('id');
-                    console.log('User ID retrieved from button:', userId);
-                    $('#user_id').val(userId);
-                    console.log('User ID set in hidden input:', $('#user_id').val());
-                    userIdSet = true;
-                }
-                console.log('User ID set:', userIdSet);
+                userId = $(this).data('id');
+                $('#user_id').val(userId);
             });
 
             $('#resetPasswordForm').submit(function(e) {
                 e.preventDefault();
-
-                console.log('Submitting form with User ID:', userId); // Debug log
-                $('#user_id').val(userId); // Set user ID in hidden input
 
                 let newPassword = $('#new-password').val();
                 let confirmPassword = $('#confirm-password').val();
@@ -335,17 +327,15 @@ function base64img($imageData)
                     });
                     return;
                 }
-                console.log('New Password');
+
                 $.ajax({
                     url: 'function/action_admin/action_adminreset.php',
-                    type: 'post',
-                    dataType: 'json', // Expect JSON response
+                    type: 'POST',
                     data: {
                         newPassword: newPassword,
                         user_id: userId
                     },
                     success: function(response) {
-                        console.log('Response from server:', response); // Debug log
                         if (response.status === 'success') {
                             $('#resetPasswordModal').modal('hide');
                             Swal.fire({
@@ -365,8 +355,7 @@ function base64img($imageData)
                             });
                         }
                     },
-                    error: function(xhr, status, error) {
-                        console.error('AJAX Error:', error);
+                    error: function() {
                         Swal.fire({
                             position: 'center',
                             icon: 'error',
@@ -404,7 +393,6 @@ function base64img($imageData)
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="reset-password-btn btn btn-success">ยืนยันการเปลี่ยนรหัสผ่าน</button>
-
                         </div>
                     </form>
                 </div>
