@@ -3,7 +3,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 $host = "localhost";
-$username = "root";
+$username = "wanawa_tracking";
 $pass = "";
 $db = "wanawat_tracking";
 
