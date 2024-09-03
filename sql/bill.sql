@@ -96,6 +96,8 @@ FROM tb_delivery d
 INNER JOIN *.tb_delivery_items di ON d.delivery_id = di.delivery_id
 WHERE d.delivery_status = 1;
 
+
+
 SELECT
     txt.txid AS txt_id,
     txt.tx_date AS วันที่,
