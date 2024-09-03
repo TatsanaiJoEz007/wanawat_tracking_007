@@ -2,9 +2,9 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-$host = "localhost";
-$username = "root";
-$pass = "root";
+$host = "localhost:3306";
+$username = "wanawa_tracking";
+$pass = "45Jt2$3hs";
 $db = "wanawat_tracking";
 
 $conn = new mysqli($host, $username, $pass, $db);
