@@ -129,7 +129,6 @@ $query = mysqli_query($conn, $sql);
                             <table class="table table-striped" id="Tableall">
                                 <thead>
                                     <tr>
-                                        <th scope="col" style="text-align: center;"></th>
                                         <th scope="col" style="text-align: center;">#</th>
                                         <th scope="col" style="text-align: center;">รูปภาพ</th>
                                         <th scope="col" style="text-align: center;">ชื่อ</th>
