@@ -7,7 +7,7 @@ $username = "wanawa_tracking";
 $pass = "";
 $db = "wanawat_tracking";
 
-$conn = new mysqli($host, $username, $pass, $db);
+$conn = new mysqli_stmt($host, $username, $pass, $db);
 $conn->set_charset("utf8");
 date_default_timezone_set('Asia/Bangkok');
 
