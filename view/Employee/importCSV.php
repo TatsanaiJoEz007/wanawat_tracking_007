@@ -163,6 +163,30 @@
         .rejected-table tr:hover {
             background-color: #ddd;
         }
+
+        .instruction-box {
+            background-color: #e9ecef;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .instruction-box h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .instruction-box ol {
+            padding-left: 20px;
+        }
+
+        .instruction-box li {
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #555;
+        }
     </style>
 </head>
 
@@ -172,6 +196,14 @@
 
     <div class="container">
         <h1 class="heading">Import Head CSV</h1>
+        <div class="instruction-box">
+            <h2>วิธีการใช้งาน</h2>
+            <ol>
+                <li>กด <b>Choose Head CSV File</b> เพื่อเลือกไฟล์ CSV ที่ต้องการอัปโหลด</li>
+                <li>กด <b>Convert</b> เพื่อแปลงไฟล์ CSV เป็น UTF-8</li>
+                <li>กด <b>Import to Database</b> เพื่ออัปโหลดข้อมูลเข้าสู่ฐานข้อมูล</li>
+            </ol>
+        </div>
         <div class="section">
             <h3 class="sub-heading">Upload and convert your Head CSV File</h3>
             <div class="buttons">
@@ -195,6 +227,14 @@
 
     <div class="container">
         <h1 class="heading">Import Line CSV</h1>
+        <div class="instruction-box">
+            <h2>วิธีการใช้งาน</h2>
+            <ol>
+                <li>กด <b>Choose Line CSV File</b> เพื่อเลือกไฟล์ CSV ที่ต้องการอัปโหลด</li>
+                <li>กด <b>Convert</b> เพื่อแปลงไฟล์ CSV เป็น UTF-8</li>
+                <li>กด <b>Import to Database</b> เพื่ออัปโหลดข้อมูลเข้าสู่ฐานข้อมูล</li>
+            </ol>
+        </div>
         <div class="section">
             <h3 class="sub-heading">Upload and convert your Line CSV File</h3>
             <div class="buttons">
@@ -227,10 +267,13 @@
             const seen = new Set();
 
             for (const row of data) {
-                const rowString = JSON.stringify(row);
+                // Clean up and normalize each cell in the row
+                const normalizedRow = row.map(cell => cell.trim());
+                const rowString = JSON.stringify(normalizedRow);
+
                 if (!seen.has(rowString)) {
                     seen.add(rowString);
-                    uniqueData.push(row);
+                    uniqueData.push(normalizedRow); // Push the cleaned row
                 }
             }
 
@@ -264,64 +307,24 @@
             }
         }
 
-        function importToDatabase(type) {
-            if (convertedCSVData[type]) {
-                const formData = new FormData();
-                formData.append('csvType', type);
-                formData.append('csvData', convertedCSVData[type]);
+      function filterDuplicates(data) {
+    const uniqueData = [];
+    const duplicates = [];
+    const seen = new Set();
 
-                fetch('../../API/import.php', {
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Success',
-                                text: data.message
-                            });
-
-                            if (data.rejected.length > 0) {
-                                let rejectedText = '<table class="rejected-table"><tr><th>#</th><th>Rejected Row</th></tr>';
-                                data.rejected.forEach((row, index) => {
-                                    rejectedText += `<tr><td>${index + 1}</td><td>${row.join(', ')}</td></tr>`;
-                                });
-                                rejectedText += '</table>';
-
-                                Swal.fire({
-                                    icon: 'info',
-                                    title: 'Rejected Data',
-                                    html: rejectedText,
-                                    width: 'auto'
-                                });
-                            }
-
-                            document.getElementById(type === 'head' ? 'output1' : 'output2').innerText = '';
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: data.message
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: error.message
-                        });
-                    });
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Please convert a CSV file first.'
-                });
-            }
+    for (const row of data) {
+        const rowString = JSON.stringify(row);
+        if (!seen.has(rowString)) {
+            seen.add(rowString);
+            uniqueData.push(row);
+        } else {
+            duplicates.push(row);
         }
+    }
+
+    return { uniqueData, duplicates };
+}
+
     </script>
 </body>
 

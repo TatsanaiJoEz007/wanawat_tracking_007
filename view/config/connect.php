@@ -4,7 +4,7 @@
 
     $host = "localhost";
     $username = "root";
-    $pass = "root";
+    $pass = "";
     $db = "wanawat_tracking";
 
     $conn = new mysqli($host, $username, $pass, $db);

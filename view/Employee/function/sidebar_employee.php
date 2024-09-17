@@ -473,7 +473,7 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
                     <i class='bx bxs-chevron-down arrow'></i>
                 </div>
                 <ul class="sub-menu">
-                    <li><a href="../Employee/importCSV.php">เพิ่ม CSV</a></li>
+                    <li><a href="../Employee/importCSV2.php">เพิ่ม CSV</a></li>
                     <li><a href="../Employee/table.php">หัวบิลที่เพิ่มแล้ว</a></li>
                 </ul>
             </li>

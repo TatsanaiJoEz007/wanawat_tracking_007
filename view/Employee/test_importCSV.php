@@ -6,7 +6,10 @@
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
+
+       
 ?>
+
 <head>
     <meta charset="UTF-8">
     <title>CSV Language Converter</title>
@@ -273,72 +276,111 @@
         }
 
         function importToDatabase() {
-            if (convertedCSVData) {
-                const formData = new FormData();
-                formData.append('csvData', convertedCSVData); // Pass converted CSV data
+    if (convertedCSVData) {
+        const formData = new FormData();
+        formData.append('csvData', convertedCSVData);
 
-                fetch('', { // Use current file path
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => response.text())
-                    .then(message => {
-                        const output = document.getElementById('output1');
-                        output.innerText = '';
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text: "Importing data successfully!"
+        fetch('', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                const contentType = response.headers.get('content-type');
+                if (!response.ok) {
+                    if (contentType && contentType.indexOf('application/json') !== -1) {
+                        return response.json().then(data => {
+                            throw new Error(data.message);
                         });
-                    })
-                    .catch(error => console.error('Error:', error));
-            } else {
+                    } else {
+                        return response.text().then(text => {
+                            throw new Error(text);
+                        });
+                    }
+                } else {
+                    return response.json();
+                }
+            })
+            .then(data => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'สำเร็จ',
+                    text: data.message
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
                 Swal.fire({
                     icon: 'error',
-                    title: 'Oops...',
-                    text: 'Please convert a CSV file first.'
+                    title: 'เกิดข้อผิดพลาด',
+                    text: error.message
                 });
-            }
-        }
+            });
+    } else {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'กรุณาแปลงไฟล์ CSV ก่อน'
+        });
+    }
+}
+
     </script>
 
-    <?php
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['csvData'])) {
-        $csvData = $_POST['csvData'];
-        $rows = str_getcsv($csvData, "\n");
+<?php
 
-        try {
-            // Connect to the database
-            $pdo = new PDO("mysql:host=$host;dbname=$db", $username, $pass);
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['csvData'])) {
+    // เปิดการแสดงข้อผิดพลาด
+    ini_set('display_errors', 1);
+    ini_set('display_startup_errors', 1);
+    error_reporting(E_ALL);
 
-            // Start a transaction
-            $pdo->beginTransaction();
+    $csvData = $_POST['csvData'];
+    $rows = str_getcsv($csvData, "\n");
 
-            foreach ($rows as $row) {
-                $data = str_getcsv($row);
-                if (count($data) === 6) { // Check if the row has all 6 columns
-                    $stmt = $pdo->prepare("INSERT INTO tb_header (bill_date, bill_number, bill_customer_id, bill_customer_name, bill_total, bill_isCanceled) VALUES (?, ?, ?, ?, ?, ?)");
-                    $stmt->execute($data);
+    try {
+        // Connect to the database
+        $pdo = new PDO("mysql:host=$host;dbname=$db", $username, $pass);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        // Start a transaction
+        $pdo->beginTransaction();
+
+        foreach ($rows as $row) {
+            $data = str_getcsv($row);
+            if (count($data) === 6) {
+                // ตรวจสอบข้อมูลซ้ำโดยใช้ bill_number
+                $checkStmt = $pdo->prepare("SELECT COUNT(*) FROM tb_header WHERE bill_number = ?");
+                $checkStmt->execute([$data[1]]);
+                $count = $checkStmt->fetchColumn();
+                if ($count > 0) {
+                    throw new Exception('พบข้อมูลซ้ำ: หมายเลขบิล ' . $data[1]);
                 }
-            }
 
-            // Commit the transaction
-            $pdo->commit();
-        } catch (PDOException $e) {
-            // Rollback the transaction on error
-            $pdo->rollBack();
-            // Display an error message using SweetAlert2
-            echo '<script>
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: "' . $e->getMessage() . '"
-                    });
-                  </script>';
+                $stmt = $pdo->prepare("INSERT INTO tb_header (bill_date, bill_number, bill_customer_id, bill_customer_name, bill_total, bill_isCanceled) VALUES (?, ?, ?, ?, ?, ?)");
+                $stmt->execute($data);
+            }
         }
+
+        // Commit the transaction
+        $pdo->commit();
+
+        // Return success message
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'success', 'message' => 'นำเข้าข้อมูลสำเร็จ']);
+        exit();
+
+    } catch (Exception $e) {
+        // Rollback the transaction on error
+        $pdo->rollBack();
+        // Return error message
+        header('Content-Type: application/json', true, 400);
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        exit();
     }
-    ?>
+}
+?>
+
+
 
     <script>
         let convertedCSVData2; // Store converted CSV data globally
@@ -373,77 +415,93 @@
         }
 
         function importToDatabase2() {
-            if (convertedCSVData2) {
-                const formData = new FormData();
-                formData.append('csvData2', convertedCSVData2); // Pass converted CSV data
+    if (convertedCSVData2) {
+        const formData = new FormData();
+        formData.append('csvData2', convertedCSVData2); // Pass converted CSV data
 
-                fetch('', { // Use current file path
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => response.text())
-                    .then(message => {
-                        const output = document.getElementById('output2');
-                        output.innerText = '';
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text: "Importing data successfully!"
-                        });
-                    })
-                    .catch(error => console.error('Error:', error));
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Please convert a CSV file first.'
-                });
-            }
-        }
+        fetch('', { // Use current file path
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json().then(data => ({status: response.status, body: data})))
+            .then(res => {
+                if (res.status === 200) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'สำเร็จ',
+                        text: res.body.message
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'เกิดข้อผิดพลาด',
+                        text: res.body.message
+                    });
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    } else {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'กรุณาแปลงไฟล์ CSV ก่อน'
+        });
+    }
+}
 
        
 
     </script>
 
-    <?php
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['csvData2'])) {
-        $csvData2 = $_POST['csvData2'];
-        $rows = str_getcsv($csvData2, "\n");
+<?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['csvData2'])) {
+    $csvData2 = $_POST['csvData2'];
+    $rows = str_getcsv($csvData2, "\n");
 
-        try {
-            // Connect to the database
-            $pdo = new PDO("mysql:host=$host;dbname=$db", $username, $pass);
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    try {
+        // Connect to the database
+        $pdo = new PDO("mysql:host=$host;dbname=$db", $username, $pass);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            // Start a transaction
-            $pdo->beginTransaction();
+        // Start a transaction
+        $pdo->beginTransaction();
 
-            foreach ($rows as $row) {
-                $data2 = str_getcsv($row);
-                if (count($data2) === 8) { // Check if the row has all 8 columns
-                    $stmt = $pdo->prepare("INSERT INTO tb_line (line_bill_number, item_sequence, item_code, item_desc, item_quantity, item_unit, item_price, line_total) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-                    $stmt->execute($data2);
+        foreach ($rows as $row) {
+            $data2 = str_getcsv($row);
+            if (count($data2) === 8) { // Check if the row has all 8 columns
+                // ตรวจสอบข้อมูลซ้ำโดยใช้ line_bill_number และ item_sequence
+                $checkStmt = $pdo->prepare("SELECT COUNT(*) FROM tb_line WHERE line_bill_number = ? AND item_sequence = ?");
+                $checkStmt->execute([$data2[0], $data2[1]]); // $data2[0] คือ line_bill_number, $data2[1] คือ item_sequence
+                $count = $checkStmt->fetchColumn();
+                if ($count > 0) {
+                    // ถ้าพบข้อมูลซ้ำ ให้โยนข้อยกเว้น
+                    throw new Exception('พบข้อมูลซ้ำ: หมายเลขบิล ' . $data2[0] . ' ลำดับสินค้า ' . $data2[1]);
                 }
+
+                $stmt = $pdo->prepare("INSERT INTO tb_line (line_bill_number, item_sequence, item_code, item_desc, item_quantity, item_unit, item_price, line_total) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt->execute($data2);
             }
-
-            // Commit the transaction
-            $pdo->commit();
-        } catch (PDOException $e) {
-            // Rollback the transaction on error
-            $pdo->rollBack();
-            // Display an error message using SweetAlert2
-            echo '<script>
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: "' . $e->getMessage() . '"
-                    });
-                  </script>';
         }
-    }
 
-    
-    ?>
+        // Commit the transaction
+        $pdo->commit();
+
+        // Return success message
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'success', 'message' => 'นำเข้าข้อมูลสำเร็จ']);
+        exit();
+
+    } catch (Exception $e) {
+        // Rollback the transaction on error
+        $pdo->rollBack();
+        // Return error message
+        header('Content-Type: application/json', true, 400);
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        exit();
+    }
+}
+?>
+
 </body>
 
 </html>
