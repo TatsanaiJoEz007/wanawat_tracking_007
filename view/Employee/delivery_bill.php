@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <?php
-require_once('../../view/config/connect.php'); // ปรับเส้นทางให้ถูกต้อง
+require_once('../../view/config/connect.php'); 
 
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
