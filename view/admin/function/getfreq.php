@@ -1,29 +1,29 @@
 <?php
-// Include database connection
-require_once('../../config/connect.php');
+require_once('../../config/connect.php'); // Include database connection
 
-// Check if freq_id is set and not empty
-if(isset($_POST['freq_id']) && !empty($_POST['freq_id'])) {
-    // Sanitize the input to prevent SQL injection
-    $freq_id = mysqli_real_escape_string($conn, $_POST['freq_id']);
+header('Content-Type: application/json'); // Ensure the content type is JSON
 
-    // Prepare SQL statement to fetch data based on freq_id
-    $sql = "SELECT * FROM tb_freq WHERE freq_id = '$freq_id'";
-    // Execute the query
-    $result = mysqli_query($conn, $sql);
-    // Check if query was successful
-    if($result) {
-        // Fetch the data as an associative array
-        $row = mysqli_fetch_assoc($result);
+if (isset($_GET['id'])) {
+    $id = intval($_GET['id']); // Sanitize the ID
 
-        // Return data as JSON
-        echo json_encode($row);
+    // Query to fetch the FAQ
+    $query = "SELECT * FROM tb_freq WHERE freq_id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $faq = $result->fetch_assoc();
+        echo json_encode($faq); // Return the FAQ data as JSON
     } else {
-        // Return an error message if query fails
-        echo json_encode(['error' => 'Failed to fetch data']);
+        echo json_encode(['error' => 'FAQ not found']); // Handle case where FAQ is not found
     }
+
+    $stmt->close();
 } else {
-    // Return an error message if freq_id is not set or empty
-    echo json_encode(['error' => 'freq_id is not set or empty']);
+    echo json_encode(['error' => 'Invalid request']); // Handle invalid request
 }
+
+$conn->close();
 ?>

@@ -5,6 +5,10 @@ require_once('../function/action_activity_log/log_activity.php'); // Include log
 
 session_start(); // Start the session
 
+header('Content-Type: application/json'); // Set the header to return JSON
+
+$response = array(); // Initialize a response array
+
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Validate and sanitize input fields
@@ -28,13 +32,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             logAdminActivity($userId, $action, $entity, $entityId, $additionalInfo);
         }
 
-        // Redirect to the FAQ list page
-        header("Location: ../admin/faq_list.php");
-        echo "New record created successfully";
+        // Prepare a successful response
+        $response['status'] = 'success';
+        $response['message'] = 'New FAQ added successfully';
+        echo json_encode($response); // Return JSON response
         exit();
     } else {
-        echo "Error: " . $query . "<br>" . mysqli_error($conn);
+        // If there's an error with the query, send an error response
+        $response['status'] = 'error';
+        $response['message'] = 'Failed to add new FAQ';
+        echo json_encode($response); // Return error JSON
+        exit();
     }
+} else {
+    // If request method is not POST, send an error response
+    $response['status'] = 'error';
+    $response['message'] = 'Invalid request';
+    echo json_encode($response); // Return error JSON
+    exit();
 }
 
 // Close database connection

@@ -1,5 +1,5 @@
 <?php
-require_once('../config/connect.php'); 
+require_once('../config/connect.php');
 
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -157,48 +157,105 @@ if (session_status() == PHP_SESSION_NONE) {
 
     <script>
         $('#new-faq-btn').click(function() {
+    Swal.fire({
+        title: 'Add New FAQ',
+        html: '<input id="header" class="swal2-input" placeholder="Header">' +
+            '<textarea id="content" class="swal2-textarea" placeholder="Content"></textarea>',
+        showCancelButton: true,
+        confirmButtonText: 'Add',
+        showLoaderOnConfirm: true,
+        preConfirm: () => {
+            var header = $('#header').val();
+            var content = $('#content').val();
+
+            return $.ajax({
+                url: 'function/new_faq.php',
+                type: 'POST',
+                dataType: 'json', // Expecting JSON response
+                data: {
+                    freq_header: header,
+                    freq_content: content
+                }
+            }).done(function(response) {
+                if (response.status === "success") {
+                    Swal.fire({
+                        title: 'FAQ Added!',
+                        text: response.message,
+                        icon: 'success',
+                        timer: 3000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: response.message,
+                        icon: 'error',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                }
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Failed to add the FAQ. Please try again.',
+                    icon: 'error',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+            });
+        }
+    });
+});
+
+        $(document).on('click', '.edit-faq-btn', function() {
+    var freq_id = $(this).data('id');
+
+    $.ajax({
+    url: 'function/getfreq.php?id=' + freq_id,
+    type: 'GET',
+    dataType: 'json',
+    success: function(data) {
+        console.log(data); // Log the data to see the response
+        if (data.error) {
             Swal.fire({
-                title: 'Add New FAQ',
-                html: '<input id="header" class="swal2-input" placeholder="Header">' +
-                    '<textarea id="content" class="swal2-textarea" placeholder="Content"></textarea>',
+                title: 'Error',
+                text: data.error,
+                icon: 'error',
+                timer: 3000,
+                showConfirmButton: false
+            });
+        } else {
+            Swal.fire({
+                title: 'Edit FAQ',
+                html: '<input id="editedHeader" class="swal2-input" placeholder="Header" value="' + data.freq_header + '">' +
+                    '<textarea id="editedContent" class="swal2-textarea" placeholder="Content">' + data.freq_content + '</textarea>',
                 showCancelButton: true,
-                confirmButtonText: 'Add',
+                confirmButtonText: 'Save',
                 showLoaderOnConfirm: true,
                 preConfirm: () => {
-                    var header = $('#header').val();
-                    var content = $('#content').val();
-
                     return $.ajax({
-                        url: 'function/new_faq.php',
+                        url: 'function/edit_faq.php?id=' + freq_id,
                         type: 'POST',
                         data: {
-                            freq_header: header,
-                            freq_content: content
+                            header: $('#editedHeader').val(),
+                            content: $('#editedContent').val()
                         }
                     }).done(function(response) {
-                        if (response.trim() == "success") {
-                            Swal.fire({
-                                title: 'FAQ Added!',
-                                text: 'เพิ่มคำถามที่พบบ่อยสำเร็จ',
-                                icon: 'success',
-                                timer: 3000,
-                                showConfirmButton: false
-                            }).then(() => {
-                                location.reload();
-                            });
-                        } else {
-                            Swal.fire({
-                                title: 'Error',
-                                text: 'เกิดปัญหาในการเพิ่มคำถามที่พบบ่อย',
-                                icon: 'error',
-                                timer: 3000,
-                                showConfirmButton: false
-                            });
-                        }
+                        Swal.fire({
+                            title: 'FAQ Edited!',
+                            text: 'แก้ไขสำเร็จ',
+                            icon: 'success',
+                            timer: 3000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            location.reload();
+                        });
                     }).fail(function() {
                         Swal.fire({
                             title: 'Error',
-                            text: 'เพิ่มคำถามที่พบบ่อยไม่สำเร็จ',
+                            text: 'แก้ไขไม่สำเร็จ',
                             icon: 'error',
                             timer: 3000,
                             showConfirmButton: false
@@ -206,57 +263,19 @@ if (session_status() == PHP_SESSION_NONE) {
                     });
                 }
             });
+        }
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+        console.log('Error:', jqXHR.responseText); // Log raw response
+        Swal.fire({
+            title: 'Error',
+            text: 'Unable to fetch the FAQ details.',
+            icon: 'error',
+            timer: 3000,
+            showConfirmButton: false
         });
-
-        $(document).on('click', '.edit-faq-btn', function() {
-            var freq_id = $(this).data('id');
-
-            $.ajax({
-                url: 'function/getfreq.php?id=' + freq_id,
-                type: 'GET',
-                dataType: 'json',
-                success: function(data) {
-                    Swal.fire({
-                        title: 'Edit FAQ',
-                        html: '<input id="editedHeader" class="swal2-input" placeholder="Header" value="' + data.freq_header + '">' +
-                            '<textarea id="editedContent" class="swal2-textarea" placeholder="Content">' + data.freq_content + '</textarea>',
-                        showCancelButton: true,
-                        confirmButtonText: 'Save',
-                        showLoaderOnConfirm: true,
-                        preConfirm: () => {
-                            return $.ajax({
-                                url: 'function/edit_faq.php?id=' + freq_id,
-                                type: 'POST',
-                                data: {
-                                    header: $('#editedHeader').val(),
-                                    content: $('#editedContent').val()
-                                }
-                            }).done(function(response) {
-                                Swal.fire({
-                                    title: 'FAQ Edited!',
-                                    text: 'แก้ไขสำเร็จ',
-                                    icon: 'success',
-                                    timer: 3000,
-                                    showConfirmButton: false
-                                }).then(() => {
-                                    location.reload();
-                                });
-                            }).fail(function() {
-                                Swal.fire({
-                                    title: 'Error',
-                                    text: 'แก้ไขไม่สำเร็จ',
-                                    icon: 'error',
-                                    timer: 3000,
-                                    showConfirmButton: false
-                                });
-                            });
-                        }
-                    });
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.log('Error:', errorThrown);
-                }
-            });
+    }
+});
         });
 
         $(document).on('click', '.delete-faq-btn', function() {
@@ -271,31 +290,32 @@ if (session_status() == PHP_SESSION_NONE) {
                 confirmButtonText: 'ใช่, ลบเลย!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                $.ajax({
-                    url: 'function/delete_faq.php?id=' + freq_id,
-                    type: 'POST'
-                }).done(function(response) {
-                    Swal.fire({
-                        title: 'ลบสำเร็จ!',
-                        text: 'ลบคำถามที่พบบ่อยสำเร็จ',
-                        icon: 'success',
-                        timer: 3000,
-                        showConfirmButton: false
-                    }).then(() => {
-                        location.reload();
+                    $.ajax({
+                        url: 'function/delete_faq.php?id=' + freq_id,
+                        type: 'POST'
+                    }).done(function(response) {
+                        Swal.fire({
+                            title: 'ลบสำเร็จ!',
+                            text: 'ลบคำถามที่พบบ่อยสำเร็จ',
+                            icon: 'success',
+                            timer: 3000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            location.reload();
+                        });
+                    }).fail(function() {
+                        Swal.fire({
+                            title: 'ลบไม่สำเร็จ',
+                            text: 'เกิดปัญหาในการเพิ่มคำถามที่พบบ่อย',
+                            icon: 'error',
+                            timer: 3000,
+                            showConfirmButton: false
+                        });
                     });
-                }).fail(function() {
-                    Swal.fire({
-                        title: 'ลบไม่สำเร็จ',
-                        text: 'เกิดปัญหาในการเพิ่มคำถามที่พบบ่อย',
-                        icon: 'error',
-                        timer: 3000,
-                        showConfirmButton: false
-                    });
-                });
-            }
+                }
+            });
         });
-    });
-</script>
+    </script>
 </body>
+
 </html>
