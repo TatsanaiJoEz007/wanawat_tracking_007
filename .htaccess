@@ -1,0 +1,12 @@
+# Enable Rewrite Engine
+RewriteEngine On
+
+# Add .php extension to URLs without extension
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^([^\.]+)$ $1.php [NC,L]
+
+# Disable PHP display_errors
+php_flag display_errors off
+
+# Prevent directory browsing
+Options -Indexes
