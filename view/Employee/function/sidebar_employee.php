@@ -452,16 +452,16 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
     <div class="sidebar close">
         <div class="logo-details">
             <img src="../../view/assets/img/logo/logo.png" alt="logo of wehome" weight="50px" height="50px" style="padding-left:8px; padding-right:10px;" />
-            <span class="logo_name">Employee</span>
+            <span class="logo_name">employee</span>
         </div>
         <ul class="nav-links">
             <li>
-                <a href="../Employee/dashboard.php">
+                <a href="../employee/dashboard.php">
                     <i class="bx bx-grid-alt nav_icon"></i>
                     <span class="link_name">หน้าหลัก</span>
                 </a>
                 <ul class="sub-menu blank">
-                    <li><a class="link_name" href="../Employee/dashboard.php">Dashboard</a></li>
+                    <li><a class="link_name" href="../employee/dashboard.php">Dashboard</a></li>
                 </ul>
             </li>
             <li>
@@ -473,12 +473,12 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
                     <i class='bx bxs-chevron-down arrow'></i>
                 </div>
                 <ul class="sub-menu">
-                    <li><a href="../Employee/importCSV2.php">เพิ่ม CSV</a></li>
-                    <li><a href="../Employee/table.php">หัวบิลที่เพิ่มแล้ว</a></li>
+                    <li><a href="../employee/importCSV2.php">เพิ่ม CSV</a></li>
+                    <li><a href="../employee/table.php">หัวบิลที่เพิ่มแล้ว</a></li>
                 </ul>
             </li>
             <li>
-                <a href="../Employee/statusbill.php">
+                <a href="../employee/statusbill.php">
                     <i class="bx bx-send nav_icon"></i>
                     <span class="link_name">สถานะบิล</span>
                 </a>
@@ -486,7 +486,7 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
             </li>
 
             <li>
-                <a href="../Employee/preparing.php">
+                <a href="../employee/preparing.php">
                     <i class="bi bi-archive nav_icon"></i>
                     <span class="link_name">กำลังจัดเตรียม </span>
                 </a>
@@ -496,41 +496,41 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
             </li>
 
             <li>
-                <a href="../Employee/sending.php">
+                <a href="../employee/sending.php">
                     <i class="bi bi-truck nav_icon"></i>
                     <span class="link_name">กำลังส่ง</span>
                 </a>
                 <ul class="sub-menu blank">
-                    <li><a class="link_name" href="../Employee/sending.php">กำลังส่ง</a></li>
+                    <li><a class="link_name" href="../employee/sending.php">กำลังส่ง</a></li>
                 </ul>
             </li>
 
             <li>
-                <a href="../Employee/history.php">
+                <a href="../employee/history.php">
                     <i class="bi bi-clock-history nav_icon"></i>
                     <span class="link_name">ประวัติการจัดส่ง</span>
                 </a>
                 <ul class="sub-menu blank">
-                    <li><a class="link_name" href="../Employee/history.php">ประวัติการจัดส่ง</a></li>
+                    <li><a class="link_name" href="../employee/history.php">ประวัติการจัดส่ง</a></li>
                 </ul>
             </li>
 
             <li>
-                <a href="../Employee/problem.php">
+                <a href="../employee/problem.php">
                     <i class="bi bi-bag-x nav_icon"></i>
                     <span class="link_name">ปัญหาที่พบ</span>
                 </a>
                 <ul class="sub-menu blank">
-                    <li><a class="link_name" href="../Employee/problem.php">ปัญหาที่พบ</a></li>
+                    <li><a class="link_name" href="../employee/problem.php">ปัญหาที่พบ</a></li>
                 </ul>
             </li>
             <li>
-                <a href="../Employee/delivery_bill.php">
+                <a href="../employee/delivery_bill.php">
                     <i class="bi bi-basket nav_icon"></i>
                     <span class="link_name">รายละเอียดบิลสินค้า</span>
                 </a>
                 <ul class="sub-menu blank">
-                    <li><a class="link_name" href="../Employee/delivery_bill.php">รายละเอียดบิลสินค้า</a></li>
+                    <li><a class="link_name" href="../employee/delivery_bill.php">รายละเอียดบิลสินค้า</a></li>
                 </ul>
             </li>
 
