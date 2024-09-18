@@ -263,7 +263,7 @@ if (!empty($myprofile['user_img'])) {
                 </div>
                 <div class="language-switcher">
                     <img src="../view/assets/img/logo/thai.png" alt="<?php echo $lang_th_language ?>" onclick="switchLanguage('th')">
-                    <img src="../view/assets/img/logo/eng.png" alt="<?php echo $lang_en_language ?>" onclick="switchLanguage('en')">
+                    <img src="../view/assets/img/logo/ENG.png" alt="<?php echo $lang_en_language ?>" onclick="switchLanguage('en')">
                 </div>
             </div>
         </div>

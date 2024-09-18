@@ -1,0 +1,49 @@
+# Enable Rewrite Engine
+RewriteEngine On
+
+# Add .php extension to URLs without extension
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^([^\.]+)$ $1.php [NC,L]
+
+# Disable PHP display_errors
+php_flag display_errors off
+
+# Prevent directory browsing
+Options -Indexes
+
+# Prevent access to .htaccess and .htpasswd files
+<FilesMatch "^\.ht">
+    Order allow,deny
+    Deny from all
+    Satisfy All
+</FilesMatch>
+
+# Prevent access to certain file types
+<FilesMatch "\.(htaccess|htpasswd|ini|phps|fla|psd|log|sh|inc|bak|json)$">
+    Order allow,deny
+    Deny from all
+    Satisfy All
+</FilesMatch>
+
+# Protect against XSS attacks
+<IfModule mod_headers.c>
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# Prevent MIME type sniffing
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+</IfModule>
+
+# Prevent clickjacking attacks
+<IfModule mod_headers.c>
+    Header set X-Frame-Options "SAMEORIGIN"
+</IfModule>
+
+# Prevent directory listing
+<IfModule mod_autoindex.c>
+    Options -Indexes
+</IfModule>
+
+# Limit maximum request size
+LimitRequestBody 10240000000000
