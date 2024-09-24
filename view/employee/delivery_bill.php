@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <?php
-require_once('../../view/config/connect.php'); 
+require_once('../../view/config/connect.php');
 
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -54,11 +54,11 @@ if (session_status() == PHP_SESSION_NONE) {
                         <?php
                         // Your SQL query
                         $sql = "SELECT DISTINCT tb_header.bill_number, tb_header.bill_customer_name, tb_header.bill_customer_id, tb_header.bill_weight,
-            tb_line.item_code, tb_line.item_desc, tb_line.item_quantity, 
-            tb_line.item_unit, tb_line.item_price, tb_line.line_total, tb_line.item_sequence
-            FROM tb_header
-            INNER JOIN tb_line ON TRIM(tb_header.bill_number) = TRIM(tb_line.line_bill_number)
-            WHERE tb_header.bill_status = 1 AND tb_line.line_status = 1";
+                                tb_line.item_code, tb_line.item_desc, tb_line.item_quantity, 
+                                tb_line.item_unit, tb_line.item_price, tb_line.line_total, tb_line.item_sequence
+                                FROM tb_header
+                                INNER JOIN tb_line ON TRIM(tb_header.bill_number) = TRIM(tb_line.line_bill_number)
+                                WHERE tb_header.bill_status = 1 AND tb_line.line_status = 1";
 
                         $result = $conn->query($sql);
 
