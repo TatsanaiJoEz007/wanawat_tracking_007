@@ -178,7 +178,7 @@
 
     <div class="container">
         <h1 class="heading">Import Head CSV</h1>
-        <h1 class="heading">Import Head CSV</h1>
+       
         <div class="instruction-box">
             <h2>วิธีการใช้งาน</h2>
             <ol>

@@ -29,18 +29,9 @@ if (session_status() == PHP_SESSION_NONE) {
         </ol>
     </div>
 
-        <div class="container">
-            <?php
-             
-            ?>
-            <div class="product-list">
-                <h1>สินค้ารอเลือกบิล</h1>
-                <label for="bill-number">Select Bill Number:</label>
-        <!-- <select id="bill-number" name="bill_number">
-            <option value="ic123">IC</option>
-            <option value="ic456">IV</option>
-
-        </select> -->
+    <div class="container">
+        <div class="product-list">
+            <h1>สินค้ารอเลือกบิล</h1>
             <div class="product-table-container">
                 <table>
                     <thead>
@@ -65,7 +56,7 @@ if (session_status() == PHP_SESSION_NONE) {
                                 tb_line.item_unit, tb_line.item_price, tb_line.line_total, tb_line.item_sequence
                                 FROM tb_header
                                 INNER JOIN tb_line ON TRIM(tb_header.bill_number) = TRIM(tb_line.line_bill_number)
-                                WHERE tb_header.bill_status = 1 AND tb_line.line_status = 1 AND tb_line.line_bill_number LIKE '%ic%'";
+                                WHERE tb_header.bill_status = 1 AND tb_line.line_status = 1 AND tb_line.line_bill_number NOT LIKE '%ic%'";
 
                         $result = $conn->query($sql);
 

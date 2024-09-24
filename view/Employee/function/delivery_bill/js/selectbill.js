@@ -7,122 +7,98 @@ document.addEventListener('DOMContentLoaded', () => {
     const maxItems = 15;
     let selectedItems = [];
 
+    // Function to calculate the total price of selected items
     const calculateTotal = () => {
         let totalPrice = 0;
         const cartItemsList = document.querySelectorAll('#cart-items .cart-item');
         cartItemsList.forEach(item => {
             totalPrice += parseFloat(item.getAttribute('data-price'));
         });
-        totalPriceElement.textContent = `฿${totalPrice.toFixed(2)}`;
+        totalPriceElement.textContent = `฿${totalPrice.toFixed(2)}`; // Ensure 2 decimal places for total
     };
 
+    // Function to handle item selection and update the cart
     checkboxes.forEach(checkbox => {
         checkbox.addEventListener('change', () => {
-            const quantityDropdown = document.querySelector(`.quantity-dropdown[data-item-code="${checkbox.getAttribute('data-item-code')}"]`);
+            const itemCode = checkbox.getAttribute('data-item-code');
+            const quantityDropdown = document.querySelector(`.quantity-dropdown[data-item-code="${itemCode}"]`);
             const selectedQuantity = parseInt(quantityDropdown.value, 10);
+            const name = checkbox.getAttribute('data-name');
+            const price = parseFloat(checkbox.getAttribute('data-price'));
+            const total = (selectedQuantity * price).toFixed(2);  // Ensure 2 decimal places for item total
 
+            // Check if the maximum number of items has been reached
             if (checkbox.checked && itemCounter > maxItems) {
                 Swal.fire('เกิดข้อผิดพลาด!', 'เลือกสินค้าได้มากที่สุด 15 ชิ้นต่อการขนส่ง 1 ครั้ง', 'error');
                 checkbox.checked = false;
                 return;
             }
 
-            const billnum = (checkbox.getAttribute('data-bill-number') ?? '').trim();
-            const billcus = (checkbox.getAttribute('data-bill-customer') ?? '').trim();
-            const billcusid = (checkbox.getAttribute('data-bill-customer-id') ?? '').trim();
-            const billweight = (checkbox.getAttribute('data-bill-weight') ?? '').trim();
-            const itemcode = (checkbox.getAttribute('data-item-code') ?? '').trim();
-            const name = (checkbox.getAttribute('data-name') ?? '').trim();
-            const seq = (checkbox.getAttribute('data-item-sequence') ?? '').trim();
-            const unit = (checkbox.getAttribute('data-unit') ?? '').trim();
-            const price = parseFloat(checkbox.getAttribute('data-price'));
-            const total = (selectedQuantity * price).toFixed(2);
-            const transferType = document.querySelector('input[name="transfer_type"]:checked').value;
-
             if (checkbox.checked) {
+                // Add the selected item to the cart
                 const li = document.createElement('li');
                 li.classList.add('cart-item');
-                li.textContent = `${itemCounter}. ${name} - ฿${total} - ${unit} x ${selectedQuantity}`;
-                li.setAttribute('data-price', total);
-                li.setAttribute('data-unit', unit);
+                li.textContent = `${itemCounter}. ${name} - ฿${total} - ${selectedQuantity} unit(s)`;
+                li.setAttribute('data-price', total);  // Store the total price with 2 decimal places
                 cartItems.appendChild(li);
                 itemCounter++;
+                
+                // Add item to the selectedItems array
                 selectedItems.push({
                     name,
-                    price,
-                    unit,
-                    billnum,
-                    itemcode,
+                    price: price.toFixed(2),  // Price stored with 2 decimals
                     quantity: selectedQuantity,
-                    total,
-                    billcus,
-                    transferType,
-                    billcusid,
-                    seq,
-                    billweight
+                    total
                 });
             } else {
+                // Remove the item from the cart if unchecked
                 cartItems.querySelectorAll('.cart-item').forEach(item => {
                     if (item.textContent.includes(name)) {
                         cartItems.removeChild(item);
                         itemCounter--;
-                        cartItems.querySelectorAll('.cart-item').forEach((item, index) => {
-                            item.textContent = `${index + 1}. ${item.textContent.substring(item.textContent.indexOf(".") + 2)}`;
-                        });
                     }
                 });
+                // Remove from selectedItems array
                 selectedItems = selectedItems.filter(item => item.name !== name);
             }
 
-            calculateTotal();
+            calculateTotal();  // Recalculate total after item is added/removed
         });
     });
 
+    // Handle create bill button click event
     createBillBtn.addEventListener('click', () => {
         const transferType = document.querySelector('input[name="transfer_type"]:checked').value;
 
         let summary = '<ul>';
         selectedItems.forEach(item => {
-            summary += `<li>${item.name} - ฿${item.total} - ${item.unit} x ${item.quantity}</li>`;
+            summary += `<li>${item.name} - ฿${item.total} - ${item.quantity} unit(s)</li>`;
         });
         summary += '</ul>';
-        console.log('Selected Items:', selectedItems);  // Log the selected items
 
+        // Display confirmation modal before proceeding
         Swal.fire({
-            title: '<span style="color: red;">ยืนยันการสร้างบิล</span>',
-            Text: 'กรุณาตรวจสอบข้อมูลให้ถูกต้องก่อนกดยืนยัน!!!!',
-            Text: 'คุณจะไม่สามารถแก้ไขบิลได้อีกต่อไปหากกดยืนยันแล้ว',
-            html: '<span style="color: red;">คุณจะไม่สามารถแก้ไขบิลได้อีกต่อไปหากกดยืนยันแล้ว</span> <br>ระบบจะทำการสร้างบิลดังต่อไปนี้ :<br>' + summary,
+            title: 'ยืนยันการสร้างบิล',
+            html: summary,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'ยืนยัน',
-            cancelButtonText: 'ยกเลิก',
-            didOpen: () => {
-                Swal.showLoading()
-                const confirmButton = Swal.getConfirmButton()
-                confirmButton.disabled = true
-
-                setTimeout(() => {
-                    Swal.hideLoading()
-                    confirmButton.disabled = false
-                }, 5000) // 5-second delay
-            }
+            cancelButtonText: 'ยกเลิก'
         }).then((result) => {
             if (result.isConfirmed) {
                 const selectedItemsJSON = JSON.stringify(selectedItems);
 
+                // Send data to server via AJAX
                 const xhr = new XMLHttpRequest();
                 xhr.open('POST', 'function/function_adddelivery.php', true);
                 xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState === XMLHttpRequest.DONE) {
                         if (xhr.status === 200) {
-                            console.log('Response:', xhr.responseText);  // Log the response from PHP
                             Swal.fire('สำเร็จ!', 'บิลได้ถูกสร้างเรียบร้อยแล้ว', 'success').then(() => {
-                                location.reload();
+                                location.reload();  // Reload the page after successful submission
                             });
                         } else {
-                            console.error('Error:', xhr.responseText);  // Log any errors
                             Swal.fire('เกิดข้อผิดพลาด!', 'ไม่สามารถสร้างบิลได้', 'error');
                         }
                     }
@@ -132,5 +108,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Initialize total price on page load
     calculateTotal();
 });

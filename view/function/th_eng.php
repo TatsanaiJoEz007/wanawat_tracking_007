@@ -1,8 +1,8 @@
 <?php
 
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
+// if (session_status() == PHP_SESSION_NONE) {
+//     session_start();
+// }
 
 $lang = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'th';
 

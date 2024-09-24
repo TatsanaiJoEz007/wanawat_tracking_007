@@ -485,17 +485,19 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
 
             </li>
 
-            <li>
-                <a href="../employee/preparing">
+
+
+            <!-- <li>
+                <a href="../employee/iv_delivery">
                     <i class="bi bi-archive nav_icon"></i>
-                    <span class="link_name">กำลังจัดเตรียม </span>
+                    <span class="link_name">IV Delivery </span>
                 </a>
                 <ul class="sub-menu blank">
-                    <li><a class="link_name" href="preparing">กำลังจัดเตรียม</a></li>
+                    <li><a class="link_name" href="preparing">IV Delivery</a></li>
                 </ul>
-            </li>
+            </li> -->
 
-            <li>
+            <!-- <li>
                 <a href="../employee/sending">
                     <i class="bi bi-truck nav_icon"></i>
                     <span class="link_name">กำลังส่ง</span>
@@ -503,7 +505,7 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
                 <ul class="sub-menu blank">
                     <li><a class="link_name" href="../employee/sending">กำลังส่ง</a></li>
                 </ul>
-            </li>
+            </li> -->
 
             <li>
                 <a href="../employee/history">
@@ -533,6 +535,16 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
                     <li><a class="link_name" href="../employee/delivery_bill">รายละเอียดบิลสินค้า</a></li>
                 </ul>
             </li>
+            <li>
+                <a href="../employee/iv_delivery">
+                    <i class="bi bi-basket nav_icon"></i>
+                    <span class="link_name">IV Delivery</span>
+                </a>
+                <ul class="sub-menu blank">
+                    <li><a class="link_name" href="../employee/iv_delivery">IV Delivery</a></li>
+                </ul>
+            </li>
+
 
             <li>
                 <div class="profile-details">
