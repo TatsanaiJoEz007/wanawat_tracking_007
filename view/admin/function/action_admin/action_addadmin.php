@@ -7,25 +7,19 @@ $response = [];
 
 session_start(); // Make sure the session is started
 
-// Debug: Output all received POST data
-$response['post_data'] = $_POST;
-$response['files_data'] = $_FILES;
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $missing_fields = [];
 
-    // Check each field
+    // Check required fields from the form
     $required_fields = ['admin_firstname', 'admin_lastname', 'admin_email', 'admin_pass'];
     foreach ($required_fields as $field) {
-        if (!isset($_POST[$field])) {
+        if (!isset($_POST[$field]) || empty($_POST[$field])) {
             $missing_fields[] = $field;
         }
     }
 
     // Set default value for admin_status if not provided
-    if (!isset($_POST['admin_status'])) {
-        $_POST['admin_status'] = 1;
-    }
+    $status = isset($_POST['admin_status']) ? $_POST['admin_status'] : 1;
 
     // Check if any fields are missing
     if (!empty($missing_fields)) {
@@ -37,7 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $lastname = $_POST['admin_lastname'];
         $email = $_POST['admin_email'];
         $password = $_POST['admin_pass'];
-        $status = $_POST['admin_status'];
 
         // Check if email is already in use
         $email_check_stmt = $conn->prepare("SELECT user_id FROM tb_user WHERE user_email = ?");
@@ -49,30 +42,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $response['success'] = false;
             $response['message'] = 'Email is already in use.';
         } else {
-            $hashed_password = md5($password); // Use password_hash for better security
+            // แฮชรหัสผ่านด้วย md5
+            $hashed_password = md5($password);
 
-            // Handle file upload if provided
-            if (isset($_FILES['admin_img']) && $_FILES['admin_img']['error'] == UPLOAD_ERR_OK) {
-                $upload_dir = '../../../uploads/'; // Define your upload directory
-                $file_name = basename($_FILES['admin_img']['name']);
-                $file_path = $upload_dir . $file_name;
-
-                if (move_uploaded_file($_FILES['admin_img']['tmp_name'], $file_path)) {
-                    $user_img = $file_path;
-                } else {
-                    $response['success'] = false;
-                    $response['message'] = 'Failed to upload image.';
-                    echo json_encode($response);
-                    exit;
-                }
-            } else {
-                $user_img = ''; // Assuming a default image or no image
+            // Handle file upload (image)
+            $user_img = null; // Default null if no image is uploaded
+            if (isset($_FILES['admin_img']) && $_FILES['admin_img']['error'] == 0) {
+                // Get the temporary file path
+                $img_tmp_name = $_FILES['admin_img']['tmp_name'];
+                // Read the file contents as binary data
+                $user_img = file_get_contents($img_tmp_name);
             }
 
-            $stmt = $conn->prepare("INSERT INTO tb_user (user_firstname, user_lastname, user_email, user_pass, user_img, user_type, user_create_at, user_status) VALUES (?, ?, ?, ?, ?, ?, NOW(), ?)");
-            $user_type = 999; // Default user type
+            // Set user_type as 999
+            $user_type = 999;
 
-            $stmt->bind_param("ssssssi", $firstname, $lastname, $email, $hashed_password, $user_img, $user_type, $status);
+            // Prepare the SQL statement to insert the new admin, including the image as Blob
+            $stmt = $conn->prepare("INSERT INTO tb_user (user_firstname, user_lastname, user_email, user_pass, user_img, user_type, user_create_at, user_status) VALUES (?, ?, ?, ?, ?, ?, NOW(), ?)");
+
+            // Bind parameters, including user_type
+            $stmt->bind_param("sssssis", $firstname, $lastname, $email, $hashed_password, $user_img, $user_type, $status);
 
             if ($stmt->execute()) {
                 // Log the activity
@@ -100,4 +89,3 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 echo json_encode($response);
 $conn->close();
-?>

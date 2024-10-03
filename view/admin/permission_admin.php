@@ -1,5 +1,4 @@
-<?php require_once('../config/connect.php'); 
-
+<?php require_once('../config/connect.php');
 
 function Profilepic($conn, $userId)
 {
@@ -23,20 +22,16 @@ function base64img($imageData)
 <head>
     <title>Manage - admin</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, admin-scalable=0, minimal-ui">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
     <style>
         /* ปรับแต่ง modal ให้อยู่ตรงกลางจอ */
         .modal-dialog {
             display: flex;
             justify-content: center;
-            /* จัดกลางแนวนอน */
             align-items: center;
-            /* จัดกลางแนวตั้ง */
             min-height: 100vh;
-            /* ตั้งค่าความสูงขั้นต่ำของ modal dialog */
             margin: 0 auto !important;
-            /* ใช้ margin auto และ !important เพื่อให้การจัดกลางแน่นอน */
         }
 
         .modal {
@@ -49,7 +44,6 @@ function base64img($imageData)
 
         .modal-content {
             margin: auto !important;
-            /* จัดกลาง modal-content ใน modal-dialog */
         }
 
         .modal-backdrop.show {
@@ -60,38 +54,27 @@ function base64img($imageData)
             height: 100vh !important;
         }
 
-
-         /* Scrollbar Styling */
-         ::-webkit-scrollbar {
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
             width: 12px;
-            /* Adjust width for vertical scrollbar */
         }
 
         ::-webkit-scrollbar-thumb {
             background-color: #FF5722;
-            /* Color for scrollbar thumb */
             border-radius: 10px;
-            /* Rounded corners for scrollbar thumb */
         }
 
         /* Container Styling */
         .home-section {
             max-height: 100vh;
-            /* Adjust height as needed */
             overflow-y: auto;
-            /* Allow vertical scroll */
             overflow-x: hidden;
-            /* Prevent horizontal scroll */
             padding: 20px;
             background-color: #f9f9f9;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
         }
-
     </style>
-
-
-
 </head>
 
 <body>
@@ -124,7 +107,7 @@ function base64img($imageData)
                                     </div>
                                     <div class="modal-body">
 
-                                        <form action="#" id="register" method="post" enctype="multipart/form-data">
+                                        <form id="register" method="post" enctype="multipart/form-data">
                                             <div class="mb-3">
                                                 <label for="admin_firstname" class="form-label">ชื่อ</label>
                                                 <input type="text" class="form-control" id="admin_firstname" name="admin_firstname" required>
@@ -196,21 +179,21 @@ function base64img($imageData)
                                                 $imageBase64 = $defaultAvatarPath;
                                             }
                                     ?>
-                                        <tr>
-                                            <td><input type="checkbox" class="userCheckbox" value="<?php echo $row['user_id']; ?>"></td>
-                                            <td><?php echo $i++; ?></td>
-                                            <td class="align-middle"><img src="<?php echo $imageBase64; ?>" alt="admin Image" style="width: 50px; height: auto;"></td>
-                                            <td class="align-middle"><?php echo $row['user_firstname'] ?></td>
-                                            <td class="align-middle"><?php echo $row['user_lastname'] ?></td>
-                                            <td class="align-middle"><?php echo $row['user_email'] ?></td>
-                                            <td class="align-middle"><?php echo md5($row['user_pass']); ?></td>
-                                            <td class="align-middle"><?php echo ($row['user_status'] == 1) ? "อยู่ในระบบ" : "ไม่อยู่ในระบบ"; ?></td>
-                                            <td class="align-middle">
-                                                <a href="#" class="btn btn-sm btn-secondary reset-password-btn" data-bs-toggle="modal" data-bs-target="#resetPasswordModal" data-id="<?php echo $row['user_id']; ?>">Reset Password</a>
-                                                <a href="#" onclick="delUser('<?php echo $row['user_id']; ?>')" class="btn btn-sm btn-danger">Delete</a>
-                                            </td>
-                                        </tr>
-                                        <?php
+                                            <tr>
+                                                <td><input type="checkbox" class="userCheckbox" value="<?php echo $row['user_id']; ?>"></td>
+                                                <td><?php echo $i++; ?></td>
+                                                <td class="align-middle"><img src="<?php echo $imageBase64; ?>" alt="admin Image" style="width: 50px; height: auto;"></td>
+                                                <td class="align-middle"><?php echo $row['user_firstname'] ?></td>
+                                                <td class="align-middle"><?php echo $row['user_lastname'] ?></td>
+                                                <td class="align-middle"><?php echo $row['user_email'] ?></td>
+                                                <td class="align-middle"><?php echo md5($row['user_pass']); ?></td>
+                                                <td class="align-middle"><?php echo ($row['user_status'] == 1) ? "อยู่ในระบบ" : "ไม่อยู่ในระบบ"; ?></td>
+                                                <td class="align-middle">
+                                                    <a href="#" class="btn btn-sm btn-secondary reset-password-btn" data-bs-toggle="modal" data-bs-target="#resetPasswordModal" data-id="<?php echo $row['user_id']; ?>">Reset Password</a>
+                                                    <a href="#" onclick="delUser('<?php echo $row['user_id']; ?>')" class="btn btn-sm btn-danger">Delete</a>
+                                                </td>
+                                            </tr>
+                                    <?php
                                         }
                                     }
                                     ?>
@@ -222,6 +205,7 @@ function base64img($imageData)
             </div>
         </div>
     </div>
+
     <script src="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
@@ -237,7 +221,8 @@ function base64img($imageData)
                     contentType: false,
                     processData: false,
                     success: function(response) {
-                        if (response.success) {                            Swal.fire({
+                        if (response.success) {
+                            Swal.fire({
                                 icon: 'success',
                                 title: 'สำเร็จ',
                                 text: response.message
@@ -253,12 +238,14 @@ function base64img($imageData)
                             });
                         }
                     },
-                    error: function() {
+                    error: function(xhr, status, error) {
+                        // Capture the response to inspect
                         Swal.fire({
                             icon: 'error',
                             title: 'ผิดพลาด',
-                            text: 'เกิดข้อผิดพลาดในการดำเนินการ'
+                            text: 'เกิดข้อผิดพลาดในการดำเนินการ: ' + xhr.responseText // Show response error
                         });
+                        console.log('Error details:', xhr.responseText); // Log the actual error to the console for further inspection
                     }
                 });
             });
@@ -326,11 +313,6 @@ function base64img($imageData)
                         timer: 1500
                     });
                 }
-            });
-
-            // Select/Deselect all checkboxes
-            $('#selectAll').click(function() {
-                $('.userCheckbox').prop('checked', this.checked);
             });
 
             // Handle reset password
