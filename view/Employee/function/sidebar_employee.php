@@ -529,19 +529,19 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
             <li>
                 <a href="../employee/delivery_bill">
                     <i class="bi bi-basket nav_icon"></i>
-                    <span class="link_name">รายละเอียดบิลสินค้า</span>
+                    <span class="link_name">รหัสบิลสินค้าIC</span>
                 </a>
                 <ul class="sub-menu blank">
-                    <li><a class="link_name" href="../employee/delivery_bill">รายละเอียดบิลสินค้า</a></li>
+                    <li><a class="link_name" href="../employee/delivery_bill">รหัสบิลสินค้าIC</a></li>
                 </ul>
             </li>
             <li>
                 <a href="../employee/iv_delivery">
                     <i class="bi bi-basket nav_icon"></i>
-                    <span class="link_name">IV Delivery</span>
+                    <span class="link_name">รหัสบิลสินค้าIV</span>
                 </a>
                 <ul class="sub-menu blank">
-                    <li><a class="link_name" href="../employee/iv_delivery">IV Delivery</a></li>
+                    <li><a class="link_name" href="../employee/iv_delivery">รหัสบิลสินค้าIV</a></li>
                 </ul>
             </li>
 

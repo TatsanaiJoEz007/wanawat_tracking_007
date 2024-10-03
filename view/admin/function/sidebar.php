@@ -350,7 +350,7 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
 
  
 
-  @media screen and (max-width: 320px) {
+  @media screen and (max-width: 768px) {
     .sidebar {
       width: 240px;
     }
@@ -407,7 +407,7 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
   }
 
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 480px) {
     .sidebar {
       width: 78px;
     }
