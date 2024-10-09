@@ -45,21 +45,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $response['success'] = false;
                 $response['message'] = 'Email is already in use.';
             } else {
-                $hashed_password = md5($password); // Use password_hash for better security
+                // ใช้ password_hash() ในการเข้ารหัสรหัสผ่าน
+                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
                 
                 $stmt = $conn->prepare("INSERT INTO tb_user (user_firstname, user_lastname, user_email, user_pass, user_address, province_id, amphure_id, district_id, user_tel, user_img, user_type, user_create_at, user_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)");
-                $user_img = ''; // Assuming a default image
-                $user_type = 0; // Default user type
-                $user_status = 1; // Default user status
+                $user_img = ''; // สมมติว่ามีภาพเริ่มต้น
+                $user_type = 0; // ประเภทผู้ใช้เริ่มต้น
+                $user_status = 1; // สถานะผู้ใช้เริ่มต้น
 
                 $stmt->bind_param("sssssiisssii", $firstname, $lastname, $email, $hashed_password, $address, $province_id, $amphure_id, $district_id, $tel, $user_img, $user_type, $user_status);
 
                 if ($stmt->execute()) {
-                    // Get the ID of the newly registered user
+                    // รับ ID ของผู้ใช้ที่เพิ่งสมัครสมาชิก
                     $new_user_id = $stmt->insert_id;
                     
-                    // Log the registration activity
-                    $admin_user_id = $new_user_id; // Assuming the new user logs themselves
+                    // บันทึกกิจกรรมการสมัครสมาชิก
+                    $admin_user_id = $new_user_id; // สมมติว่าผู้ใช้ใหม่เป็นผู้ทำกิจกรรม
                     $action = 'register';
                     $entity = 'user';
                     $entity_id = $new_user_id;
@@ -68,10 +69,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     logAdminActivity($admin_user_id, $action, $entity, $entity_id, $additional_info);
 
                     $response['success'] = true;
-                    $response['message'] = 'Registration successful.';
+                    $response['message'] = 'สมัครสมาชิกสำเร็จ';
                 } else {
                     $response['success'] = false;
-                    $response['message'] = 'Error: ' . $stmt->error;
+                    $response['message'] = 'เกิดข้อผิดพลาด: ' . $stmt->error;
                 }
                 $stmt->close();
             }
@@ -79,11 +80,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     } else {
         $response['success'] = false;
-        $response['message'] = 'Required fields are missing.';
+        $response['message'] = 'กรุณากรอกข้อมูลให้ครบถ้วน';
     }
 } else {
     $response['success'] = false;
-    $response['message'] = 'Invalid request method.';
+    $response['message'] = 'การร้องขอไม่ถูกต้อง';
 }
 
 echo json_encode($response);

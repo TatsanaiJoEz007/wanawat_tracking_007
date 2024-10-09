@@ -1,7 +1,6 @@
 <?php
 header('Content-Type: application/json');
 
-// Ensure session is started
 if (!isset($_SESSION)) {
     session_start();
 }
@@ -9,19 +8,13 @@ if (!isset($_SESSION)) {
 require_once('../../view/config/connect.php');
 require_once('../admin/function/action_activity_log/log_activity.php'); 
 
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
 // Decode JSON input
 $data = json_decode(file_get_contents('php://input'), true);
-
-// Debugging: Log the received data
-error_log(print_r($data, true));
 
 // Check if POST request is made
 if (isset($data['login'])) {
     $user_email = $data['user_email'];
-    $user_pass = md5($data['user_pass']);
+    $user_pass = $data['user_pass'];
     $remember = isset($data['remember']) ? $data['remember'] : false;
 
     // Validate input
@@ -41,9 +34,12 @@ if (isset($data['login'])) {
     if ($result->num_rows >= 1) {
         $user = $result->fetch_array();
 
-        // Verify password
-        if ($user_pass == $user['user_pass']) {
+        // Verify password using password_verify()
+        if (password_verify($user_pass, $user['user_pass'])) {
             if ($user['user_status'] != 0) {
+                // Regenerate session ID
+                session_regenerate_id(true);
+
                 // Set session variables
                 $_SESSION['login'] = true;
                 $_SESSION['user_id'] = $user['user_id'];
@@ -51,12 +47,32 @@ if (isset($data['login'])) {
                 $_SESSION['user_firstname'] = $user['user_firstname'];
                 $_SESSION['user_lastname'] = $user['user_lastname'];
                 $_SESSION['user_email'] = $user['user_email'];
-                $_SESSION['user_img'] = $user['user_img'];
-                $_SESSION['user_address'] = $user['user_address'];
-                $_SESSION['user_tel'] = $user['user_tel'];
                 $_SESSION['user_create_at'] = $user['user_create_at'];
-                
                 $user_type = $user['user_type'];
+
+                // ดึงข้อมูลสิทธิ์จาก tb_role ตาม user_type
+                $role_query = "SELECT * FROM tb_role WHERE role_id = ?";
+                $role_stmt = $conn->prepare($role_query);
+                $role_stmt->bind_param("i", $user_type);
+                $role_stmt->execute();
+                $role_result = $role_stmt->get_result();
+
+                if ($role_result->num_rows >= 1) {
+                    $role = $role_result->fetch_array();
+
+                    // เก็บสิทธิ์ไว้ใน session เพื่อใช้ในการตรวจสอบสิทธิ์
+                    $_SESSION['permissions'] = [
+                        'manage_permission' => $role['manage_permission'],
+                        'manage_website' => $role['manage_website'],
+                        'manage_logs' => $role['manage_logs'],
+                        'manage_csv' => $role['manage_csv'],
+                        'manage_statusbill' => $role['manage_statusbill'],
+                        'manage_history' => $role['manage_history'],
+                        'manage_problem' => $role['manage_problem'],
+                        'manage_ic_delivery' => $role['manage_ic_delivery'],
+                        'manage_iv_delivery' => $role['manage_iv_delivery']
+                    ];
+                }
 
                 // Log activity
                 $admin_user_id = $_SESSION['user_id'];
@@ -65,15 +81,6 @@ if (isset($data['login'])) {
                 $entity_id = $user['user_id'];
                 $additional_info = "User logged in with email: " . $user_email;
                 logAdminActivity($admin_user_id, $action, $entity, $entity_id, $additional_info);
-
-                // Handle "Remember Me"
-                if ($remember) {
-                    setcookie('username', $user_email, time() + (86400 * 30), "/"); // 30 days
-                    setcookie('password', $data['user_pass'], time() + (86400 * 30), "/"); // Save plain password
-                } else {
-                    setcookie('username', '', time() - 3600, "/");
-                    setcookie('password', '', time() - 3600, "/");
-                }
 
                 // Return user type
                 if ($user_type == 999) {
@@ -99,7 +106,6 @@ if (isset($data['login'])) {
         echo json_encode('failuser');
     }
 } else {
-    error_log("Login key not detected");
     echo json_encode('no_post');
 }
 ?>

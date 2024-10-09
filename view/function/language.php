@@ -8,6 +8,10 @@ if (isset($_POST['lang'])) {
     $lang = $_POST['lang'];
     $_SESSION['lang'] = $lang; // Set the language in session
     setcookie('lang', $lang, time() + (86400 * 30), "/"); // Set the language in cookie
+
+    // ตั้งค่า header สำหรับส่งออก JSON
+    header('Content-Type: application/json');
+
     echo json_encode(['success' => true]);
     exit;
 } elseif (isset($_COOKIE['lang'])) {
@@ -20,4 +24,5 @@ if (isset($_POST['lang'])) {
 
 // Include translation file based on the language
 require_once('th_eng.php');
+
 ?>

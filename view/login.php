@@ -86,7 +86,9 @@ $(document).ready(function() {
             }),
             success: function(response) {
                 console.log(response); // Log the response for debugging
-                if (response === 'user') {
+                
+                // Handle different user types
+                if (response === 'user' || response === 'admin' || response === 'employee' || response === 'clerk') {
                     if (remember) {
                         document.cookie = "username=" + user_email + "; max-age=" + (86400 * 30) + "; path=/";
                         document.cookie = "password=" + user_pass + "; max-age=" + (86400 * 30) + "; path=/";
@@ -94,6 +96,7 @@ $(document).ready(function() {
                         document.cookie = "username=; max-age=-1; path=/";
                         document.cookie = "password=; max-age=-1; path=/";
                     }
+
                     Swal.fire({
                         position: 'center',
                         icon: 'success',
@@ -101,30 +104,27 @@ $(document).ready(function() {
                         showConfirmButton: false,
                         timer: 1500
                     });
+
+                    // Delay for redirect to main page
                     setTimeout(function() {
-                        window.location.href = "../view/mainpage";
-                    }, 1500);
-                } else if (response === 'admin') {
-                    Swal.fire({
-                        position: 'center',
-                        icon: 'success',
-                        title: 'เข้าสู่ระบบสำเร็จ!!',
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                    setTimeout(function() {
-                        window.location.href = "../view/admin/permission_admin";
-                    }, 1500);
-                } else if (response === 'employee') {
-                    Swal.fire({
-                        position: 'center',
-                        icon: 'success',
-                        title: 'เข้าสู่ระบบสำเร็จ!!',
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                    setTimeout(function() {
-                        window.location.href = "../view/employee/dashboard";
+                        // Fetch and log session permissions
+                        $.ajax({
+                            url: 'function/fetch_session_permissions.php',
+                            type: 'get',
+                            success: function(permissionResponse) {
+                                console.log("Session Permissions:", permissionResponse);
+                            }
+                        });
+
+                        if (response === 'admin') {
+                            window.location.href = "../view/admin/permission_admin";
+                        } else if (response === 'user') {
+                            window.location.href = "../view/mainpage";
+                        } else if (response === 'employee') {
+                            window.location.href = "../view/employee/dashboard";
+                        } else if (response === 'clerk') {
+                            window.location.href = "../view/clerk/dashboard";
+                        }
                     }, 1500);
                 } else if (response === 'failuser') {
                     Swal.fire({
@@ -162,83 +162,8 @@ $(document).ready(function() {
             }
         });
     });
-
-    // Forgot password form submit
-    $('#forgotPasswordForm').submit(function(e) {
-        e.preventDefault();
-
-        let email = $('#forgot-password-email').val();
-
-        $.ajax({
-            url: 'function/forgotuser/check_mail.php', // เซิร์ฟเวอร์ที่จะตรวจสอบอีเมล
-            type: 'post',
-            data: { email: email },
-            success: function(response) {
-                if (response === 'exists') {
-                    $('#forgotPasswordModal').modal('hide');
-                    $('#resetPasswordModal').modal('show');
-                } else {
-                    Swal.fire({
-                        position: 'center',
-                        icon: 'error',
-                        title: 'อีเมลนี้ไม่มีในระบบ',
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                }
-            }
-        });
-    });
-
-    // Reset password form submit
-    $('#resetPasswordForm').submit(function(e) {
-        e.preventDefault();
-
-        let email = $('#forgot-password-email').val();
-        let newPassword = $('#new-password').val();
-        let confirmPassword = $('#confirm-password').val();
-
-        if (newPassword !== confirmPassword) {
-            Swal.fire({
-                position: 'center',
-                icon: 'error',
-                title: 'รหัสผ่านไม่ตรงกัน',
-                showConfirmButton: false,
-                timer: 1500
-            });
-            return;
-        }
-
-        $.ajax({
-            url: 'function/forgotuser/reset_password.php', // เซิร์ฟเวอร์ที่จะเปลี่ยนรหัสผ่าน
-            type: 'post',
-            data: {
-                email: email,
-                newPassword: newPassword
-            },
-            success: function(response) {
-                if (response === 'success') {
-                    $('#resetPasswordModal').modal('hide');
-                    Swal.fire({
-                        position: 'center',
-                        icon: 'success',
-                        title: 'เปลี่ยนรหัสผ่านสำเร็จ',
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                } else {
-                    Swal.fire({
-                        position: 'center',
-                        icon: 'error',
-                        title: 'เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน',
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                }
-            }
-        });
-    });
 });
+
 </script>
 <!-- Forgot Password Modal -->
 <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
