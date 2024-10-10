@@ -471,7 +471,7 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
         <div class="iocn-link">
           <a href="#">
             <i class="bx bx-user nav_icon"></i>
-            <span class="link_name">ควบคุมสิทธิ์การเข้าถึง</span>
+            <span class="link_name">ตารางข้อมูลผู้ใช้งานในระบบ</span>
           </a>
           <i class='bx bxs-chevron-down arrow'></i>
         </div>
@@ -480,6 +480,15 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
           <li><a href="../admin/permission_user">ลูกค้า</a></li>
           <li><a href="../admin/permission_employee">พนักงาน</a></li>
 
+        </ul>
+      </li>
+      <li>
+        <a href="../admin/activity.php">
+          <i class="bx bxs-heart "></i>
+          <span class="link_name">ควบคุมสิทธิ์การเข้าถึง</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link_name" href="../admin/activity">ประวัติกิจกรรม</a></li>
         </ul>
       </li>
       <li>

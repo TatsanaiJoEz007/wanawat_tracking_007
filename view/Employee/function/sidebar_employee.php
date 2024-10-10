@@ -1,15 +1,23 @@
 <?php
-require_once('../../view/config/connect.php');
-
-
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
+require_once('../../view/config/connect.php');
+require_once('../../view/config/permission.php');
 
-// if (!isset($_SESSION['login'])) {
+echo '<pre>';
+print_r($_SESSION['permissions']);
+echo '</pre>';
+
+?>
+
+
+
+<!-- // if (!isset($_SESSION['login'])) {
 //     echo '<script>location.href="../../view/login.php"</script>';
-// }
+// } -->
+<?php
 
 function fetchUserProfile($conn, $userId)
 {
@@ -455,6 +463,7 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
             <span class="logo_name">employee</span>
         </div>
         <ul class="nav-links">
+            <!-- เมนูหน้าหลัก (แสดงให้ทุกคน) -->
             <li>
                 <a href="../employee/dashboard">
                     <i class="bx bx-grid-alt nav_icon"></i>
@@ -464,6 +473,9 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
                     <li><a class="link_name" href="../employee/dashboard">Dashboard</a></li>
                 </ul>
             </li>
+
+            <!-- เมนูเพิ่มบิลจาก CSV (สิทธิ์ manage_csv) -->
+            <?php if (checkPermission(['manage_csv'])): ?>
             <li>
                 <div class="iocn-link">
                     <a href="#">
@@ -477,36 +489,20 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
                     <li><a href="../employee/table">หัวบิลที่เพิ่มแล้ว</a></li>
                 </ul>
             </li>
+            <?php endif; ?>
+
+            <!-- เมนูสถานะบิล (สิทธิ์ manage_statusbill) -->
+            <?php if (checkPermission(['manage_statusbill'])): ?>
             <li>
                 <a href="../employee/statusbill">
                     <i class="bx bx-send nav_icon"></i>
                     <span class="link_name">สถานะบิล</span>
                 </a>
-
             </li>
+            <?php endif; ?>
 
-
-
-            <!-- <li>
-                <a href="../employee/iv_delivery">
-                    <i class="bi bi-archive nav_icon"></i>
-                    <span class="link_name">IV Delivery </span>
-                </a>
-                <ul class="sub-menu blank">
-                    <li><a class="link_name" href="preparing">IV Delivery</a></li>
-                </ul>
-            </li> -->
-
-            <!-- <li>
-                <a href="../employee/sending">
-                    <i class="bi bi-truck nav_icon"></i>
-                    <span class="link_name">กำลังส่ง</span>
-                </a>
-                <ul class="sub-menu blank">
-                    <li><a class="link_name" href="../employee/sending">กำลังส่ง</a></li>
-                </ul>
-            </li> -->
-
+            <!-- เมนูประวัติการจัดส่ง (สิทธิ์ manage_history) -->
+            <?php if (checkPermission(['manage_history'])): ?>
             <li>
                 <a href="../employee/history">
                     <i class="bi bi-clock-history nav_icon"></i>
@@ -516,7 +512,10 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
                     <li><a class="link_name" href="../employee/history">ประวัติการจัดส่ง</a></li>
                 </ul>
             </li>
+            <?php endif; ?>
 
+            <!-- เมนูปัญหาที่พบ (สิทธิ์ manage_problem) -->
+            <?php if (checkPermission(['manage_problem'])): ?>
             <li>
                 <a href="../employee/problem">
                     <i class="bi bi-bag-x nav_icon"></i>
@@ -526,6 +525,10 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
                     <li><a class="link_name" href="../employee/problem">ปัญหาที่พบ</a></li>
                 </ul>
             </li>
+            <?php endif; ?>
+
+            <!-- เมนูรหัสบิลสินค้า IC (สิทธิ์ manage_ic_delivery) -->
+            <?php if (checkPermission(['manage_ic_delivery'])): ?>
             <li>
                 <a href="../employee/delivery_bill">
                     <i class="bi bi-basket nav_icon"></i>
@@ -535,6 +538,10 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
                     <li><a class="link_name" href="../employee/delivery_bill">รหัสบิลสินค้าIC</a></li>
                 </ul>
             </li>
+            <?php endif; ?>
+
+            <!-- เมนูรหัสบิลสินค้า IV (สิทธิ์ manage_iv_delivery) -->
+            <?php if (checkPermission(['manage_iv_delivery'])): ?>
             <li>
                 <a href="../employee/iv_delivery">
                     <i class="bi bi-basket nav_icon"></i>
@@ -544,18 +551,19 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
                     <li><a class="link_name" href="../employee/iv_delivery">รหัสบิลสินค้าIV</a></li>
                 </ul>
             </li>
+            <?php endif; ?>
 
-
+            <!-- โปรไฟล์และออกจากระบบ -->
             <li>
                 <div class="profile-details">
                     <div class="profile-content">
-                        <img src=<?php echo $imageBase64; ?> alt="profileImg">
+                        <img src="<?php echo $imageBase64; ?>" alt="profileImg">
                     </div>
                     <div class="name-job">
-                        <div class="profile_name"><?php echo $myprofile['user_firstname'] ?> &nbsp; <?php echo $myprofile['user_lastname'] ?></div>
-                        <div class="job"><?php echo $myprofile['user_email'] ?></div>
+                        <div class="profile_name"><?php echo $myprofile['user_firstname'] . ' ' . $myprofile['user_lastname']; ?></div>
+                        <div class="job"><?php echo $myprofile['user_email']; ?></div>
                     </div>
-                    <?php require_once "../../view/admin/function/function_logout.php" ?>
+                    <?php require_once "../../view/admin/function/function_logout.php"; ?>
                     <i class='bx bx-log-out' onclick="logout()"></i>
                 </div>
             </li>

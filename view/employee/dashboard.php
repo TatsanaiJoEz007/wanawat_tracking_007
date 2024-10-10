@@ -1,3 +1,16 @@
+<?php
+session_start();
+require_once '../config/permission.php';
+
+echo '<pre>';
+print_r($_SESSION['permissions']);
+echo '</pre>';
+
+// ตรวจสอบสิทธิ์ในการเข้าถึงแดชบอร์ดผู้ดูแลระบบ
+// requirePermission(['manage_csv']);
+
+// เนื้อหาของแดชบอร์ดผู้ดูแลระบบ
+?>
 
 
 <!DOCTYPE html>
