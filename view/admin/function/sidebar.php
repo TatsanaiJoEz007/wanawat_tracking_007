@@ -467,7 +467,7 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
           <li><a class="link_name" href="../admin/Dashboard.php">Dashboard</a></li>
         </ul>
       </li> -->
-      <li>
+      <!-- <li>
         <div class="iocn-link">
           <a href="#">
             <i class="bx bx-user nav_icon"></i>
@@ -481,10 +481,27 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
           <li><a href="../admin/permission_employee">พนักงาน</a></li>
 
         </ul>
+      </li> -->
+      <li>
+        <div class="iocn-link">
+          <a href="#">
+            <i class="bx bx-user nav_icon"></i>
+            <span class="link_name">ตารางข้อมูลผู้ใช้งานในระบบ</span>
+          </a>
+          <i class='bx bxs-chevron-down arrow'></i>
+        </div>
+        <ul class="sub-menu">
+          <li><a class="link_name" href="#">ตารางข้อมูลผู้ใช้งานในระบบ</a></li>
+          <li><a href="../admin/permission_admin">แอดมิน</a></li>
+          <li><a href="../admin/permission_user">ลูกค้า</a></li>
+          <li><li><a href="../admin/permission_employee">พนักงาน</a></li></li>
+        </ul>
       </li>
 
+
       <li>
-        <a href="">
+      
+        <a href="../admin/Manage.php">
           <i class="bx bxs-heart"></i>
           <span class="link_name">ควบคุมสิทธิ์การเข้าถึง</span>
         </a>
@@ -496,14 +513,14 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
 
       <li>
         <div class="iocn-link">
-          <a href="#">
+        <a href="#">
             <i class="bx bx-cog nav_icon"></i>
             <span class="link_name">จัดการหน้าเว็บไซต์</span>
           </a>
           <i class='bx bxs-chevron-down arrow'></i>
         </div>
         <ul class="sub-menu">
-          <li><a class="link_name" href="#">จัดการหน้าเว็บไซต์</a></li>
+        <li><a class="link_name" href="#">จัดการหน้าเว็บไซต์</a></li>
           <li><a href="../admin/banner">หน้าแบนเนอร์</a></li>
           <li><a href="../admin/contact.php" hidden disabled>หน้าติดต่อ</a></li>
           <li><a href="../admin/question.php">หน้าคำถามที่พบบ่อย</a></li>
