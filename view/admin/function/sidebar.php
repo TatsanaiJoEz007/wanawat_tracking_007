@@ -454,34 +454,10 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
 <body>
   <div class="sidebar close">
     <div class="logo-details">
-      <img src="../../view/assets/img/logo/logo.png" alt="logo of wehome" weight="50px" height="50px" style="padding-left:8px; padding-right:10px;" />
+      <img src="../../view/assets/img/logo/logo.png" alt="logo of wehome" weight="" height="70px" style="padding-left:8px; padding-right:10px;" />
       <span class="logo_name">Admin</span>
     </div>
     <ul class="nav-links">
-      <!-- <li>
-        <a href="../admin/Dashboard">
-          <i class="bx bx-grid-alt nav_icon"></i>
-          <span class="link_name">หน้าหลัก</span>
-        </a>
-        <ul class="sub-menu blank">
-          <li><a class="link_name" href="../admin/Dashboard.php">Dashboard</a></li>
-        </ul>
-      </li> -->
-      <!-- <li>
-        <div class="iocn-link">
-          <a href="#">
-            <i class="bx bx-user nav_icon"></i>
-            <span class="link_name"></span>
-          </a>
-          <i class='bx bxs-chevron-down arrow'>ตารางข้อมูลผู้ใช้งานในระบบ</i>
-        </div>
-        <ul class="sub-menu">
-          <li><a href="../admin/permission_admin">แอดมิน</a></li>
-          <li><a href="../admin/permission_user">ลูกค้า</a></li>
-          <li><a href="../admin/permission_employee">พนักงาน</a></li>
-
-        </ul>
-      </li> -->
       <li>
         <div class="iocn-link">
           <a href="#">
