@@ -1,22 +1,20 @@
-<!DOCTYPE html>
-<!-- Designined by CodingLab | www.youtube.com/codinglabyt -->
-<html lang="en" dir="ltr">
-
 <?php
+if (!isset($_SESSION)) {
+    session_start();
+}
+
 require_once('../../view/config/connect.php');
 
-if (session_status() == PHP_SESSION_NONE) {
-  session_start();
-}
-
-
+// ตรวจสอบการเข้าสู่ระบบ
 if (!isset($_SESSION['login'])) {
-  //echo '<script>location.href="login"</script>';
+    echo '<script>location.href="../../view/login"</script>';
+    exit;
 }
 
+// ฟังก์ชันดึงข้อมูลผู้ใช้
 function fetchUserProfile($conn, $userId)
 {
-  $sql = "SELECT tb_user.*, 
+    $sql = "SELECT tb_user.*, 
             provinces.name_th AS province_name, 
             amphures.name_th AS amphure_name, 
             districts.name_th AS district_name,
@@ -26,30 +24,34 @@ function fetchUserProfile($conn, $userId)
             LEFT JOIN amphures ON tb_user.amphure_id = amphures.id 
             LEFT JOIN districts ON tb_user.district_id = districts.id 
             WHERE user_id = ?";
-  $stmt = $conn->prepare($sql);
-  $stmt->bind_param("i", $userId);
-  $stmt->execute();
-  return $stmt->get_result()->fetch_array(MYSQLI_ASSOC);
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    return $stmt->get_result()->fetch_array(MYSQLI_ASSOC);
 }
 
 function getImageBase64($imageData)
 {
-  return 'data:image/jpeg;base64,' . base64_encode($imageData);
+    return 'data:image/jpeg;base64,' . base64_encode($imageData);
 }
 
 $userId = $_SESSION['user_id'];
 $myprofile = fetchUserProfile($conn, $userId);
-$imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_img']) : '../../view/assets/img/logo/mascot.png'; // Set your default image path here
+$imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_img']) : '../../view/assets/img/logo/mascot.png';
+
+// ดึงข้อมูล permissions จาก session
+$permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
 ?>
 
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
-  <title> Drop Down Sidebar Menu | CodingLab </title>
-  <!-- Boxiocns CDN Link -->
+  <title>Wanawat Tracking System</title>
+  <!-- Boxicons CDN Link -->
   <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 </head>
 
 <style>
@@ -73,7 +75,6 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
     left: 0;
     height: 100%;
     width: 300px;
-    /* Increased width */
     background: #F0592E;
     z-index: 100;
     transition: all 0.5s ease;
@@ -255,7 +256,6 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
     position: fixed;
     bottom: 0;
     width: 300px;
-    /* Increased width */
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -314,9 +314,7 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
     background: #fff;
     height: 100vh;
     left: 300px;
-    /* Adjusted to new sidebar width */
     width: calc(100% - 300px);
-    /* Adjusted to new sidebar width */
     transition: all 0.5s ease;
     padding: 12px;
   }
@@ -348,8 +346,6 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
     font-weight: 600;
   }
 
- 
-
   @media screen and (max-width: 768px) {
     .sidebar {
       width: 240px;
@@ -380,7 +376,6 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
       left: 78px;
       width: calc(100% - 78px);
     }
-
   }
 
   /* Adjustments for sidebar collapse */
@@ -405,7 +400,6 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
     margin: 0 10px;
     transition: all 0.5s ease;
   }
-
 
   @media screen and (max-width: 480px) {
     .sidebar {
@@ -455,9 +449,12 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
   <div class="sidebar close">
     <div class="logo-details">
       <img src="../../view/assets/img/logo/logo.png" alt="logo of wehome" weight="" height="70px" style="padding-left:8px; padding-right:10px;" />
-      <span class="logo_name">Admin</span>
+      <span class="logo_name"><?php echo $_SESSION['user_type']; ?></span>
     </div>
     <ul class="nav-links">
+      
+      <!-- ผู้ใช้งานในระบบ - เมนูสำหรับผู้ดูแลระบบ -->
+      <?php if (isset($permissions['manage_permission']) && $permissions['manage_permission'] == 1): ?>
       <li>
         <div class="iocn-link">
           <a href="#">
@@ -470,39 +467,44 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
           <li><a class="link_name" href="#">ตารางข้อมูลผู้ใช้งานในระบบ</a></li>
           <li><a href="../admin/permission_admin">แอดมิน</a></li>
           <li><a href="../admin/permission_user">ลูกค้า</a></li>
-          <li><li><a href="../admin/permission_employee">พนักงาน</a></li></li>
+          <li><a href="../admin/permission_employee">พนักงาน</a></li>
         </ul>
       </li>
+      <?php endif; ?>
 
-
+      <!-- ควบคุมสิทธิ์การเข้าถึง - เมนูสำหรับผู้ดูแลระบบ -->
+      <?php if (isset($permissions['manage_permission']) && $permissions['manage_permission'] == 1): ?>
       <li>
-      
         <a href="../admin/Manage.php">
           <i class="bx bxs-heart"></i>
           <span class="link_name">ควบคุมสิทธิ์การเข้าถึง</span>
         </a>
         <ul class="sub-menu blank">
-          <li><a class="link_name" href="../admin/activity">ประวัติกิจกรรม</a></li>
+          <li><a class="link_name" href="../admin/Manage.php">ควบคุมสิทธิ์การเข้าถึง</a></li>
         </ul>
       </li>
-      
+      <?php endif; ?>
 
+      <!-- จัดการหน้าเว็บไซต์ - เมนูสำหรับผู้ดูแลระบบ -->
+      <?php if (isset($permissions['manage_website']) && $permissions['manage_website'] == 1): ?>
       <li>
         <div class="iocn-link">
-        <a href="#">
+          <a href="#">
             <i class="bx bx-cog nav_icon"></i>
             <span class="link_name">จัดการหน้าเว็บไซต์</span>
           </a>
           <i class='bx bxs-chevron-down arrow'></i>
         </div>
         <ul class="sub-menu">
-        <li><a class="link_name" href="#">จัดการหน้าเว็บไซต์</a></li>
+          <li><a class="link_name" href="#">จัดการหน้าเว็บไซต์</a></li>
           <li><a href="../admin/banner">หน้าแบนเนอร์</a></li>
-          <li><a href="../admin/contact.php" hidden disabled>หน้าติดต่อ</a></li>
           <li><a href="../admin/question.php">หน้าคำถามที่พบบ่อย</a></li>
         </ul>
       </li>
+      <?php endif; ?>
 
+      <!-- ประวัติกิจกรรม - เมนูสำหรับผู้ที่มีสิทธิ์ดูประวัติกิจกรรม -->
+      <?php if (isset($permissions['manage_logs']) && $permissions['manage_logs'] == 1): ?>
       <li>
         <a href="../admin/activity.php">
           <i class="bi bi-activity nav_icon"></i>
@@ -512,10 +514,91 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
           <li><a class="link_name" href="../admin/activity">ประวัติกิจกรรม</a></li>
         </ul>
       </li>
+      <?php endif; ?>
+
+      <!-- นำเข้าข้อมูล CSV - สำหรับผู้มีสิทธิ์ -->
+      <?php if (isset($permissions['manage_csv']) && $permissions['manage_csv'] == 1): ?>
+      <li>
+        <a href="../admin/import_csv.php">
+          <i class="bx bx-import"></i>
+          <span class="link_name">นำเข้าข้อมูล CSV</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link_name" href="../admin/import_csv.php">นำเข้าข้อมูล CSV</a></li>
+        </ul>
+      </li>
+      <?php endif; ?>
+
+      <!-- สถานะการจัดส่ง - สำหรับผู้มีสิทธิ์ -->
+      <?php if (isset($permissions['manage_statusbill']) && $permissions['manage_statusbill'] == 1): ?>
+      <li>
+        <a href="../admin/status_bill.php">
+          <i class="bx bx-package"></i>
+          <span class="link_name">สถานะการจัดส่ง</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link_name" href="../admin/status_bill.php">สถานะการจัดส่ง</a></li>
+        </ul>
+      </li>
+      <?php endif; ?>
+
+      <!-- ประวัติการสั่งซื้อ - สำหรับผู้มีสิทธิ์ -->
+      <?php if (isset($permissions['manage_history']) && $permissions['manage_history'] == 1): ?>
+      <li>
+        <a href="../admin/history.php">
+          <i class="bx bx-history"></i>
+          <span class="link_name">ประวัติการสั่งซื้อ</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link_name" href="../admin/history.php">ประวัติการสั่งซื้อ</a></li>
+        </ul>
+      </li>
+      <?php endif; ?>
+
+      <!-- แจ้งปัญหา - สำหรับผู้มีสิทธิ์ -->
+      <?php if (isset($permissions['manage_problem']) && $permissions['manage_problem'] == 1): ?>
+      <li>
+        <a href="../admin/problem.php">
+          <i class="bx bx-bug"></i>
+          <span class="link_name">แจ้งปัญหา</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link_name" href="../admin/problem.php">แจ้งปัญหา</a></li>
+        </ul>
+      </li>
+      <?php endif; ?>
+
+      <!-- จัดการใบส่งสินค้า IC - สำหรับผู้มีสิทธิ์ -->
+      <?php if (isset($permissions['manage_ic_delivery']) && $permissions['manage_ic_delivery'] == 1): ?>
+      <li>
+        <a href="../admin/ic_delivery.php">
+          <i class="bx bx-file"></i>
+          <span class="link_name">จัดการใบส่งสินค้า IC</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link_name" href="../admin/ic_delivery.php">จัดการใบส่งสินค้า IC</a></li>
+        </ul>
+      </li>
+      <?php endif; ?>
+
+      <!-- จัดการใบส่งสินค้า IV - สำหรับผู้มีสิทธิ์ -->
+      <?php if (isset($permissions['manage_iv_delivery']) && $permissions['manage_iv_delivery'] == 1): ?>
+      <li>
+        <a href="../admin/iv_delivery.php">
+          <i class="bx bx-file-blank"></i>
+          <span class="link_name">จัดการใบส่งสินค้า IV</span>
+        </a>
+        <ul class="sub-menu blank">
+          <li><a class="link_name" href="../admin/iv_delivery.php">จัดการใบส่งสินค้า IV</a></li>
+        </ul>
+      </li>
+      <?php endif; ?>
+
+      <!-- Profile Details -->
       <li>
         <div class="profile-details">
           <div class="profile-content">
-            <img src=<?php echo $imageBase64; ?> alt="profileImg">
+            <img src="<?php echo $imageBase64; ?>" alt="profileImg">
           </div>
           <div class="name-job">
             <div class="profile_name"><?php echo $myprofile['user_firstname'] ?> &nbsp; <?php echo $myprofile['user_lastname'] ?></div>
@@ -532,9 +615,6 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
       <i class='bx bx-menu'></i>
       <span class="text"></span>
     </div>
-
-
-
 
     <script>
       let arrow = document.querySelectorAll(".arrow");
@@ -560,7 +640,5 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
         sidebar.classList.toggle("close");
       });
     </script>
-
 </body>
-
 </html>

@@ -37,10 +37,10 @@ if (isset($data['login'])) {
         // Verify password using password_verify()
         if (password_verify($user_pass, $user['user_pass'])) {
             if ($user['user_status'] != 0) {
-                // Regenerate session ID
+                // Regenerate session ID for security
                 session_regenerate_id(true);
 
-                // Set session variables
+                // Set basic session variables
                 $_SESSION['login'] = true;
                 $_SESSION['user_id'] = $user['user_id'];
                 $_SESSION['customer_id'] = $user['customer_id'];
@@ -82,7 +82,7 @@ if (isset($data['login'])) {
                 $additional_info = "User logged in with email: " . $user_email;
                 logAdminActivity($admin_user_id, $action, $entity, $entity_id, $additional_info);
 
-                // Return user type
+                // Set user type in session
                 if ($user_type == 999) {
                     $_SESSION['user_type'] = 'admin';
                     echo json_encode('admin');
@@ -95,6 +95,9 @@ if (isset($data['login'])) {
                 } elseif ($user_type == 2) {
                     $_SESSION['user_type'] = 'clerk';
                     echo json_encode('clerk');
+                } else {
+                    $_SESSION['user_type'] = 'undefined';
+                    echo json_encode('undefined');
                 }
             } else {
                 echo json_encode('close');
