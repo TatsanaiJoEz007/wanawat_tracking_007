@@ -117,7 +117,7 @@ $(document).ready(function() {
                         });
 
                         if (response === 'admin') {
-                            window.location.href = "../view/admin/permission_admin";
+                            window.location.href = "../view/admin/dashboard";
                         } else if (response === 'user') {
                             window.location.href = "../view/mainpage";
                         } else if (response === 'employee') {
