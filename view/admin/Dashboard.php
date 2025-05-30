@@ -16,104 +16,6 @@ if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-// Handle AJAX requests for chart data
-if (isset($_GET['ajax'])) {
-    header('Content-Type: application/json');
-    
-    if ($_GET['ajax'] === 'monthly_data') {
-        $year = isset($_GET['year']) ? (int)$_GET['year'] : date('Y');
-        
-        try {
-            // Get monthly bills data
-            $stmt = $conn->prepare("
-                SELECT MONTH(create_at) as month, COUNT(*) as count 
-                FROM tb_header 
-                WHERE YEAR(create_at) = ? 
-                GROUP BY MONTH(create_at) 
-                ORDER BY MONTH(create_at)
-            ");
-            $stmt->bind_param("i", $year);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            
-            $monthlyBills = array_fill(1, 12, 0);
-            while ($row = $result->fetch_assoc()) {
-                $monthlyBills[(int)$row['month']] = (int)$row['count'];
-            }
-            $stmt->close();
-            
-            // Get monthly deliveries data
-            $stmt = $conn->prepare("
-                SELECT MONTH(delivery_date) as month, COUNT(*) as count 
-                FROM tb_delivery 
-                WHERE YEAR(delivery_date) = ? 
-                GROUP BY MONTH(delivery_date) 
-                ORDER BY MONTH(delivery_date)
-            ");
-            $stmt->bind_param("i", $year);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            
-            $monthlyDeliveries = array_fill(1, 12, 0);
-            while ($row = $result->fetch_assoc()) {
-                $monthlyDeliveries[(int)$row['month']] = (int)$row['count'];
-            }
-            $stmt->close();
-            
-            echo json_encode([
-                'success' => true,
-                'bills' => array_values($monthlyBills),
-                'deliveries' => array_values($monthlyDeliveries)
-            ]);
-        } catch (Exception $e) {
-            echo json_encode(['success' => false, 'error' => $e->getMessage()]);
-        }
-        exit;
-    }
-    
-    if ($_GET['ajax'] === 'status_data') {
-        try {
-            // Get delivery status data
-            $stmt = $conn->prepare("
-                SELECT delivery_status, COUNT(*) as count 
-                FROM tb_delivery 
-                GROUP BY delivery_status
-            ");
-            $stmt->execute();
-            $result = $stmt->get_result();
-            
-            $statusData = [
-                'completed' => 0,    // status 5
-                'inprogress' => 0,   // status 1,2
-                'pending' => 0,      // other statuses
-                'problem' => 0       // if any
-            ];
-            
-            while ($row = $result->fetch_assoc()) {
-                $status = (int)$row['delivery_status'];
-                $count = (int)$row['count'];
-                
-                if ($status == 5) {
-                    $statusData['completed'] = $count;
-                } elseif ($status == 1 || $status == 2) {
-                    $statusData['inprogress'] = $count;
-                } else {
-                    $statusData['pending'] += $count;
-                }
-            }
-            $stmt->close();
-            
-            echo json_encode([
-                'success' => true,
-                'data' => $statusData
-            ]);
-        } catch (Exception $e) {
-            echo json_encode(['success' => false, 'error' => $e->getMessage()]);
-        }
-        exit;
-    }
-}
-
 // Get statistics data
 try {
     // Total bills from tb_header
@@ -229,15 +131,15 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
 
         body {
             background: linear-gradient(135deg, #F0592E 0%, #FF8A65 100%);
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
         /* Main Content Styles */
         .home-section {
             position: relative;
             background: transparent;
-            height: 100vh;
+            min-height: 100vh;
             left: 300px;
             width: calc(100% - 300px);
             transition: all 0.5s ease;
@@ -254,13 +156,13 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
             display: flex;
             align-items: center;
             flex-wrap: wrap;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .home-section .home-content .bx-menu,
         .home-section .home-content .text {
             color: #fff;
-            font-size: 28px;
+            font-size: 35px;
         }
 
         .home-section .home-content .bx-menu {
@@ -269,7 +171,7 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
         }
 
         .home-section .home-content .text {
-            font-size: 24px;
+            font-size: 26px;
             font-weight: 600;
         }
 
@@ -278,99 +180,62 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
             border-radius: 15px;
-            padding: 1rem;
+            padding: 2rem;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            height: calc(100vh - 80px);
-            overflow-y: auto;
+            margin-bottom: 20px;
         }
 
         .page-title {
             color: #fff;
-            font-size: 1.5rem;
+            font-size: 2rem;
             font-weight: 700;
             text-align: center;
-            margin-bottom: 1rem;
+            margin-bottom: 2rem;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .stats-row {
-            margin-bottom: 1rem;
+            margin-bottom: 2rem;
         }
 
         .stat-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 12px;
-            padding: 1rem;
+            padding: 1.5rem;
             text-align: center;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
             transition: all 0.3s ease;
             cursor: pointer;
-            height: 110px;
+            height: 140px;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            margin-bottom: 0.75rem;
         }
 
         .stat-card:hover {
-            transform: translateY(-3px);
+            transform: translateY(-5px);
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
         }
 
         .stat-icon {
-            font-size: 1.5rem;
-            margin-bottom: 0.4rem;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
             color: #F0592E;
         }
 
         .stat-number {
-            font-size: 1.4rem;
+            font-size: 1.8rem;
             font-weight: 700;
             color: #2d3748;
-            margin-bottom: 0.2rem;
+            margin-bottom: 0.25rem;
         }
 
         .stat-title {
-            font-size: 0.75rem;
+            font-size: 0.9rem;
             color: #718096;
             font-weight: 500;
-        }
-
-        /* Date Filter */
-        .date-filter {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 12px;
-            padding: 1rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            margin-bottom: 1rem;
-        }
-
-        .date-filter-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #2d3748;
-            text-align: center;
-            margin-bottom: 0.75rem;
-        }
-
-        .date-controls {
-            display: flex;
-            gap: 0.75rem;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .date-select {
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 0.4rem;
-            font-size: 0.8rem;
-            background: white;
         }
 
         /* Chart Section */
@@ -378,39 +243,39 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 12px;
-            padding: 1rem;
+            padding: 1.5rem;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         .chart-title {
-            font-size: 1rem;
+            font-size: 1.25rem;
             font-weight: 600;
             color: #2d3748;
             text-align: center;
-            margin-bottom: 0.75rem;
+            margin-bottom: 1rem;
         }
 
         .chart-container {
-            height: 250px;
+            height: 300px;
             position: relative;
         }
 
         /* Filter Buttons */
         .filter-section {
             text-align: center;
-            margin-bottom: 0.75rem;
+            margin-bottom: 1rem;
         }
 
         .filter-btn {
             background: #f8f9fa;
             border: 1px solid #dee2e6;
             color: #495057;
-            padding: 0.3rem 0.75rem;
-            margin: 0 0.2rem;
-            border-radius: 6px;
-            font-size: 0.8rem;
+            padding: 0.5rem 1rem;
+            margin: 0 0.25rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
             transition: all 0.3s ease;
         }
 
@@ -421,36 +286,95 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
             color: white;
         }
 
+        /* Date Filter */
+        .date-filter {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 1.5rem;
+        }
+
+        .date-filter-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .date-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .date-select {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 0.5rem;
+            font-size: 0.9rem;
+            background: white;
+        }
+
+        /* Loading States */
+        .loading-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 250px;
+            color: #718096;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #F0592E;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         /* Quick Actions */
         .quick-actions {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 12px;
-            padding: 1rem;
+            padding: 1.5rem;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .quick-actions-title {
-            font-size: 1rem;
+            font-size: 1.25rem;
             font-weight: 600;
             color: #2d3748;
             text-align: center;
-            margin-bottom: 0.75rem;
+            margin-bottom: 1rem;
         }
 
         .action-btn {
             display: block;
             width: 100%;
-            padding: 0.5rem;
-            margin-bottom: 0.4rem;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
             border: none;
             border-radius: 8px;
             color: white;
             text-decoration: none;
             text-align: center;
             font-weight: 500;
-            font-size: 0.85rem;
             transition: all 0.3s ease;
         }
 
@@ -465,70 +389,157 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
         .btn-warning-custom { background: linear-gradient(135deg, #ed8936, #dd6b20); }
         .btn-danger-custom { background: linear-gradient(135deg, #f56565, #e53e3e); }
 
-        /* Loading States */
-        .loading-placeholder {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 200px;
-            color: #718096;
+        /* Mobile Warning Modal */
+        .mobile-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.8);
         }
 
-        .loading-spinner {
-            width: 30px;
-            height: 30px;
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #F0592E;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 0.75rem;
+        .mobile-modal-content {
+            position: absolute;
+            height: 50%;
+            width: 90%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            padding: 2rem;
+            text-align: center;
+            border-radius: 8px;
+            max-width: 90%;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        /* Error Message */
+        .error-message {
+            display: none;
+            color: #dc3545;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 10px 0;
+            text-align: center;
         }
 
         /* Responsive Design */
+        @media screen and (max-width: 1200px) {
+            .stat-card {
+                height: 130px;
+                padding: 1rem;
+            }
+
+            .stat-number {
+                font-size: 1.6rem;
+            }
+
+            .chart-container {
+                height: 280px;
+            }
+        }
+
         @media screen and (max-width: 768px) {
             .home-section {
                 left: 0;
                 width: 100%;
-                padding: 8px;
+                padding: 12px 8px;
             }
 
             .dashboard-content {
-                padding: 0.75rem;
+                padding: 1rem;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .stat-card {
+                height: 120px;
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .stat-number {
+                font-size: 1.4rem;
+            }
+
+            .stat-title {
+                font-size: 0.8rem;
+            }
+
+            .chart-container {
+                height: 250px;
+            }
+
+            .date-controls {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .date-select {
+                width: 100%;
+                max-width: 200px;
+            }
+
+            .filter-btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+                margin: 0.1rem;
+            }
+
+            .home-content .text {
+                font-size: 20px;
+            }
+
+            .home-content .bx-menu {
+                font-size: 28px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .dashboard-content {
+                padding: 0.5rem;
             }
 
             .page-title {
                 font-size: 1.2rem;
+                margin-bottom: 1rem;
             }
 
             .stat-card {
-                height: 90px;
-                padding: 0.75rem;
+                height: 100px;
+                padding: 0.5rem;
             }
 
             .stat-number {
                 font-size: 1.2rem;
             }
 
-            .stat-title {
-                font-size: 0.7rem;
+            .stat-icon {
+                font-size: 1.5rem;
+                margin-bottom: 0.25rem;
             }
 
             .chart-container {
                 height: 200px;
             }
 
-            .home-content .text {
-                font-size: 18px;
+            .chart-title {
+                font-size: 1rem;
             }
 
-            .home-content .bx-menu {
-                font-size: 24px;
+            .date-filter-title {
+                font-size: 1rem;
+            }
+
+            .quick-actions-title {
+                font-size: 1rem;
             }
         }
     </style>
@@ -538,6 +549,20 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
     <!-- Include Sidebar -->
     <?php include_once('function/sidebar.php'); ?>
 
+    <!-- Mobile Warning Modal -->
+    <div id="mobileWarningModal" class="mobile-modal">
+        <div class="mobile-modal-content">
+            <h2>กรุณาใช้ระบบนี้บนคอมพิวเตอร์</h2>
+            <p>เพื่อให้รับประสบการณ์ในการทำงานที่ดีที่สุด <br>หน้าเพจนี้จำเป็นต้องใช้คอมพิวเตอร์</p>
+            <img style="width:30%;" src="./assets/img/adminpic/wehome.png" class="wehome" alt="Warning Image">
+            <br><br>
+            <a href="#" id="mobile-logout-button" data-csrf-token="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? ''); ?>">
+                <i class="fas fa-sign-out-alt" style="color:red;"></i>
+                <span style="color:red;">ออกจากระบบ</span>
+            </a>
+        </div>
+    </div>
+
     <!-- Main Dashboard Content -->
     <section class="home-section">
         <div class="home-content">
@@ -546,15 +571,15 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
         </div>
 
         <div class="dashboard-content">
-            <h1 class="page-title">
+            <h1 class="page-title animate__animated animate__fadeInDown">
                 <i class="bi bi-speedometer2 me-2"></i>
                 Dashboard Overview - ระบบติดตามการขนส่ง
             </h1>
 
-            <!-- Statistics Cards Row 1 -->
+            <!-- Statistics Cards - บิลและการขนส่ง -->
             <div class="row stats-row">
-                <div class="col-3">
-                    <div class="stat-card">
+                <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
+                    <div class="stat-card animate__animated animate__fadeInUp animate__delay-1s">
                         <div class="stat-icon">
                             <i class="bi bi-receipt-cutoff"></i>
                         </div>
@@ -562,8 +587,9 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                         <div class="stat-title">จำนวนบิลทั้งหมด</div>
                     </div>
                 </div>
-                <div class="col-3">
-                    <div class="stat-card">
+
+                <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
+                    <div class="stat-card animate__animated animate__fadeInUp animate__delay-2s">
                         <div class="stat-icon">
                             <i class="bi bi-check-circle"></i>
                         </div>
@@ -571,8 +597,9 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                         <div class="stat-title">บิลที่ใช้งานได้</div>
                     </div>
                 </div>
-                <div class="col-3">
-                    <div class="stat-card">
+
+                <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
+                    <div class="stat-card animate__animated animate__fadeInUp animate__delay-3s">
                         <div class="stat-icon">
                             <i class="bi bi-x-circle"></i>
                         </div>
@@ -580,8 +607,9 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                         <div class="stat-title">บิลที่ถูกยกเลิก</div>
                     </div>
                 </div>
-                <div class="col-3">
-                    <div class="stat-card">
+
+                <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
+                    <div class="stat-card animate__animated animate__fadeInUp animate__delay-4s">
                         <div class="stat-icon">
                             <i class="bi bi-calendar-month"></i>
                         </div>
@@ -591,10 +619,10 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                 </div>
             </div>
 
-            <!-- Statistics Cards Row 2 -->
+            <!-- Additional Stats Row - การขนส่งและผู้ใช้งาน -->
             <div class="row stats-row">
-                <div class="col-3">
-                    <div class="stat-card">
+                <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
+                    <div class="stat-card animate__animated animate__fadeInUp animate__delay-5s">
                         <div class="stat-icon">
                             <i class="bi bi-truck"></i>
                         </div>
@@ -602,8 +630,9 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                         <div class="stat-title">เที่ยวขนส่งทั้งหมด</div>
                     </div>
                 </div>
-                <div class="col-3">
-                    <div class="stat-card">
+
+                <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
+                    <div class="stat-card animate__animated animate__fadeInUp animate__delay-6s">
                         <div class="stat-icon">
                             <i class="bi bi-check2-square"></i>
                         </div>
@@ -611,8 +640,9 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                         <div class="stat-title">การขนส่งเสร็จสิ้น</div>
                     </div>
                 </div>
-                <div class="col-3">
-                    <div class="stat-card">
+
+                <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
+                    <div class="stat-card animate__animated animate__fadeInUp animate__delay-7s">
                         <div class="stat-icon">
                             <i class="bi bi-hourglass-split"></i>
                         </div>
@@ -620,8 +650,9 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                         <div class="stat-title">การขนส่งดำเนินอยู่</div>
                     </div>
                 </div>
-                <div class="col-3">
-                    <div class="stat-card">
+
+                <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
+                    <div class="stat-card animate__animated animate__fadeInUp animate__delay-8s">
                         <div class="stat-icon">
                             <i class="bi bi-box-seam"></i>
                         </div>
@@ -631,19 +662,20 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                 </div>
             </div>
 
-            <!-- Statistics Cards Row 3 -->
+            <!-- User Stats Row -->
             <div class="row stats-row">
-                <div class="col-3">
-                    <div class="stat-card">
+                <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
+                    <div class="stat-card animate__animated animate__fadeInUp animate__delay-9s">
                         <div class="stat-icon">
                             <i class="bi bi-people"></i>
                         </div>
                         <div class="stat-number"><?php echo number_format($total_users); ?></div>
-                        <div class="stat-title">ผู้ใช้งาน</div>
+                        <div class="stat-title">ผู้ใช้งานทั้งหมด</div>
                     </div>
                 </div>
-                <div class="col-3">
-                    <div class="stat-card">
+
+                <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
+                    <div class="stat-card animate__animated animate__fadeInUp animate__delay-10s">
                         <div class="stat-icon">
                             <i class="bi bi-person-badge"></i>
                         </div>
@@ -651,8 +683,9 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                         <div class="stat-title">ผู้ดูแลระบบ</div>
                     </div>
                 </div>
-                <div class="col-3">
-                    <div class="stat-card">
+
+                <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
+                    <div class="stat-card animate__animated animate__fadeInUp animate__delay-11s">
                         <div class="stat-icon">
                             <i class="bi bi-person-check"></i>
                         </div>
@@ -660,8 +693,9 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                         <div class="stat-title">พนักงาน</div>
                     </div>
                 </div>
-                <div class="col-3">
-                    <div class="stat-card">
+
+                <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
+                    <div class="stat-card animate__animated animate__fadeInUp animate__delay-12s">
                         <div class="stat-icon">
                             <i class="bi bi-list-ul"></i>
                         </div>
@@ -672,7 +706,7 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
             </div>
 
             <!-- Date Filter Section -->
-            <div class="date-filter">
+            <div class="date-filter animate__animated animate__fadeInUp animate__delay-13s">
                 <h3 class="date-filter-title">
                     <i class="bi bi-calendar-alt me-2"></i>
                     เลือกวันที่ดูข้อมูลย้อนหลัง
@@ -695,8 +729,8 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
 
             <!-- Charts Section -->
             <div class="row">
-                <div class="col-8">
-                    <div class="chart-section">
+                <div class="col-lg-6 mb-4">
+                    <div class="chart-section animate__animated animate__fadeInLeft animate__delay-14s">
                         <h3 class="chart-title">กราฟบิลและการขนส่งรายเดือน</h3>
                         
                         <div class="filter-section">
@@ -704,6 +738,8 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                             <button class="filter-btn active" data-filter="month">เดือน</button>
                             <button class="filter-btn" data-filter="year">ปี</button>
                         </div>
+
+                        <div id="monthlyChartError" class="error-message"></div>
                         
                         <div class="chart-container">
                             <div id="monthlyChartPlaceholder" class="loading-placeholder">
@@ -715,13 +751,15 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                     </div>
                 </div>
 
-                <div class="col-4">
-                    <div class="chart-section">
+                <div class="col-lg-6 mb-4">
+                    <div class="chart-section animate__animated animate__fadeInRight animate__delay-15s">
                         <h3 class="chart-title">กราฟสถานะการขนส่ง</h3>
                         
-                        <div id="statusChartTitle" class="text-center mb-2" style="font-size: 0.8rem;">
+                        <div id="statusChartTitle" class="text-center mb-3">
                             สถานะการขนส่งประจำปี <span id="statusChartYear"></span>
                         </div>
+
+                        <div id="statusChartError" class="error-message"></div>
                         
                         <div class="chart-container">
                             <div id="statusChartPlaceholder" class="loading-placeholder">
@@ -736,31 +774,31 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
 
             <!-- Quick Actions -->
             <?php if (isset($permissions['manage_permission']) && $permissions['manage_permission'] == 1): ?>
-            <div class="quick-actions">
+            <div class="quick-actions animate__animated animate__fadeInUp animate__delay-16s">
                 <h3 class="quick-actions-title">
                     <i class="bi bi-lightning me-2"></i>
                     การจัดการด่วน
                 </h3>
                 <div class="row">
-                    <div class="col-3">
+                    <div class="col-lg-3 col-md-6 mb-2">
                         <a href="../admin/permission_admin" class="action-btn btn-primary-custom">
                             <i class="bi bi-shield-check me-2"></i>
                             จัดการแอดมิน
                         </a>
                     </div>
-                    <div class="col-3">
+                    <div class="col-lg-3 col-md-6 mb-2">
                         <a href="../admin/permission_user" class="action-btn btn-success-custom">
                             <i class="bi bi-people me-2"></i>
                             จัดการผู้ใช้งาน
                         </a>
                     </div>
-                    <div class="col-3">
+                    <div class="col-lg-3 col-md-6 mb-2">
                         <a href="../admin/permission_employee" class="action-btn btn-warning-custom">
                             <i class="bi bi-person-badge me-2"></i>
                             จัดการพนักงาน
                         </a>
                     </div>
-                    <div class="col-3">
+                    <div class="col-lg-3 col-md-6 mb-2">
                         <a href="../admin/Manage.php" class="action-btn btn-danger-custom">
                             <i class="bi bi-gear me-2"></i>
                             ควบคุมสิทธิ์
@@ -789,6 +827,8 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
             let currentFilter = 'month';
 
             // DOM Elements
+            const monthlyChartError = document.getElementById('monthlyChartError');
+            const statusChartError = document.getElementById('statusChartError');
             const monthlyChartCanvas = document.getElementById('monthlyChart');
             const statusChartCanvas = document.getElementById('statusChart');
             const monthlyChartPlaceholder = document.getElementById('monthlyChartPlaceholder');
@@ -884,6 +924,20 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
             });
 
             // Chart Functions
+            function showError(element, message) {
+                if (element) {
+                    element.textContent = message;
+                    element.style.display = 'block';
+                }
+                console.error(message);
+            }
+
+            function hideError(element) {
+                if (element) {
+                    element.style.display = 'none';
+                }
+            }
+
             async function fetchAndUpdateCharts() {
                 // Show placeholders
                 if (monthlyChartPlaceholder) monthlyChartPlaceholder.style.display = 'flex';
@@ -891,52 +945,36 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                 if (monthlyChartCanvas) monthlyChartCanvas.style.display = 'none';
                 if (statusChartCanvas) statusChartCanvas.style.display = 'none';
 
-                try {
-                    // Fetch monthly data
-                    const monthlyResponse = await fetch(`?ajax=monthly_data&year=${selectedYear}`);
-                    const monthlyData = await monthlyResponse.json();
-                    
-                    // Fetch status data
-                    const statusResponse = await fetch(`?ajax=status_data`);
-                    const statusData = await statusResponse.json();
+                hideError(monthlyChartError);
+                hideError(statusChartError);
 
-                    if (monthlyData.success && statusData.success) {
-                        createCharts(monthlyData, statusData.data);
-                        
+                try {
+                    // Simulate data fetch
+                    setTimeout(() => {
                         // Hide placeholders
                         if (monthlyChartPlaceholder) monthlyChartPlaceholder.style.display = 'none';
                         if (statusChartPlaceholder) statusChartPlaceholder.style.display = 'none';
                         if (monthlyChartCanvas) monthlyChartCanvas.style.display = 'block';
                         if (statusChartCanvas) statusChartCanvas.style.display = 'block';
 
+                        // Create sample charts with delivery-related data
+                        createSampleCharts();
+
                         if (statusChartYear) {
                             statusChartYear.textContent = selectedYear + 543;
                         }
-                    } else {
-                        throw new Error('Failed to fetch chart data');
-                    }
+                    }, 1500);
 
                 } catch (error) {
                     console.error('Error fetching data:', error);
-                    // Hide placeholders and show error
-                    if (monthlyChartPlaceholder) monthlyChartPlaceholder.style.display = 'none';
-                    if (statusChartPlaceholder) statusChartPlaceholder.style.display = 'none';
+                    showError(monthlyChartError, `เกิดข้อผิดพลาด: ${error.message}`);
+                    showError(statusChartError, `เกิดข้อผิดพลาด: ${error.message}`);
                 }
             }
 
-            function createCharts(monthlyData, statusData) {
-                // Destroy existing charts
-                if (monthlyChart) {
-                    monthlyChart.destroy();
-                    monthlyChart = null;
-                }
-                if (statusChart) {
-                    statusChart.destroy();
-                    statusChart = null;
-                }
-
+            function createSampleCharts() {
                 // Monthly Bills & Deliveries Chart
-                if (monthlyChartCanvas) {
+                if (monthlyChartCanvas && !monthlyChart) {
                     const ctx = monthlyChartCanvas.getContext('2d');
                     monthlyChart = new Chart(ctx, {
                         type: 'line',
@@ -944,7 +982,7 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                             labels: thaiMonths,
                             datasets: [{
                                 label: 'จำนวนบิล',
-                                data: monthlyData.bills,
+                                data: [45, 52, 38, 67, 49, 73, 61, 84, 56, 71, 68, 42],
                                 borderColor: '#F0592E',
                                 backgroundColor: 'rgba(240, 89, 46, 0.1)',
                                 borderWidth: 2,
@@ -952,7 +990,7 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                                 fill: true
                             }, {
                                 label: 'การขนส่ง',
-                                data: monthlyData.deliveries,
+                                data: [12, 15, 10, 18, 14, 22, 19, 25, 16, 20, 18, 13],
                                 borderColor: '#4CAF50',
                                 backgroundColor: 'rgba(76, 175, 80, 0.1)',
                                 borderWidth: 2,
@@ -967,31 +1005,20 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                                 y: {
                                     beginAtZero: true
                                 }
-                            },
-                            plugins: {
-                                legend: {
-                                    display: true,
-                                    position: 'top'
-                                }
                             }
                         }
                     });
                 }
 
                 // Delivery Status Chart
-                if (statusChartCanvas) {
+                if (statusChartCanvas && !statusChart) {
                     const ctx = statusChartCanvas.getContext('2d');
                     statusChart = new Chart(ctx, {
                         type: 'doughnut',
                         data: {
                             labels: ['การขนส่งเสร็จสิ้น', 'กำลังดำเนินการ', 'รอการขนส่ง', 'ปัญหาการขนส่ง'],
                             datasets: [{
-                                data: [
-                                    statusData.completed,
-                                    statusData.inprogress,
-                                    statusData.pending,
-                                    statusData.problem
-                                ],
+                                data: [<?php echo $completed_deliveries; ?>, <?php echo $inprogress_deliveries; ?>, <?php echo ($total_deliveries - $completed_deliveries - $inprogress_deliveries); ?>, 0],
                                 backgroundColor: [
                                     '#4CAF50',
                                     '#2196F3', 
@@ -1003,22 +1030,24 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
-                            cutout: '60%',
-                            plugins: {
-                                legend: {
-                                    display: true,
-                                    position: 'bottom',
-                                    labels: {
-                                        font: {
-                                            size: 10
-                                        }
-                                    }
-                                }
-                            }
+                            cutout: '60%'
                         }
                     });
                 }
             }
+
+            // Mobile Warning
+            function checkScreenSize() {
+                const mobileModal = document.getElementById('mobileWarningModal');
+                if (window.innerWidth < 768) {
+                    if (mobileModal) mobileModal.style.display = 'block';
+                } else {
+                    if (mobileModal) mobileModal.style.display = 'none';
+                }
+            }
+
+            checkScreenSize();
+            window.addEventListener('resize', checkScreenSize);
 
             // Initialize
             fetchAndUpdateCharts();

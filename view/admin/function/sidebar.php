@@ -391,18 +391,12 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
             <!-- ผู้ใช้งานในระบบ - เมนูสำหรับผู้ดูแลระบบ -->
             <?php if (isset($permissions['manage_permission']) && $permissions['manage_permission'] == 1): ?>
             <li>
-                <div class="iocn-link">
-                    <a href="#">
-                        <i class="bx bx-user nav_icon"></i>
-                        <span class="link_name">ตารางข้อมูลผู้ใช้งานในระบบ</span>
-                    </a>
-                    <i class='bx bxs-chevron-down arrow'></i>
-                </div>
-                <ul class="sub-menu">
-                    <li><a class="link_name" href="#">ตารางข้อมูลผู้ใช้งานในระบบ</a></li>
-                    <li><a href="../admin/permission_admin">แอดมิน</a></li>
-                    <li><a href="../admin/permission_user">ลูกค้า</a></li>
-                    <li><a href="../admin/permission_employee">พนักงาน</a></li>
+                <a href="../admin/edituser.php">
+                    <i class="bx bx-user nav_icon"></i>
+                    <span class="link_name">ตารางข้อมูลผู้ใช้งานในระบบ</span>
+                </a>
+                <ul class="sub-menu blank">
+                    <li><a class="link_name" href="../admin/Manage.php">ตารางข้อมูลผู้ใช้งานในระบบ</a></li>
                 </ul>
             </li>
             <?php endif; ?>
