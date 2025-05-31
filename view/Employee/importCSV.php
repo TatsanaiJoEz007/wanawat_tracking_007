@@ -831,33 +831,170 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
             importButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังนำเข้า...';
             importButton.disabled = true;
 
-            // Simulate database import (replace with actual implementation)
-            setTimeout(() => {
+            // Prepare form data
+            const formData = new FormData();
+            
+            // Use different parameter names for different types
+            if (type === 'head') {
+                formData.append('csvData', convertedCSVData[type]);
+            } else {
+                formData.append('csvData2', convertedCSVData[type]); // importLine.php expects csvData2
+            }
+            
+            // Add CSRF token if available
+            <?php if (isset($_SESSION['csrf_token'])): ?>
+            formData.append('csrf_token', '<?php echo $_SESSION['csrf_token']; ?>');
+            <?php endif; ?>
+
+            // Determine the correct PHP file
+            const phpFile = type === 'head' ? 'function/importCSV/importHeader.php' : 'function/importCSV/importLine.php';
+
+            // Make AJAX request
+            fetch(phpFile, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                // Check if response is ok
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.text(); // Get as text first to handle both JSON and HTML responses
+            })
+            .then(responseText => {
+                console.log('Response:', responseText); // For debugging
+                
+                try {
+                    // Try to parse as JSON first
+                    const data = JSON.parse(responseText);
+                    
+                    if (data.status === 'success') {
+                        // Success case
+                        let successMessage = data.message || `ข้อมูล ${type.toUpperCase()} CSV ถูกนำเข้าฐานข้อมูลเรียบร้อยแล้ว`;
+                        
+                        // Add details if available
+                        if (data.details && data.details.success_count) {
+                            successMessage += `\n\nรายละเอียด:\n- นำเข้าสำเร็จ: ${data.details.success_count} แถว`;
+                            if (data.details.error_count > 0) {
+                                successMessage += `\n- ข้อผิดพลาด: ${data.details.error_count} แถว`;
+                            }
+                        }
+                        
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'นำเข้าข้อมูลสำเร็จ!',
+                            text: successMessage,
+                            confirmButtonColor: '#F0592E'
+                        });
+
+                        // Clear the output
+                        const outputElement = document.getElementById(type === 'head' ? 'output1' : 'output2');
+                        outputElement.textContent = '';
+                        
+                        // Clear the converted data
+                        delete convertedCSVData[type];
+                        
+                        // Reset file input
+                        const fileInput = document.getElementById(type === 'head' ? 'csvFileInput1' : 'csvFileInput2');
+                        fileInput.value = '';
+                        const textElementId = type === 'head' ? 'fileInputText1' : 'fileInputText2';
+                        updateFileInputText(textElementId, null);
+                        
+                    } else {
+                        // Error case
+                        let errorMessage = data.message || 'เกิดข้อผิดพลาดในการนำเข้าข้อมูล';
+                        
+                        // Add error details if available
+                        if (data.details && data.details.errors && data.details.errors.length > 0) {
+                            errorMessage += '\n\nรายละเอียดข้อผิดพลาด:\n' + data.details.errors.slice(0, 5).join('\n');
+                            if (data.details.errors.length > 5) {
+                                errorMessage += `\n... และอีก ${data.details.errors.length - 5} ข้อผิดพลาด`;
+                            }
+                        }
+                        
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'เกิดข้อผิดพลาด',
+                            text: errorMessage,
+                            confirmButtonColor: '#F0592E'
+                        });
+                    }
+                } catch (parseError) {
+                    // If JSON parsing fails, check if it's HTML with success/error indicators
+                    console.log('JSON parse error:', parseError);
+                    console.log('Response text:', responseText);
+                    
+                    if (responseText.includes('success') || responseText.includes('สำเร็จ') || responseText.trim() === '') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'นำเข้าข้อมูลสำเร็จ!',
+                            text: `ข้อมูล ${type.toUpperCase()} CSV ถูกนำเข้าฐานข้อมูลเรียบร้อยแล้ว`,
+                            confirmButtonColor: '#F0592E'
+                        });
+
+                        // Clear the output
+                        const outputElement = document.getElementById(type === 'head' ? 'output1' : 'output2');
+                        outputElement.textContent = '';
+                        
+                        // Clear the converted data
+                        delete convertedCSVData[type];
+                        
+                        // Reset file input
+                        const fileInput = document.getElementById(type === 'head' ? 'csvFileInput1' : 'csvFileInput2');
+                        fileInput.value = '';
+                        const textElementId = type === 'head' ? 'fileInputText1' : 'fileInputText2';
+                        updateFileInputText(textElementId, null);
+                        
+                    } else {
+                        // Extract error message from HTML if possible
+                        let errorMessage = 'เกิดข้อผิดพลาดในการนำเข้าข้อมูล';
+                        const scriptMatch = responseText.match(/text: "(.*?)"/);
+                        if (scriptMatch) {
+                            errorMessage = scriptMatch[1];
+                        }
+                        
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'เกิดข้อผิดพลาด',
+                            text: errorMessage,
+                            confirmButtonColor: '#F0592E'
+                        });
+                        
+                        // Show raw response in output for debugging
+                        const outputElement = document.getElementById(type === 'head' ? 'output1' : 'output2');
+                        outputElement.textContent = `❌ เกิดข้อผิดพลาด:\n${responseText}`;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Fetch Error:', error);
+                
+                // Show detailed error message
+                let errorMessage = error.message || 'ไม่สามารถนำเข้าข้อมูลได้';
+                
+                // Handle specific error types
+                if (error.message.includes('HTTP error')) {
+                    errorMessage = 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาตรวจสอบ path ของไฟล์ PHP';
+                } else if (error.message.includes('NetworkError') || error.message.includes('fetch')) {
+                    errorMessage = 'เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย';
+                }
+                
                 Swal.fire({
-                    icon: 'success',
-                    title: 'นำเข้าข้อมูลสำเร็จ!',
-                    text: `ข้อมูล ${type.toUpperCase()} CSV ถูกนำเข้าฐานข้อมูลเรียบร้อยแล้ว`,
+                    icon: 'error',
+                    title: 'เกิดข้อผิดพลาด',
+                    text: errorMessage,
                     confirmButtonColor: '#F0592E'
                 });
 
+                // Show error in output container for debugging
+                const outputElement = document.getElementById(type === 'head' ? 'output1' : 'output2');
+                outputElement.textContent = `❌ เกิดข้อผิดพลาด: ${errorMessage}`;
+            })
+            .finally(() => {
                 // Reset button state
                 importButton.innerHTML = originalText;
                 importButton.disabled = false;
-
-                // Clear the output
-                const outputElement = document.getElementById(type === 'head' ? 'output1' : 'output2');
-                outputElement.textContent = '';
-                
-                // Clear the converted data
-                delete convertedCSVData[type];
-                
-                // Reset file input
-                const fileInput = document.getElementById(type === 'head' ? 'csvFileInput1' : 'csvFileInput2');
-                fileInput.value = '';
-                const textElementId = type === 'head' ? 'fileInputText1' : 'fileInputText2';
-                updateFileInputText(textElementId, null);
-                
-            }, 2000); // Simulate 2 second delay
+            });
         }
 
         // Add drag and drop functionality
@@ -923,6 +1060,8 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                 el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
                 observer.observe(el);
             });
+            
+            console.log('Import CSV page loaded successfully');
         });
     </script>
 </body>

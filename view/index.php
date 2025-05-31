@@ -1,3 +1,10 @@
+<?php
+// เริ่ม output buffering และ session ก่อนอื่น
+ob_start();
+
+// รวมไฟล์จัดการภาษาก่อน
+require_once('function/language.php');
+?>
 <!DOCTYPE html>
 <html lang="<?php echo $lang; ?>">
 
@@ -150,10 +157,10 @@
     <div id="cookieModal" class="modal">
         <div class="modal-content">
             <div class="cookie-emoji">🍪</div>
-            <h2>ยอมรับคุกกี้</h2>
-            <p>เราใช้คุกกี้เพื่อให้แน่ใจว่าคุณได้รับประสบการณ์ที่ดีที่สุดบนเว็บไซต์ของเรา</p>
-            <button id="acceptCookie" onclick="acceptCookie()">ยอมรับ</button>
-            <button id="rejectCookie" onclick="rejectCookie()">ไม่ยอมรับ</button>
+            <h2><?php echo $lang == 'th' ? 'ยอมรับคุกกี้' : 'Accept Cookies'; ?></h2>
+            <p><?php echo $lang == 'th' ? 'เราใช้คุกกี้เพื่อให้แน่ใจว่าคุณได้รับประสบการณ์ที่ดีที่สุดบนเว็บไซต์ของเรา' : 'We use cookies to ensure you get the best experience on our website'; ?></p>
+            <button id="acceptCookie" onclick="acceptCookie()"><?php echo $lang == 'th' ? 'ยอมรับ' : 'Accept'; ?></button>
+            <button id="rejectCookie" onclick="rejectCookie()"><?php echo $lang == 'th' ? 'ไม่ยอมรับ' : 'Reject'; ?></button>
         </div>
     </div>
 
@@ -162,6 +169,26 @@
     </footer>
 
     <script>
+        // ฟังก์ชันสำหรับเปลี่ยนภาษา
+        function changeLanguage(lang) {
+            const formData = new FormData();
+            formData.append('lang', lang);
+            
+            fetch('function/language.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload(); // รีโหลดหน้าเพื่อใช้ภาษาใหม่
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
         window.onload = function () {
             var cookieAccepted = getCookie("cookieAccepted");
             if (!cookieAccepted) {
@@ -200,11 +227,14 @@
         }
 
         function rejectCookie() {
+            const warningText = <?php echo $lang == 'th' ? "'คุณจะไม่ได้รับประสบการณ์การใช้งานฟังก์ชั่นในการทำงานต่างๆจากหน้าเว็ป'" : "'You will not receive the full functionality and experience from this website'"; ?>;
+            const confirmText = <?php echo $lang == 'th' ? "'ตกลง'" : "'OK'"; ?>;
+            
             swal({
-                title: 'แจ้งเตือน',
-                text: 'คุณจะไม่ได้รับประสบการณ์การใช้งานฟังก์ชั่นในการทำงานต่างๆจากหน้าเว็ป',
+                title: <?php echo $lang == 'th' ? "'แจ้งเตือน'" : "'Warning'"; ?>,
+                text: warningText,
                 icon: 'warning',
-                confirmButtonText: 'ตกลง'
+                confirmButtonText: confirmText
             }).then((result) => {
                 if (result.isConfirmed) {
                     var modal = document.getElementById("cookieModal");

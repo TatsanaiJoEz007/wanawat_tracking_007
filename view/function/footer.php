@@ -1,5 +1,5 @@
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet"> <!-- Font Awesome for icons -->
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"> <!-- Bootstrap CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 <style>
     footer {
         position: relative;
@@ -22,7 +22,6 @@
             transform: translateY(100%);
             opacity: 0;
         }
-
         to {
             transform: translateY(0);
             opacity: 1;
@@ -69,71 +68,79 @@
     .wedev-logo {
         width: 55px;
         height: 50px;
-        /* Adjust size as needed */
         margin-top: 20px;
-
         margin-right: 700px;
-        /* Add margin to separate from other elements */
     }
 
     @media (max-width: 576px) {
-    .footer-content {
-        text-align: center;
-        flex-direction: column;
-    }
+        .footer-content {
+            text-align: center;
+            flex-direction: column;
+        }
 
-    .wedev-logo {
-        margin: 20px auto; /* Center the logo horizontally */
+        .wedev-logo {
+            margin: 20px auto;
+        }
     }
-}
-
 </style>
 
-<body>
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-logo">
-                    <img src="../view/assets/img/logo/logo.png" alt="Company Logo">
-                </div>
-                <img src="../view/assets/img/wedev.png" class="wedev-logo" alt="WEDEV Logo"> <!-- Move WEDEV logo here -->
-                <div class="social-icons">
-                    <a href="https://www.facebook.com/WeHomeOnline" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://maps.app.goo.gl/d4iug4bQ4Z5tMJAC9" target="_blank"><i class="fas fa-map-marker-alt"></i></a>
-                    <a href="https://wehome.co.th" target="_blank"><i class="fas fa-globe"></i></a>
-                    <a href="#" onclick="confirmCall()"><i class="fas fa-phone-alt"></i></a>
-                </div>
-            </div>
-            <div class="powered-by text-center">
-                <p>Powered By: <a href="https://www.facebook.com/profile.php?id=61558770879804">WE.DEV</a></p>
-            </div>
-            <div class="footer-text text-center">
-                <p>&copy; 2024 Wanawat Hardware Company Limited. All rights reserved.</p>
-            </div>
+<div class="container">
+    <div class="footer-content">
+        <div class="footer-logo">
+            <img src="../view/assets/img/logo/logo.png" alt="Company Logo">
         </div>
-    </footer>
+        <img src="../view/assets/img/wedev.png" class="wedev-logo" alt="WEDEV Logo">
+        <div class="social-icons">
+            <a href="https://www.facebook.com/WeHomeOnline" target="_blank"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://maps.app.goo.gl/d4iug4bQ4Z5tMJAC9" target="_blank"><i class="fas fa-map-marker-alt"></i></a>
+            <a href="https://wehome.co.th" target="_blank"><i class="fas fa-globe"></i></a>
+            <a href="#" onclick="confirmCall()"><i class="fas fa-phone-alt"></i></a>
+        </div>
+    </div>
+    <div class="powered-by text-center">
+        <p><?php echo isset($lang) && $lang == 'th' ? 'พัฒนาโดย:' : 'Powered By:'; ?> <a href="https://www.facebook.com/profile.php?id=61558770879804">WE.DEV</a></p>
+    </div>
+    <div class="footer-text text-center">
+        <p>&copy; 2024 Wanawat Hardware Company Limited. <?php echo isset($lang) && $lang == 'th' ? 'สงวนสิทธิ์ทุกประการ' : 'All rights reserved'; ?>.</p>
+    </div>
+</div>
 
+<!-- Bootstrap JS -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
-    <!-- Bootstrap JS (optional) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-    <script>
-        function confirmCall() {
-            Swal.fire({
-                title: "Confirmation",
-                text: "Would you like to call WeHome Co., Ltd.?",
-                icon: "info",
-                showCancelButton: true,
-                confirmButtonText: "Yes, call now",
-                cancelButtonText: "No",
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = "tel:+6674324697";
-                }
-            });
-            return false;
+<script>
+function confirmCall() {
+    // ตรวจสอบว่ามีตัวแปร lang หรือไม่
+    const isThaiLang = typeof window.currentLang !== 'undefined' ? window.currentLang === 'th' : 
+                      (typeof PHP_LANG !== 'undefined' ? PHP_LANG === 'th' : true);
+    
+    const confirmTitle = isThaiLang ? 'ยืนยันการโทร' : 'Confirmation';
+    const confirmText = isThaiLang ? 'คุณต้องการโทรไปที่ WeHome Co., Ltd. หรือไม่?' : 'Would you like to call WeHome Co., Ltd.?';
+    const confirmButton = isThaiLang ? 'โทรเลย' : 'Yes, call now';
+    const cancelButton = isThaiLang ? 'ยกเลิก' : 'No';
+
+    Swal.fire({
+        title: confirmTitle,
+        text: confirmText,
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonText: confirmButton,
+        cancelButtonText: cancelButton,
+        confirmButtonColor: '#FF5722',
+        cancelButtonColor: '#6c757d'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = "tel:+6674324697";
         }
-    </script>
-</body>
+    });
+    return false;
+}
+
+// ตั้งค่าภาษาจาก PHP
+<?php if (isset($lang)): ?>
+window.currentLang = '<?php echo $lang; ?>';
+<?php endif; ?>
+</script>
