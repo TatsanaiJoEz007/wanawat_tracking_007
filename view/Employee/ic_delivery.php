@@ -336,6 +336,7 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
             margin-bottom: 20px;
             max-height: 400px;
             overflow-y: auto;
+            min-height: 50px;
         }
 
         .cart-item {
@@ -674,7 +675,7 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
         <div class="container">
             <!-- Main Content -->
             <div class="content-container animate__fadeInUp">
-                <a href="../dashboard.php" class="back-button">
+                <a href="dashboard" class="back-button">
                     <i class="bi bi-arrow-left"></i> กลับไปหน้า Dashboard
                 </a>
                 
@@ -771,7 +772,6 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                                     echo "<td rowspan='" . count($row["item_details"]) . "'><strong>" . $row["bill_number"] . "</strong></td>";
                                     echo "<td rowspan='" . count($row["item_details"]) . "'>" . $row["bill_customer_name"] . "</td>";
                                     echo "<td rowspan='" . count($row["item_details"]) . "'><span style='font-weight: 600; color: #F0592E;'>" . $row["bill_weight"] . "</span></td>";
-                                    echo "<input type='hidden' name='bill_customer_id' value='" . $row["bill_customer_id"] . "'>";
 
                                     foreach ($row["item_details"] as $index => $item) {
                                         if ($index > 0) {
@@ -796,7 +796,7 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                                         echo "<td>" . $item["item_unit"] . "</td>";
                                         echo "<td><span style='color: #28a745; font-weight: 500;'>฿" . $item["item_price"] . "</span></td>";
                                         echo "<td><span style='color: #F0592E; font-weight: 600;'>฿" . $item["line_total"] . "</span></td>";
-                                        echo "<input type='hidden' name='item_sequence[]' value='" . $index . "'>";
+                                        
                                         echo "<td>";
                                         echo "<input type='checkbox' class='product-checkbox' 
                                             data-bill-number='" . $row["bill_number"] . "' 
@@ -831,11 +831,7 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                 </h2>
                 
                 <ul class="cart-items" id="cart-items">
-                    <div class="empty-cart">
-                        <i class="bi bi-cart-x"></i>
-                        <h3>ตะกร้าว่าง</h3>
-                        <p>เลือกสินค้าจากตารางเพื่อเพิ่มลงในตะกร้า</p>
-                    </div>
+                    <!-- Items will be added dynamically -->
                 </ul>
 
                 <div class="cart-total">
@@ -860,7 +856,7 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                     </div>
                 </div>
 
-                <button class="create-bill-btn" id="create-bill-btn" disabled>
+                <button class="create-bill-btn" id="create-bill-btn">
                     <i class="bi bi-receipt"></i>
                     สร้างบิล
                 </button>
@@ -871,101 +867,5 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="function/delivery_bill/js/selectbill.js"></script>
-
-    <script>
-        // Enhanced JavaScript for modern UX
-        document.addEventListener('DOMContentLoaded', function() {
-            const cartItems = document.getElementById('cart-items');
-            const totalPriceElement = document.getElementById('total-price');
-            const createBillBtn = document.getElementById('create-bill-btn');
-
-            // Function to update cart display
-            function updateCartDisplay() {
-                const hasItems = cartItems.children.length > 0 && !cartItems.querySelector('.empty-cart');
-                createBillBtn.disabled = !hasItems;
-                
-                if (hasItems) {
-                    createBillBtn.style.opacity = '1';
-                    createBillBtn.style.cursor = 'pointer';
-                } else {
-                    createBillBtn.style.opacity = '0.6';
-                    createBillBtn.style.cursor = 'not-allowed';
-                }
-            }
-
-            // Monitor cart changes
-            const observer = new MutationObserver(updateCartDisplay);
-            observer.observe(cartItems, { childList: true, subtree: true });
-
-            // Add hover effects to table rows
-            const tableRows = document.querySelectorAll('tbody tr');
-            tableRows.forEach(row => {
-                row.addEventListener('mouseenter', function() {
-                    this.style.transform = 'scale(1.002)';
-                });
-                
-                row.addEventListener('mouseleave', function() {
-                    this.style.transform = 'scale(1)';
-                });
-            });
-
-            // Add animation to checkboxes
-            const checkboxes = document.querySelectorAll('.product-checkbox');
-            checkboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', function() {
-                    if (this.checked) {
-                        this.closest('tr').style.backgroundColor = 'rgba(240, 89, 46, 0.15)';
-                        
-                        // Add success feedback
-                        const icon = document.createElement('i');
-                        icon.className = 'bi bi-check-circle-fill';
-                        icon.style.color = '#28a745';
-                        icon.style.marginLeft = '5px';
-                        icon.style.fontSize = '1.2rem';
-                        
-                        this.parentNode.appendChild(icon);
-                        
-                        setTimeout(() => {
-                            if (icon.parentNode) {
-                                icon.remove();
-                            }
-                        }, 2000);
-                    } else {
-                        this.closest('tr').style.backgroundColor = '';
-                    }
-                });
-            });
-
-            // Add loading state to create bill button
-            createBillBtn.addEventListener('click', function() {
-                if (!this.disabled) {
-                    this.innerHTML = '<i class="bi bi-arrow-clockwise" style="animation: spin 1s linear infinite;"></i> กำลังสร้างบิล...';
-                    this.disabled = true;
-                    
-                    // Simulate processing time (remove this in production)
-                    setTimeout(() => {
-                        this.innerHTML = '<i class="bi bi-receipt"></i> สร้างบิล';
-                        this.disabled = false;
-                    }, 3000);
-                }
-            });
-
-            // Initial cart display update
-            updateCartDisplay();
-        });
-
-        // Add CSS for spin animation if not already present
-        if (!document.querySelector('style[data-spin]')) {
-            const style = document.createElement('style');
-            style.setAttribute('data-spin', 'true');
-            style.textContent = `
-                @keyframes spin {
-                    from { transform: rotate(0deg); }
-                    to { transform: rotate(360deg); }
-                }
-            `;
-            document.head.appendChild(style);
-        }
-    </script>
 </body>
 </html>

@@ -378,24 +378,24 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
     <ul class="nav-links">
         <!-- Dashboard -->
         <li>
-            <a href="dashboard.php">
+            <a href="../employee/dashboard">
                 <i class="bx bx-grid-alt"></i>
                 <span class="link_name">Dashboard</span>
             </a>
             <ul class="sub-menu blank">
-                <li><a class="link_name" href="dashboard.php">Dashboard</a></li>
+                <li><a class="link_name" href="dashboard">Dashboard</a></li>
             </ul>
         </li>
         
         <!-- นำเข้าข้อมูลCSV - สำหรับผู้มีสิทธิ์ -->
         <?php if (isset($permissions['manage_csv']) && $permissions['manage_csv'] == 1): ?>
         <li>
-            <a href="../employee/importCSV.php">
+            <a href="../employee/importCSV">
                 <i class="bx bx-upload"></i>
                 <span class="link_name">นำเข้าข้อมูลCSV</span>
             </a>
             <ul class="sub-menu blank">
-                <li><a class="link_name" href="../employee/importCSV.php">นำเข้าข้อมูลCSV</a></li>
+                <li><a class="link_name" href="../employee/importCSV">นำเข้าข้อมูลCSV</a></li>
             </ul>
         </li>
         <?php endif; ?>
@@ -403,12 +403,12 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
         <!-- สถานะขนส่ง - สำหรับผู้มีสิทธิ์ -->
         <?php if (isset($permissions['manage_statusbill']) && $permissions['manage_statusbill'] == 1): ?>
         <li>
-            <a href="../employee/statusbill.php">
+            <a href="../employee/statusbill">
                 <i class="bi bi-truck"></i>
                 <span class="link_name">จัดการสถานะขนส่ง</span>
             </a>
             <ul class="sub-menu blank">
-                <li><a class="link_name" href="../employee/importCSV.php">สถานะขนส่ง</a></li>
+                <li><a class="link_name" href="../employee/importCSV">สถานะขนส่ง</a></li>
             </ul>
         </li>
         <?php endif; ?>
@@ -416,12 +416,12 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
         <!-- ประวัติการดำเนินขนส่ง - สำหรับผู้มีสิทธิ์ -->
         <?php if (isset($permissions['manage_history']) && $permissions['manage_history'] == 1): ?>
         <li>
-            <a href="../employee/history.php">
+            <a href="../employee/history">
                 <i class="bx bx-history"></i>
                 <span class="link_name">ประวัติการดำเนินขนส่ง</span>
             </a>
             <ul class="sub-menu blank">
-                <li><a class="link_name" href="../employee/history.php">ประวัติการดำเนินขนส่ง</a></li>
+                <li><a class="link_name" href="../employee/history">ประวัติการดำเนินขนส่ง</a></li>
             </ul>
         </li>
         <?php endif; ?>
@@ -429,12 +429,12 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
         <!-- จัดการใบส่งสินค้า IC - สำหรับผู้มีสิทธิ์ -->
         <?php if (isset($permissions['manage_ic_delivery']) && $permissions['manage_ic_delivery'] == 1): ?>
         <li>
-            <a href="../employee/ic_delivery.php">
+            <a href="../employee/ic_delivery">
                 <i class="bx bx-file"></i>
                 <span class="link_name">จัดการใบส่งสินค้า IC</span>
             </a>
             <ul class="sub-menu blank">
-                <li><a class="link_name" href="../employee/ic_delivery.php">จัดการใบส่งสินค้า IC</a></li>
+                <li><a class="link_name" href="../employee/ic_delivery">จัดการใบส่งสินค้า IC</a></li>
             </ul>
         </li>
         <?php endif; ?>
@@ -442,12 +442,12 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
         <!-- จัดการใบส่งสินค้า IV - สำหรับผู้มีสิทธิ์ -->
         <?php if (isset($permissions['manage_iv_delivery']) && $permissions['manage_iv_delivery'] == 1): ?>
         <li>
-            <a href="../employee/iv_delivery.php">
+            <a href="../employee/iv_delivery">
                 <i class="bx bx-file-blank"></i>
                 <span class="link_name">จัดการใบส่งสินค้า IV</span>
             </a>
             <ul class="sub-menu blank">
-                <li><a class="link_name" href="../employee/iv_delivery.php">จัดการใบส่งสินค้า IV</a></li>
+                <li><a class="link_name" href="../employee/iv_delivery">จัดการใบส่งสินค้า IV</a></li>
             </ul>
         </li>
         <?php endif; ?>

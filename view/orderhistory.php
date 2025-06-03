@@ -191,7 +191,7 @@ echo "<!-- Query history: $query_history -->";
         }
 
         .custom-tabs .nav-link:hover {
-            background: rgba(240, 89, 46, 0.1);
+            background: rgba(255, 255, 255, 0.1);
             color: #F0592E;
         }
 

@@ -423,6 +423,96 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
         .status-grey { background-color: rgba(108, 117, 125, 0.1) !important; }
         .status-purple { background-color: rgba(111, 66, 193, 0.1) !important; }
 
+        /* Completed Row Styling */
+        .completed-row {
+            opacity: 0.7 !important;
+            background-color: rgba(40, 167, 69, 0.05) !important;
+            border-left: 3px solid #28a745 !important;
+        }
+
+        .completed-row:hover {
+            background-color: rgba(40, 167, 69, 0.1) !important;
+            transform: none !important; /* ไม่ให้ scale เมื่อ hover */
+        }
+
+        /* Disabled Checkbox Styling */
+        .disabled-checkbox {
+            opacity: 0.4;
+            cursor: not-allowed !important;
+            pointer-events: none;
+        }
+
+        .disabled-checkbox:hover {
+            cursor: not-allowed !important;
+        }
+
+        /* Completed Status Styling */
+        .completed-status {
+            color: #28a745;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .completed-time {
+            background: rgba(40, 167, 69, 0.15) !important;
+            color: #1e7e34 !important;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+
+        /* Status Circle Animation Override for Completed */
+        .completed-row .status-circle.green {
+            animation: completedPulse 3s infinite;
+        }
+
+        @keyframes completedPulse {
+            0% { 
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 0 0 0 rgba(40, 167, 69, 0.4); 
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 0 0 6px rgba(40, 167, 69, 0); 
+                transform: scale(1.05);
+            }
+            100% { 
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 0 0 0 rgba(40, 167, 69, 0); 
+                transform: scale(1);
+            }
+        }
+
+        /* Success Icon Animation */
+        .completed-status i {
+            animation: checkBounce 2s infinite;
+        }
+
+        @keyframes checkBounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Pagination info styling */
+        .pagination-info {
+            text-align: center;
+            margin: 15px 0;
+            color: #6c757d;
+            font-size: 0.9rem;
+            padding: 10px;
+            background: rgba(240, 89, 46, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(240, 89, 46, 0.1);
+        }
+
+        /* Search highlight in pagination info */
+        .search-highlight {
+            color: #F0592E;
+            font-weight: 600;
+            background: rgba(240, 89, 46, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
         /* Status Circle */
         .status-circle {
             width: 20px;
@@ -614,7 +704,7 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
 
         .modal-body {
             padding: 25px;
-            max-height: 60vh;
+            max-height: 70vh;
             overflow-y: auto;
         }
 
@@ -669,6 +759,29 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
             background: linear-gradient(135deg, #D84315, #F0592E);
         }
 
+        .status-time-badge {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .status-time-badge:hover {
+            background: rgba(40, 167, 69, 0.2);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+        }
+
+        .no-data-badge {
+            color: #6c757d;
+            font-style: italic;
+            font-size: 0.85rem;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .home-section {
@@ -707,7 +820,7 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
             }
 
             #myTable {
-                min-width: 1000px;
+                min-width: 1200px;
             }
 
             #myTable thead th,
@@ -756,7 +869,7 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
             }
 
             #myTable {
-                min-width: 900px;
+                min-width: 1100px;
             }
         }
 
@@ -815,7 +928,7 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
         </div>
 
         <div class="content-container animate__fadeInUp">
-            <a href="../dashboard.php" class="back-button">
+            <a href="dashboard" class="back-button">
                 <i class="bi bi-arrow-left"></i> กลับไปหน้า Dashboard
             </a>
             
@@ -876,13 +989,13 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                     <hr style="margin: 15px 0; border: 1px solid rgba(33, 150, 243, 0.2);">
                     <li style="border-left-color: #17a2b8; background: rgba(23, 162, 184, 0.05);">
                         <b style="color: #17a2b8;">💡 เคล็ดลับ:</b>
-                        <i style="color:black;">คุณสามารถดูสีสถานะในรูปแบบวงกลมสีที่คอลัมน์ "สีสถานะ" และเมื่อวางเมาส์เหนือวงกลมจะแสดงรายละเอียดสถานะ</i>
+                        <i style="color:black;">คุณสามารถดูสีสถานะในรูปแบบวงกลมสีที่คอลัมน์ "สีสถานะ" และเมื่อวางเมาส์เหนือวงกลมจะแสดงรายละเอียดสถานะ พร้อมดู Timeline การขนส่งใน Modal รายการที่ส่งเสร็จแล้วจะอยู่ล่างสุดและไม่สามารถเลือกได้</i>
                     </li>
                 </ol>
             </div>
 
             <?php 
-            // Include search term processing
+            // Include search term processing (ต้องใช้ไฟล์ searchterm.php ที่ปรับปรุงแล้ว)
             require_once "function/statusbill/searchterm.php";
             ?>
 
@@ -899,75 +1012,140 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                 <table id="myTable">
                     <thead>
                         <tr>
-                            <th width="6%">เลือก</th>
-                            <th width="6%">#</th>
+                            <th width="5%">เลือก</th>
+                            <th width="5%">#</th>
                             <th width="8%">สีสถานะ</th>
-                            <th width="18%">เลขบิล</th>
-                            <th width="12%">จำนวนสินค้าในบิล</th>
-                            <th width="22%">สถานะ</th>
-                            <th width="15%">วันที่สร้างบิล</th>
+                            <th width="15%">เลขที่การขนส่ง</th>
+                            <th width="10%">จำนวนสินค้า</th>
+                            <th width="18%">สถานะปัจจุบัน</th>
+                            <th width="13%">วันที่สร้างบิล</th>
+                            <th width="13%">วันเวลาสถานะล่าสุด</th>
                             <th width="13%">ประเภทการขนย้าย</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
                         if (mysqli_num_rows($result) > 0) {
-                            $i = 1;
+                            $i = ($current_page - 1) * 20 + 1; // เริ่มนับจากหน้าปัจจุบัน
+                            
                             while ($row = mysqli_fetch_assoc($result)) {
                                 // Determine status text, class, and circle color
+                                $is_completed = ($row['delivery_status'] == 5);
+                                $is_disabled = $is_completed; // ปิดการใช้งาน checkbox สำหรับสถานะส่งเสร็จ
+                                
                                 switch ($row['delivery_status']) {
                                     case 1:
-                                        $status_text = 'สถานะสินค้าที่คำสั่งซื้อเข้าสู่ระบบ';
+                                        $status_text = 'รับคำสั่งซื้อ';
                                         $status_class = 'status-blue';
                                         $circle_color = 'blue';
+                                        $latest_step_time = $row['delivery_step1_received'];
                                         break;
                                     case 2:
-                                        $status_text = 'สถานะสินค้าที่กำลังจัดส่งไปยังศูนย์กระจายสินค้า';
+                                        $status_text = 'กำลังจัดส่งไปศูนย์';
                                         $status_class = 'status-yellow';
                                         $circle_color = 'yellow';
+                                        $latest_step_time = $row['delivery_step2_transit'];
                                         break;
                                     case 3:
-                                        $status_text = 'สถานะสินค้าอยู่ที่ศูนย์กระจายสินค้าปลายทาง';
+                                        $status_text = 'ถึงศูนย์กระจาย';
                                         $status_class = 'status-grey';
                                         $circle_color = 'grey';
+                                        $latest_step_time = $row['delivery_step3_warehouse'];
                                         break;
                                     case 4:
-                                        $status_text = 'สถานะสินค้าที่กำลังนำส่งให้ลูกค้า';
+                                        $status_text = 'กำลังส่งลูกค้า';
                                         $status_class = 'status-purple';
                                         $circle_color = 'purple';
+                                        $latest_step_time = $row['delivery_step4_last_mile'];
                                         break;
                                     case 5:
-                                        $status_text = 'สถานะสินค้าที่ถึงนำส่งให้ลูกค้าสำเร็จ';
-                                        $status_class = 'status-green';
+                                        $status_text = 'ส่งสำเร็จ';
+                                        $status_class = 'status-green completed-row';
                                         $circle_color = 'green';
+                                        $latest_step_time = $row['delivery_step5_completed'];
                                         break;
                                     case 99:
-                                        $status_text = 'สถานะสินค้าที่เกิดปัญหา';
+                                        $status_text = 'เกิดปัญหา';
                                         $status_class = 'status-red';
                                         $circle_color = 'red';
+                                        // Find the latest non-null timestamp for problem status
+                                        $timestamps = [
+                                            $row['delivery_step5_completed'],
+                                            $row['delivery_step4_last_mile'],
+                                            $row['delivery_step3_warehouse'],
+                                            $row['delivery_step2_transit'],
+                                            $row['delivery_step1_received']
+                                        ];
+                                        $latest_step_time = null;
+                                        foreach ($timestamps as $timestamp) {
+                                            if (!empty($timestamp)) {
+                                                $latest_step_time = $timestamp;
+                                                break;
+                                            }
+                                        }
                                         break;
                                     default:
                                         $status_text = 'ไม่ทราบสถานะ';
                                         $status_class = '';
                                         $circle_color = 'grey';
+                                        $latest_step_time = null;
                                         break;
                                 }
 
                                 echo '<tr class="' . $status_class . '">';
-                                echo '<td><center><input type="checkbox" name="select" value="' . $row['delivery_id'] . '" data-status-text="' . $status_text . '" data-delivery-number="' . $row['delivery_number'] . '"></center></td>';
+                                
+                                // Checkbox column with conditional disable
+                                echo '<td><center>';
+                                if ($is_disabled) {
+                                    echo '<input type="checkbox" disabled class="disabled-checkbox" title="ไม่สามารถเลือกรายการที่ส่งเสร็จแล้วได้">';
+                                    echo '<i class="bi bi-check-circle-fill text-success ms-1" title="ส่งเสร็จแล้ว"></i>';
+                                } else {
+                                    echo '<input type="checkbox" name="select" value="' . $row['delivery_id'] . '" data-status-text="' . $status_text . '" data-delivery-number="' . $row['delivery_number'] . '">';
+                                }
+                                echo '</center></td>';
+                                
                                 echo '<td>' . $i . '</td>';
                                 echo '<td><center><div class="status-circle ' . $circle_color . '" title="' . $status_text . '"></div></center></td>';
                                 echo '<td><strong>' . $row['delivery_number'] . '</strong></td>';
                                 echo '<td><center><span style="background: rgba(240, 89, 46, 0.1); padding: 4px 8px; border-radius: 12px; font-weight: 600; color: #F0592E;">' . $row['item_count'] . ' รายการ</span></center></td>';
-                                echo '<td>' . $status_text . '</td>';
+                                
+                                // Status text with completion badge
+                                echo '<td>';
+                                if ($is_completed) {
+                                    echo '<span class="completed-status">';
+                                    echo '<i class="bi bi-check-circle-fill text-success me-1"></i>';
+                                    echo $status_text;
+                                    echo '</span>';
+                                } else {
+                                    echo $status_text;
+                                }
+                                echo '</td>';
+                                
                                 echo '<td>' . date('d/m/Y H:i', strtotime($row['delivery_date'])) . '</td>';
-                                echo '<td><span style="background: rgba(33, 150, 243, 0.1); padding: 4px 8px; border-radius: 8px; color: #2196F3; font-weight: 500;">' . $row['transfer_type'] . '</span></td>';
+                                
+                                // Display latest step time
+                                if (!empty($latest_step_time)) {
+                                    $formatted_time = date('d/m/Y H:i', strtotime($latest_step_time));
+                                    if ($is_completed) {
+                                        echo '<td><span class="status-time-badge completed-time">' . $formatted_time . '</span></td>';
+                                    } else {
+                                        echo '<td><span class="status-time-badge">' . $formatted_time . '</span></td>';
+                                    }
+                                } else {
+                                    echo '<td><span class="no-data-badge">ยังไม่มีข้อมูล</span></td>';
+                                }
+                                
+                                // แสดง transfer_type อย่างปลอดภัย
+                                $transfer_type = isset($row['transfer_type']) ? $row['transfer_type'] : 
+                                               (isset($row['transfer_type_default']) ? $row['transfer_type_default'] : 'ทั่วไป');
+                                
+                                echo '<td><span style="background: rgba(33, 150, 243, 0.1); padding: 4px 8px; border-radius: 8px; color: #2196F3; font-weight: 500;">' . htmlspecialchars($transfer_type) . '</span></td>';
                                 echo '</tr>';
 
                                 $i++;
                             }
                         } else {
-                            echo "<tr><td colspan='8' class='empty-state'>";
+                            echo "<tr><td colspan='9' class='empty-state'>";
                             echo "<i class='bi bi-inbox'></i>";
                             echo "<h3>ไม่พบข้อมูลการขนส่ง</h3>";
                             echo "<p>ยังไม่มีข้อมูลการขนส่งที่ตรงกับการค้นหา</p>";
@@ -977,6 +1155,20 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                     </tbody>
                 </table>
             </div>
+
+            <!-- Pagination Info -->
+            <?php if ($total_records > 0): ?>
+            <div class="pagination-info">
+                <i class="bi bi-info-circle me-1"></i>
+                แสดงรายการที่ <?php echo number_format($start_record); ?> - <?php echo number_format($end_record); ?> 
+                จากทั้งหมด <?php echo number_format($total_records); ?> รายการ
+                <?php if (!empty($search)): ?>
+                    <span class="search-highlight">
+                        (ผลการค้นหา: "<?php echo htmlspecialchars($search); ?>")
+                    </span>
+                <?php endif; ?>
+            </div>
+            <?php endif; ?>
 
             <!-- Pagination -->
             <?php if ($total_pages > 1): ?>
@@ -1025,13 +1217,35 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                     </a>
                 <?php endif; ?>
             </div>
+
+            <!-- Quick Page Jump -->
+            <?php if ($total_pages > 10): ?>
+            <div style="text-align: center; margin-top: 15px;">
+                <form method="GET" action="" style="display: inline-flex; align-items: center; gap: 10px;">
+                    <?php foreach ($_GET as $key => $value): ?>
+                        <?php if ($key !== 'page'): ?>
+                            <input type="hidden" name="<?php echo htmlspecialchars($key); ?>" value="<?php echo htmlspecialchars($value); ?>">
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                    
+                    <label for="pageJump" style="font-size: 0.9rem; color: #6c757d;">ไปที่หน้า:</label>
+                    <input type="number" id="pageJump" name="page" min="1" max="<?php echo $total_pages; ?>" 
+                           value="<?php echo $current_page; ?>" 
+                           style="width: 80px; padding: 5px 8px; border: 1px solid #ddd; border-radius: 4px; text-align: center;">
+                    <button type="submit" style="padding: 5px 12px; background: #F0592E; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        <i class="bi bi-arrow-right"></i>
+                    </button>
+                    <small style="color: #6c757d;">(จาก <?php echo $total_pages; ?> หน้า)</small>
+                </form>
+            </div>
+            <?php endif; ?>
             <?php endif; ?>
         </div>
     </section>
 
     <!-- Modal -->
     <div class="modal fade" id="manageModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">
@@ -1066,10 +1280,10 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
     <script>
         // Enhanced JavaScript functionality
         document.addEventListener('DOMContentLoaded', function() {
-            const checkboxes = document.querySelectorAll('input[name="select"]');
+            const checkboxes = document.querySelectorAll('input[name="select"]:not(.disabled-checkbox)'); // ไม่รวม checkbox ที่ปิดการใช้งาน
             const actionButtons = document.getElementById('action-buttons');
 
-            // Monitor checkbox changes
+            // Monitor checkbox changes (เฉพาะ checkbox ที่ใช้งานได้)
             checkboxes.forEach((checkbox) => {
                 checkbox.addEventListener('change', () => {
                     const anyChecked = Array.from(checkboxes).some(chk => chk.checked);
@@ -1088,32 +1302,90 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
             function updateCheckboxStyling() {
                 checkboxes.forEach(checkbox => {
                     const row = checkbox.closest('tr');
-                    if (checkbox.checked) {
+                    if (checkbox.checked && !row.classList.contains('completed-row')) {
                         row.style.backgroundColor = 'rgba(240, 89, 46, 0.15)';
                         row.style.transform = 'scale(1.002)';
                     } else {
-                        row.style.backgroundColor = '';
-                        row.style.transform = 'scale(1)';
+                        if (!row.classList.contains('completed-row')) {
+                            row.style.backgroundColor = '';
+                            row.style.transform = 'scale(1)';
+                        }
                     }
                 });
             }
 
-            // Add hover effects to table rows
-            const tableRows = document.querySelectorAll('#myTable tbody tr');
+            // Add hover effects to table rows (ยกเว้นแถวที่เสร็จสิ้น)
+            const tableRows = document.querySelectorAll('#myTable tbody tr:not(.completed-row)');
             tableRows.forEach(row => {
                 row.addEventListener('mouseenter', function() {
-                    if (!this.querySelector('input[type="checkbox"]').checked) {
+                    const checkbox = this.querySelector('input[type="checkbox"]:not(.disabled-checkbox)');
+                    if (checkbox && !checkbox.checked) {
                         this.style.transform = 'scale(1.002)';
                     }
                 });
                 
                 row.addEventListener('mouseleave', function() {
-                    if (!this.querySelector('input[type="checkbox"]').checked) {
+                    const checkbox = this.querySelector('input[type="checkbox"]:not(.disabled-checkbox)');
+                    if (checkbox && !checkbox.checked) {
                         this.style.transform = 'scale(1)';
                     }
                 });
             });
+
+            // Add special handling for completed rows
+            const completedRows = document.querySelectorAll('#myTable tbody tr.completed-row');
+            completedRows.forEach(row => {
+                row.addEventListener('mouseenter', function() {
+                    this.style.cursor = 'default';
+                });
+            });
+
+            // Add notification for completed items
+            if (completedRows.length > 0) {
+                console.log(`พบรายการที่ส่งเสร็จแล้ว ${completedRows.length} รายการ - ไม่สามารถจัดการได้`);
+            }
+
+            // Update statistics
+            updateTableStatistics();
         });
+
+        // Function to update table statistics
+        function updateTableStatistics() {
+            const totalRows = document.querySelectorAll('#myTable tbody tr').length;
+            const completedRows = document.querySelectorAll('#myTable tbody tr.completed-row').length;
+            const activeRows = totalRows - completedRows;
+            const emptyState = document.querySelector('.empty-state');
+            
+            if (!emptyState && totalRows > 0) {
+                // Add statistics info if not exists
+                let statsDiv = document.getElementById('table-statistics');
+                if (!statsDiv) {
+                    statsDiv = document.createElement('div');
+                    statsDiv.id = 'table-statistics';
+                    statsDiv.style.cssText = `
+                        text-align: center;
+                        margin: 10px 0;
+                        padding: 8px 15px;
+                        background: rgba(33, 150, 243, 0.05);
+                        border: 1px solid rgba(33, 150, 243, 0.2);
+                        border-radius: 8px;
+                        font-size: 0.85rem;
+                        color: #2196F3;
+                    `;
+                    
+                    const tableContainer = document.querySelector('.table-container');
+                    tableContainer.parentNode.insertBefore(statsDiv, tableContainer);
+                }
+                
+                let statsText = `รายการทั้งหมด: ${totalRows} รายการ`;
+                if (completedRows > 0) {
+                    statsText += ` | รายการที่สามารถจัดการได้: ${activeRows} รายการ`;
+                    statsText += ` | รายการที่ส่งเสร็จแล้ว: ${completedRows} รายการ`;
+                }
+                
+                statsDiv.innerHTML = `<i class="bi bi-info-circle me-1"></i>${statsText}`;
+            }
+        }
 
         // Instructions toggle function
         function toggleInstructions() {
@@ -1148,7 +1420,7 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
         // Enhanced modal functionality for Bootstrap 5
         function handleSelectedItems() {
             const selectedItems = [];
-            const checkboxes = document.querySelectorAll('input[name="select"]:checked');
+            const checkboxes = document.querySelectorAll('input[name="select"]:checked:not(.disabled-checkbox)'); // เฉพาะที่เลือกและไม่ disable
 
             checkboxes.forEach((checkbox) => {
                 selectedItems.push(checkbox.value);
@@ -1158,7 +1430,7 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                 Swal.fire({
                     icon: 'warning',
                     title: 'ไม่ได้เลือกรายการ',
-                    text: 'กรุณาเลือกการจัดส่งอย่างน้อยหนึ่งรายการ',
+                    text: 'กรุณาเลือกการจัดส่งอย่างน้อยหนึ่งรายการที่สามารถจัดการได้',
                     confirmButtonColor: '#F0592E'
                 });
                 return;
@@ -1175,7 +1447,7 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
 
             // Fetch data and show modal
             $.ajax({
-                url: '../../view/Employee/function/fetch_modal_data.php',
+                url: 'function/fetch_modal_data.php',
                 type: 'POST',
                 data: {
                     deliveryIds: selectedItems.join(',')
@@ -1210,15 +1482,35 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                 error: function(xhr, status, error) {
                     Swal.close();
                     console.error('Error:', error);
+                    console.error('XHR Response:', xhr.responseText);
                     Swal.fire({
                         icon: 'error',
                         title: 'เกิดข้อผิดพลาด',
-                        text: 'ไม่สามารถดึงข้อมูลได้',
+                        text: 'ไม่สามารถดึงข้อมูลได้: ' + error,
                         confirmButtonColor: '#F0592E'
                     });
                 }
             });
         }
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+A to select all available checkboxes
+            if (e.ctrlKey && e.key === 'a') {
+                e.preventDefault();
+                const checkboxes = document.querySelectorAll('input[name="select"]:not(.disabled-checkbox)');
+                const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+                
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = !allChecked;
+                });
+                
+                // Trigger change event
+                if (checkboxes.length > 0) {
+                    checkboxes[0].dispatchEvent(new Event('change'));
+                }
+            }
+        });
     </script>
 </body>
 </html>

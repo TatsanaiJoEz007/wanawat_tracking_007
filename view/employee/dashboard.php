@@ -19,58 +19,67 @@ if (!isset($_SESSION['csrf_token'])) {
 
 // Get statistics data for employee dashboard
 try {
-    // Total bills
+    // Total bills (แสดงบิลทั้งหมดที่มีสถานะ 1)
     $stmt = $conn->prepare("SELECT COUNT(*) AS total_bill FROM tb_header WHERE bill_status = 1");
     $stmt->execute();
-    $total_bill_box = $stmt->get_result()->fetch_assoc()['total_bill'];
+    $result = $stmt->get_result();
+    $total_bill_box = $result->fetch_assoc()['total_bill'];
     $stmt->close();
 
     // Total delivery preparing (status 1)
     $stmt = $conn->prepare("SELECT COUNT(*) AS total_delivery_preparing FROM tb_delivery WHERE delivery_status = 1");
     $stmt->execute();
-    $total_delivery_preparing_box = $stmt->get_result()->fetch_assoc()['total_delivery_preparing'];
+    $result = $stmt->get_result();
+    $total_delivery_preparing_box = $result->fetch_assoc()['total_delivery_preparing'];
     $stmt->close();
 
     // Total sending to distribution center (status 2)
     $stmt = $conn->prepare("SELECT COUNT(*) AS total_sending2 FROM tb_delivery WHERE delivery_status = 2");
     $stmt->execute();
-    $total_sending2_box = $stmt->get_result()->fetch_assoc()['total_sending2'];
+    $result = $stmt->get_result();
+    $total_sending2_box = $result->fetch_assoc()['total_sending2'];
     $stmt->close();
 
     // Total at distribution center (status 3)
     $stmt = $conn->prepare("SELECT COUNT(*) AS total_sending3 FROM tb_delivery WHERE delivery_status = 3");
     $stmt->execute();
-    $total_sending3_box = $stmt->get_result()->fetch_assoc()['total_sending3'];
+    $result = $stmt->get_result();
+    $total_sending3_box = $result->fetch_assoc()['total_sending3'];
     $stmt->close();
 
     // Total delivering to customer (status 4)
     $stmt = $conn->prepare("SELECT COUNT(*) AS total_sending4 FROM tb_delivery WHERE delivery_status = 4");
     $stmt->execute();
-    $total_sending4_box = $stmt->get_result()->fetch_assoc()['total_sending4'];
+    $result = $stmt->get_result();
+    $total_sending4_box = $result->fetch_assoc()['total_sending4'];
     $stmt->close();
 
     // Total completed deliveries (status 5)
     $stmt = $conn->prepare("SELECT COUNT(*) AS total_history FROM tb_delivery WHERE delivery_status = 5");
     $stmt->execute();
-    $total_history_box = $stmt->get_result()->fetch_assoc()['total_history'];
+    $result = $stmt->get_result();
+    $total_history_box = $result->fetch_assoc()['total_history'];
     $stmt->close();
 
     // Total problem deliveries (status 99)
     $stmt = $conn->prepare("SELECT COUNT(*) AS total_problem FROM tb_delivery WHERE delivery_status = 99");
     $stmt->execute();
-    $total_problem_box = $stmt->get_result()->fetch_assoc()['total_problem'];
+    $result = $stmt->get_result();
+    $total_problem_box = $result->fetch_assoc()['total_problem'];
     $stmt->close();
 
     // Total deliveries
     $stmt = $conn->prepare("SELECT COUNT(*) AS total_delivery FROM tb_delivery");
     $stmt->execute();
-    $total_delivery = $stmt->get_result()->fetch_assoc()['total_delivery'];
+    $result = $stmt->get_result();
+    $total_delivery = $result->fetch_assoc()['total_delivery'];
     $stmt->close();
 
     // Total line items
-    $stmt = $conn->prepare("SELECT COUNT(*) AS total_line FROM tb_line WHERE line_status = 1");
+    $stmt = $conn->prepare("SELECT COUNT(*) AS total_line FROM tb_line WHERE line_status = '1'");
     $stmt->execute();
-    $total_line_box = $stmt->get_result()->fetch_assoc()['total_line'];
+    $result = $stmt->get_result();
+    $total_line_box = $result->fetch_assoc()['total_line'];
     $stmt->close();
 
     // Fetch distinct delivery dates for date picker
@@ -93,16 +102,55 @@ try {
     $dates_json = json_encode($dates);
 }
 
-// Handle date selection for historical data
+// Handle date selection for historical data with pagination
 $selected_date = null;
 $data = null;
+$total_records = 0;
+$total_pages = 0;
+$current_page = 1;
+$items_per_page = 10;
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['selected_date'])) {
     $selected_date = $_POST['selected_date'];
     $user_id = $_SESSION['user_id'];
+    $current_page = isset($_POST['page']) ? max(1, intval($_POST['page'])) : 1;
+    $offset = ($current_page - 1) * $items_per_page;
     
     try {
-        $stmt = $conn->prepare("SELECT * FROM tb_delivery WHERE DATE(delivery_date) = ? AND created_by = ?");
-        $stmt->bind_param("si", $selected_date, $user_id);
+        // Get total count
+        $count_stmt = $conn->prepare("SELECT COUNT(*) as total FROM tb_delivery d 
+                                    INNER JOIN tb_delivery_items di ON d.delivery_id = di.delivery_id 
+                                    WHERE DATE(d.delivery_date) = ? AND d.created_by = ?");
+        $count_stmt->bind_param("si", $selected_date, $user_id);
+        $count_stmt->execute();
+        $count_result = $count_stmt->get_result();
+        $total_records = $count_result->fetch_assoc()['total'];
+        $total_pages = ceil($total_records / $items_per_page);
+        $count_stmt->close();
+
+        // Get paginated data
+        $stmt = $conn->prepare("SELECT 
+                                d.delivery_id, 
+                                d.delivery_number, 
+                                d.delivery_date, 
+                                COUNT(di.item_code) AS item_count, 
+                                d.delivery_status,
+                                d.delivery_step1_received,
+                                d.delivery_step2_transit,
+                                d.delivery_step3_warehouse,
+                                d.delivery_step4_last_mile,
+                                d.delivery_step5_completed,
+                                d.delivery_problem_desc,
+                                GROUP_CONCAT(DISTINCT di.transfer_type SEPARATOR ', ') as transfer_type 
+                            FROM tb_delivery d 
+                            INNER JOIN tb_delivery_items di ON d.delivery_id = di.delivery_id 
+                            WHERE DATE(d.delivery_date) = ? AND d.created_by = ?
+                            GROUP BY d.delivery_id, d.delivery_number, d.delivery_date, d.delivery_status, 
+                                     d.delivery_step1_received, d.delivery_step2_transit, d.delivery_step3_warehouse, 
+                                     d.delivery_step4_last_mile, d.delivery_step5_completed, d.delivery_problem_desc
+                            ORDER BY d.delivery_date DESC, d.delivery_id DESC
+                            LIMIT ? OFFSET ?");
+        $stmt->bind_param("siii", $selected_date, $user_id, $items_per_page, $offset);
         $stmt->execute();
         $data = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
@@ -282,217 +330,6 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
             line-height: 1.2;
         }
 
-        .stat-link {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(240, 89, 46, 0.1);
-            padding: 0.5rem;
-            text-decoration: none;
-            color: #F0592E;
-            font-size: 0.8rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .stat-link:hover {
-            background: rgba(240, 89, 46, 0.2);
-            color: #D84315;
-            text-decoration: none;
-        }
-
-        /* Date Filter Section */
-        .date-filter {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            margin-bottom: 1.5rem;
-        }
-
-        .date-filter-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #2d3748;
-            text-align: center;
-            margin-bottom: 1rem;
-        }
-
-        .form-container {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .date-input-group {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .form-control {
-            border: 2px solid rgba(240, 89, 46, 0.2);
-            border-radius: 8px;
-            padding: 0.75rem;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .form-control:focus {
-            border-color: #F0592E;
-            box-shadow: 0 0 0 0.2rem rgba(240, 89, 46, 0.25);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #F0592E, #FF8A65);
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #D84315, #F0592E);
-            transform: translateY(-1px);
-        }
-
-        /* Table Section */
-        .table-section {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            margin-top: 1.5rem;
-        }
-
-        .table-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #2d3748;
-            text-align: center;
-            margin-bottom: 1rem;
-        }
-
-        .table-container {
-            overflow-x: auto;
-            border-radius: 8px;
-        }
-
-        .table {
-            margin-bottom: 0;
-        }
-
-        .table thead th {
-            background: linear-gradient(135deg, #F0592E, #FF8A65);
-            color: white;
-            border: none;
-            padding: 1rem 0.75rem;
-            font-weight: 600;
-            text-align: center;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-            font-size: 0.9rem;
-        }
-
-        .table tbody td {
-            padding: 1rem 0.75rem;
-            vertical-align: middle;
-            text-align: center;
-            border-bottom: 1px solid rgba(240, 89, 46, 0.1);
-            color: #2d3748;
-            font-size: 0.9rem;
-        }
-
-        .table tbody tr:nth-child(even) {
-            background-color: rgba(240, 89, 46, 0.05);
-        }
-
-        .table tbody tr:hover {
-            background-color: rgba(240, 89, 46, 0.1);
-            transition: background-color 0.3s;
-        }
-
-        /* Status Colors for Table Rows */
-        .table tbody tr.status-blue td {
-            background-color: rgba(33, 150, 243, 0.1);
-        }
-
-        .table tbody tr.status-yellow td {
-            background-color: rgba(255, 215, 0, 0.1);
-        }
-
-        .table tbody tr.status-grey td {
-            background-color: rgba(158, 158, 158, 0.1);
-        }
-
-        .table tbody tr.status-purple td {
-            background-color: rgba(156, 39, 176, 0.1);
-        }
-
-        .table tbody tr.status-green td {
-            background-color: rgba(76, 175, 80, 0.1);
-        }
-
-        .table tbody tr.status-red td {
-            background-color: rgba(244, 67, 54, 0.1);
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 3rem 1rem;
-            color: #718096;
-        }
-
-        .empty-state i {
-            font-size: 4rem;
-            color: #adb5bd;
-            margin-bottom: 1rem;
-            display: block;
-        }
-
-        .empty-state h3 {
-            color: #2d3748;
-            margin-bottom: 0.5rem;
-            font-size: 1.5rem;
-        }
-
-        .empty-state p {
-            font-size: 1rem;
-        }
-
-        /* Datepicker Customization */
-        .datepicker table tr td.enabled-date {
-            background-color: #dff0d8;
-            color: #3c763d;
-            cursor: pointer;
-        }
-
-        .datepicker table tr td.disabled-date {
-            background-color: #f2dede;
-            color: #a94442;
-            cursor: not-allowed;
-        }
-
-        .datepicker .dow,
-        .datepicker .month {
-            color: #F0592E;
-            font-weight: 600;
-        }
-
-        .datepicker table tr td.active {
-            background-color: #F0592E;
-            color: white;
-        }
-
         /* Chart Section */
         .chart-section {
             background: rgba(255, 255, 255, 0.95);
@@ -579,6 +416,398 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
             text-align: center;
         }
 
+        /* Date Filter Section */
+        .date-filter {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 1.5rem;
+        }
+
+        .date-filter-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .date-input-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .form-control {
+            border: 2px solid rgba(240, 89, 46, 0.2);
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #F0592E;
+            box-shadow: 0 0 0 0.2rem rgba(240, 89, 46, 0.25);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #F0592E, #FF8A65);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #D84315, #F0592E);
+            transform: translateY(-1px);
+        }
+
+        /* Table Section */
+        .table-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-top: 1.5rem;
+        }
+
+        .table-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .table-container {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+        }
+
+        .table thead th {
+            background: linear-gradient(135deg, #F0592E, #FF8A65);
+            color: white;
+            border: none;
+            padding: 15px 12px;
+            font-weight: 600;
+            text-align: center;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            font-size: 0.95rem;
+            position: relative;
+        }
+
+        .table thead th:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 25%;
+            height: 50%;
+            width: 1px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .table tbody td {
+            padding: 15px 12px;
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid rgba(240, 89, 46, 0.1);
+            color: #2d3748;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .table tbody tr:hover {
+            transition: all 0.3s ease;
+            transform: scale(1.002);
+            cursor: pointer;
+        }
+
+        /* Status Circle */
+        .status-circle {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            position: relative;
+            animation: pulse 2s infinite;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .status-circle:hover {
+            transform: scale(1.2);
+            z-index: 10;
+        }
+
+        .status-circle.red {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+        }
+
+        .status-circle.green {
+            background: linear-gradient(135deg, #28a745, #1e7e34);
+        }
+
+        .status-circle.blue {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+        }
+
+        .status-circle.yellow {
+            background: linear-gradient(135deg, #ffc107, #e0a800);
+        }
+
+        .status-circle.grey {
+            background: linear-gradient(135deg, #6c757d, #545b62);
+        }
+
+        .status-circle.purple {
+            background: linear-gradient(135deg, #6f42c1, #59339d);
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 0 0 0 rgba(240, 89, 46, 0.7);
+            }
+            70% {
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 0 0 8px rgba(240, 89, 46, 0);
+            }
+            100% {
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 0 0 0 rgba(240, 89, 46, 0);
+            }
+        }
+
+        /* Completed Row Styling */
+        .completed-row {
+            opacity: 0.7 !important;
+        }
+
+        .completed-row:hover {
+            transform: none !important;
+        }
+
+        /* Completed Status Styling */
+        .completed-status {
+            color: #28a745;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .completed-time {
+            background: rgba(40, 167, 69, 0.15) !important;
+            color: #1e7e34 !important;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+
+        .status-time-badge {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .status-time-badge:hover {
+            background: rgba(40, 167, 69, 0.2);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+        }
+
+        .no-data-badge {
+            color: #6c757d;
+            font-style: italic;
+            font-size: 0.85rem;
+        }
+
+        /* Transfer Type Badge */
+        .transfer-badge {
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            background: rgba(240, 89, 46, 0.1);
+            color: #F0592E;
+            border: 1px solid rgba(240, 89, 46, 0.3);
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .pagination-info {
+            text-align: center;
+            margin: 15px 0;
+            color: #6c757d;
+            font-size: 0.9rem;
+            padding: 10px;
+            background: rgba(240, 89, 46, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(240, 89, 46, 0.1);
+        }
+
+        .btn-custom {
+            padding: 10px 16px;
+            border: 2px solid rgba(240, 89, 46, 0.3);
+            border-radius: 10px;
+            color: #F0592E;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            min-width: 45px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-custom:hover {
+            background: rgba(240, 89, 46, 0.1);
+            color: #D84315;
+            text-decoration: none;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(240, 89, 46, 0.2);
+        }
+
+        .btn-custom.active {
+            background: linear-gradient(135deg, #F0592E, #FF8A65);
+            color: white;
+            border-color: #F0592E;
+            box-shadow: 0 5px 15px rgba(240, 89, 46, 0.4);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #718096;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #adb5bd;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .empty-state h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .empty-state p {
+            color: #718096;
+            font-size: 1rem;
+        }
+
+        /* Datepicker Customization */
+        .datepicker table tr td.enabled-date {
+            background-color: #28a745 !important;
+            color: white !important;
+            border: 1px solid #1e7e34 !important;
+            cursor: pointer !important;
+            font-weight: 600 !important;
+        }
+
+        .datepicker table tr td.enabled-date:hover {
+            background-color: #218838 !important;
+            color: white !important;
+        }
+
+        .datepicker table tr td.disabled-date {
+            background-color: #f8f9fa !important;
+            color: #6c757d !important;
+            cursor: not-allowed;
+        }
+
+        .datepicker .dow,
+        .datepicker .month {
+            color: #F0592E;
+            font-weight: 600;
+        }
+
+        .datepicker table tr td.active {
+            background-color: #F0592E !important;
+            color: white !important;
+        }
+
+        .datepicker table tr td.today {
+            background-color: #ffc107;
+            color: #212529;
+        }
+
+        .datepicker table tr td.today.enabled-date {
+            background-color: #28a745 !important;
+            color: white !important;
+        }
+
+        /* Mobile Warning Modal */
+        .mobile-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .mobile-modal-content {
+            position: absolute;
+            height: 50%;
+            width: 90%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            padding: 2rem;
+            text-align: center;
+            border-radius: 8px;
+            max-width: 90%;
+        }
+
         /* Responsive Design */
         @media screen and (max-width: 1200px) {
             .stat-card {
@@ -639,12 +868,17 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
 
             .table-container {
                 font-size: 0.8rem;
+                overflow-x: auto;
+            }
+
+            .table {
+                min-width: 1200px;
             }
 
             .table thead th,
             .table tbody td {
-                padding: 0.5rem 0.25rem;
-                font-size: 0.8rem;
+                padding: 10px 8px;
+                font-size: 0.85rem;
             }
         }
 
@@ -679,21 +913,9 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
             .table-title {
                 font-size: 1rem;
             }
-        }
 
-        /* Loading Animation */
-        .loading-card {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-        }
-
-        @keyframes loading {
-            0% {
-                background-position: 200% 0;
-            }
-            100% {
-                background-position: -200% 0;
+            .table {
+                min-width: 1100px;
             }
         }
     </style>
@@ -730,112 +952,78 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                 Employee Dashboard - แดชบอร์ดพนักงาน
             </h1>
 
-            <!-- Statistics Cards Row 1 -->
+            <!-- Statistics Cards Row 1 (4 cards) -->
             <div class="row stats-row">
                 <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
-                    <div class="stat-card status-orange">
+                    <div class="stat-card status-orange" onclick="openStatModal('all_bills', 'บิลทั้งหมด')">
                         <div class="stat-icon">
                             <i class="bi bi-receipt-cutoff"></i>
                         </div>
                         <div class="stat-number"><?php echo number_format($total_bill_box); ?></div>
                         <div class="stat-title">จำนวนบิลทั้งหมด</div>
-                        <a href="../../view/Employee/delivery_bill" class="stat-link">
-
-                        </a>
                     </div>
                 </div>
 
                 <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
-                    <div class="stat-card status-orange">
-                        <div class="stat-icon">
-                            <i class="bi bi-truck"></i>
-                        </div>
-                        <div class="stat-number"><?php echo number_format($total_delivery); ?></div>
-                        <div class="stat-title">จำนวนบิลขนส่งทั้งหมด</div>
-                        <a href="../../view/Employee/statusbill" class="stat-link">
-
-                        </a>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
-                    <div class="stat-card status-blue">
+                    <div class="stat-card status-yellow" onclick="openStatModal('preparing', 'คำสั่งซื้อที่กำลังจัดเตรียม')">
                         <div class="stat-icon">
                             <i class="bi bi-hourglass-split"></i>
                         </div>
                         <div class="stat-number"><?php echo number_format($total_delivery_preparing_box); ?></div>
                         <div class="stat-title">คำสั่งซื้อที่กำลังจัดเตรียม</div>
-                        <a href="../../view/Employee/preparing" class="stat-link">
-
-                        </a>
                     </div>
                 </div>
 
                 <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
-                    <div class="stat-card status-yellow">
+                    <div class="stat-card status-purple" onclick="openStatModal('sending_center', 'สินค้าที่กำลังจัดส่งไปยังศูนย์กระจายสินค้า')">
                         <div class="stat-icon">
                             <i class="bi bi-arrow-right-circle"></i>
                         </div>
                         <div class="stat-number"><?php echo number_format($total_sending2_box); ?></div>
                         <div class="stat-title">สินค้าที่กำลังจัดส่งไปยังศูนย์กระจายสินค้า</div>
-                        <a href="../../view/Employee/sending" class="stat-link">
-
-                        </a>
                     </div>
                 </div>
-            </div>
 
-            <!-- Statistics Cards Row 2 -->
-            <div class="row stats-row">
                 <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
-                    <div class="stat-card status-grey">
+                    <div class="stat-card status-grey" onclick="openStatModal('at_center', 'สินค้าอยู่ที่ศูนย์กระจายสินค้าปลายทาง')">
                         <div class="stat-icon">
                             <i class="bi bi-building"></i>
                         </div>
                         <div class="stat-number"><?php echo number_format($total_sending3_box); ?></div>
                         <div class="stat-title">สินค้าอยู่ที่ศูนย์กระจายสินค้าปลายทาง</div>
-                        <a href="../../view/Employee/sending" class="stat-link">
-
-                        </a>
                     </div>
                 </div>
+            </div>
 
-                <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
-                    <div class="stat-card status-purple">
+            <!-- Statistics Cards Row 2 (3 cards) -->
+            <div class="row stats-row">
+                <div class="col-lg-4 col-md-6 col-sm-6 mb-3">
+                    <div class="stat-card status-orange" onclick="openStatModal('delivering', 'สินค้าที่กำลังนำส่งให้ลูกค้า')">
                         <div class="stat-icon">
                             <i class="bi bi-truck-front"></i>
                         </div>
                         <div class="stat-number"><?php echo number_format($total_sending4_box); ?></div>
                         <div class="stat-title">สินค้าที่กำลังนำส่งให้ลูกค้า</div>
-                        <a href="../../view/Employee/sending" class="stat-link">
-
-                        </a>
                     </div>
                 </div>
 
-                <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
-                    <div class="stat-card status-green">
+                <div class="col-lg-4 col-md-6 col-sm-6 mb-3">
+                    <div class="stat-card status-green" onclick="openStatModal('completed', 'คำสั่งซื้อที่จัดส่งสำเร็จแล้ว')">
                         <div class="stat-icon">
                             <i class="bi bi-check-circle"></i>
                         </div>
                         <div class="stat-number"><?php echo number_format($total_history_box); ?></div>
                         <div class="stat-title">คำสั่งซื้อที่จัดส่งสำเร็จแล้ว</div>
-                        <a href="../../view/Employee/history" class="stat-link">
-
-                        </a>
                     </div>
                 </div>
 
-                <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
-                    <div class="stat-card status-red">
+                <div class="col-lg-4 col-md-6 col-sm-6 mb-3">
+                    <div class="stat-card status-red" onclick="openStatModal('problem', 'จำนวนบิลที่มีปัญหา')">
                         <div class="stat-icon">
                             <i class="bi bi-exclamation-triangle"></i>
                         </div>
                         <div class="stat-number"><?php echo number_format($total_problem_box); ?></div>
                         <div class="stat-title">จำนวนบิลที่มีปัญหา</div>
-                        <a href="../../view/Employee/problem" class="stat-link">
-
-                        </a>
                     </div>
                 </div>
             </div>
@@ -906,6 +1094,7 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                                 <i class="bi bi-search me-1"></i>ดูข้อมูล
                             </button>
                         </div>
+                        <input type="hidden" name="page" value="1">
                     </form>
                 </div>
             </div>
@@ -918,64 +1107,190 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                         <i class="bi bi-table me-2"></i>
                         ข้อมูลการขนส่งวันที่: <?php echo htmlspecialchars($selected_date); ?>
                     </h3>
+
+                    <!-- Pagination Info -->
+                    <?php if ($total_records > 0): ?>
+                    <div class="pagination-info">
+                        <i class="bi bi-info-circle me-1"></i>
+                        แสดงรายการที่ <?php echo number_format(($current_page - 1) * $items_per_page + 1); ?> - <?php echo number_format(min($current_page * $items_per_page, $total_records)); ?> 
+                        จากทั้งหมด <?php echo number_format($total_records); ?> รายการ
+                    </div>
+                    <?php endif; ?>
+
                     <div class="table-container">
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th width="8%">#</th>
-                                    <th width="20%">เลขบิล</th>
-                                    <th width="15%">จำนวน</th>
-                                    <th width="35%">สถานะ</th>
+                                    <th width="5%">#</th>
+                                    <th width="8%">สีสถานะ</th>
+                                    <th width="18%">เลขที่การขนส่ง</th>
+                                    <th width="10%">จำนวนสินค้า</th>
+                                    <th width="15%">สถานะปัจจุบัน</th>
                                     <th width="15%">วันที่สร้างบิล</th>
-                                    <th width="7%">ประเภท</th>
+                                    <th width="15%">วันเวลาสถานะล่าสุด</th>
+                                    <th width="14%">ประเภทการขนย้าย</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($data as $index => $row): ?>
-                                    <?php
-                                    switch ($row['delivery_status']) {
-                                        case 1:
-                                            $status_text = 'สถานะสินค้าที่คำสั่งซื้อเข้าสู่ระบบ';
-                                            $status_class = 'status-blue';
-                                            break;
-                                        case 2:
-                                            $status_text = 'สถานะสินค้าที่กำลังจัดส่งไปยังศูนย์กระจายสินค้า';
-                                            $status_class = 'status-yellow';
-                                            break;
-                                        case 3:
-                                            $status_text = 'สถานะสินค้าอยู่ที่ศูนย์กระจายสินค้าปลาย';
-                                            $status_class = 'status-grey';
-                                            break;
-                                        case 4:
-                                            $status_text = 'สถานะสินค้าที่กำลังนำส่งให้ลูกค้า';
-                                            $status_class = 'status-purple';
-                                            break;
-                                        case 5:
-                                            $status_text = 'สถานะสินค้าที่ถึงนำส่งให้ลูกค้าสำเร็จ';
-                                            $status_class = 'status-green';
-                                            break;
-                                        case 99:
-                                            $status_text = 'สถานะสินค้าที่เกิดปัญหา';
-                                            $status_class = 'status-red';
-                                            break;
-                                        default:
-                                            $status_text = 'ไม่ทราบสถานะ';
-                                            $status_class = '';
-                                            break;
+                                <?php
+                                if (!empty($data)) {
+                                    $i = ($current_page - 1) * $items_per_page + 1;
+                                    foreach ($data as $row) {
+                                        // Determine status text, class, and circle color
+                                        $is_completed = ($row['delivery_status'] == 5);
+                                        $row_class = $is_completed ? 'completed-row' : '';
+                                        
+                                        switch ($row['delivery_status']) {
+                                            case 1:
+                                                $status_text = 'รับคำสั่งซื้อ';
+                                                $circle_color = 'blue';
+                                                $latest_step_time = $row['delivery_step1_received'];
+                                                break;
+                                            case 2:
+                                                $status_text = 'กำลังจัดส่งไปศูนย์';
+                                                $circle_color = 'yellow';
+                                                $latest_step_time = $row['delivery_step2_transit'];
+                                                break;
+                                            case 3:
+                                                $status_text = 'ถึงศูนย์กระจาย';
+                                                $circle_color = 'grey';
+                                                $latest_step_time = $row['delivery_step3_warehouse'];
+                                                break;
+                                            case 4:
+                                                $status_text = 'กำลังส่งลูกค้า';
+                                                $circle_color = 'purple';
+                                                $latest_step_time = $row['delivery_step4_last_mile'];
+                                                break;
+                                            case 5:
+                                                $status_text = 'ส่งสำเร็จ';
+                                                $circle_color = 'green';
+                                                $latest_step_time = $row['delivery_step5_completed'];
+                                                break;
+                                            case 99:
+                                                $status_text = 'เกิดปัญหา';
+                                                $circle_color = 'red';
+                                                // Find the latest non-null timestamp for problem status
+                                                $timestamps = [
+                                                    $row['delivery_step5_completed'],
+                                                    $row['delivery_step4_last_mile'],
+                                                    $row['delivery_step3_warehouse'],
+                                                    $row['delivery_step2_transit'],
+                                                    $row['delivery_step1_received']
+                                                ];
+                                                $latest_step_time = null;
+                                                foreach ($timestamps as $timestamp) {
+                                                    if (!empty($timestamp)) {
+                                                        $latest_step_time = $timestamp;
+                                                        break;
+                                                    }
+                                                }
+                                                break;
+                                            default:
+                                                $status_text = 'ไม่ทราบสถานะ';
+                                                $circle_color = 'grey';
+                                                $latest_step_time = null;
+                                                break;
+                                        }
+
+                                        echo '<tr class="' . $row_class . '" data-delivery-id="' . $row['delivery_id'] . '" style="cursor: pointer;" title="คลิกเพื่อดูรายละเอียด">';
+                                        echo '<td><strong>' . $i++ . '</strong></td>';
+                                        echo '<td><center><div class="status-circle ' . $circle_color . '" title="' . $status_text . '"></div></center></td>';
+                                        echo '<td><strong>' . htmlspecialchars($row['delivery_number']) . '</strong></td>';
+                                        echo '<td><center><span style="background: rgba(240, 89, 46, 0.1); padding: 4px 8px; border-radius: 12px; font-weight: 600; color: #F0592E;">' . $row['item_count'] . ' รายการ</span></center></td>';
+                                        
+                                        // Status text with completion badge
+                                        echo '<td>';
+                                        if ($is_completed) {
+                                            echo '<span class="completed-status">';
+                                            echo '<i class="bi bi-check-circle-fill text-success me-1"></i>';
+                                            echo $status_text;
+                                            echo '</span>';
+                                        } else {
+                                            echo $status_text;
+                                        }
+                                        echo '</td>';
+                                        
+                                        echo '<td>' . date('d/m/Y H:i', strtotime($row['delivery_date'])) . '</td>';
+                                        
+                                        // Display latest step time
+                                        if (!empty($latest_step_time)) {
+                                            $formatted_time = date('d/m/Y H:i', strtotime($latest_step_time));
+                                            if ($is_completed) {
+                                                echo '<td><span class="status-time-badge completed-time">' . $formatted_time . '</span></td>';
+                                            } else {
+                                                echo '<td><span class="status-time-badge">' . $formatted_time . '</span></td>';
+                                            }
+                                        } else {
+                                            echo '<td><span class="no-data-badge">ยังไม่มีข้อมูล</span></td>';
+                                        }
+                                        
+                                        // แสดง transfer_type อย่างปลอดภัย
+                                        $transfer_type = isset($row['transfer_type']) ? $row['transfer_type'] : 'ทั่วไป';
+                                        echo '<td><span class="transfer-badge">' . htmlspecialchars($transfer_type) . '</span></td>';
+                                        echo '</tr>';
                                     }
-                                    ?>
-                                    <tr class="<?php echo $status_class; ?>">
-                                        <td><strong><?php echo $index + 1; ?></strong></td>
-                                        <td><?php echo htmlspecialchars($row['delivery_number']); ?></td>
-                                        <td><?php echo htmlspecialchars($row['delivery_weight_total']); ?></td>
-                                        <td><?php echo $status_text; ?></td>
-                                        <td><?php echo htmlspecialchars($row['delivery_date']); ?></td>
-                                        <td><?php echo htmlspecialchars($row['created_by']); ?></td>
-                                    </tr>
-                                <?php endforeach; ?>
+                                } else {
+                                    echo "<tr>";
+                                    echo "<td colspan='8' class='empty-state'>";
+                                    echo "<i class='bi bi-inbox'></i>";
+                                    echo "<h3>ไม่พบข้อมูลการจัดส่ง</h3>";
+                                    echo "<p>ไม่มีรายการการจัดส่งในวันที่เลือก</p>";
+                                    echo "</td>";
+                                    echo "</tr>";
+                                }
+                                ?>
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Pagination -->
+                    <?php if ($total_pages > 1): ?>
+                    <div class="pagination">
+                        <?php if ($current_page > 1): ?>
+                            <button type="button" class="btn-custom" onclick="changePage(<?php echo $current_page - 1; ?>)">
+                                <i class="bi bi-chevron-left"></i> ก่อนหน้า
+                            </button>
+                        <?php endif; ?>
+
+                        <?php 
+                        // Show page numbers with smart pagination
+                        $start_page = max(1, $current_page - 2);
+                        $end_page = min($total_pages, $current_page + 2);
+                        
+                        // Show first page if not in range
+                        if ($start_page > 1) {
+                            echo '<button type="button" class="btn-custom" onclick="changePage(1)">1</button>';
+                            if ($start_page > 2) {
+                                echo '<span class="btn-custom" style="border: none; background: transparent; cursor: default;">...</span>';
+                            }
+                        }
+                        
+                        // Show page range
+                        for ($i = $start_page; $i <= $end_page; $i++): 
+                        ?>
+                            <button type="button" class="btn-custom <?php echo ($i == $current_page) ? 'active' : ''; ?>" onclick="changePage(<?php echo $i; ?>)">
+                                <?php echo $i; ?>
+                            </button>
+                        <?php endfor; ?>
+                        
+                        <?php
+                        // Show last page if not in range
+                        if ($end_page < $total_pages) {
+                            if ($end_page < $total_pages - 1) {
+                                echo '<span class="btn-custom" style="border: none; background: transparent; cursor: default;">...</span>';
+                            }
+                            echo '<button type="button" class="btn-custom" onclick="changePage(' . $total_pages . ')">' . $total_pages . '</button>';
+                        }
+                        ?>
+
+                        <?php if ($current_page < $total_pages): ?>
+                            <button type="button" class="btn-custom" onclick="changePage(<?php echo $current_page + 1; ?>)">
+                                ถัดไป <i class="bi bi-chevron-right"></i>
+                            </button>
+                        <?php endif; ?>
+                    </div>
+                    <?php endif; ?>
+
                 <?php else: ?>
                     <div class="empty-state">
                         <i class="bi bi-inbox"></i>
@@ -987,6 +1302,54 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
             <?php endif; ?>
         </div>
     </section>
+
+    <!-- Modal สำหรับแสดงรายละเอียด Statistics -->
+    <div class="modal fade" id="statModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="statModalTitle">
+                        <i class="bi bi-info-circle me-2"></i>
+                        รายละเอียด
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="statModalContent">
+                    <!-- Content will be populated by JavaScript -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i>
+                        ปิด
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal สำหรับแสดงรายละเอียดการขนส่ง -->
+    <div class="modal fade" id="detailModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-info-circle me-2"></i>
+                        รายละเอียดการจัดส่ง
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalContent">
+                    <!-- Modal body content -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i>
+                        ปิด
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -1036,7 +1399,6 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                     element.textContent = message;
                     element.style.display = 'block';
                 }
-                console.error(message);
             }
 
             function hideError(element) {
@@ -1079,7 +1441,6 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                     }
 
                 } catch (error) {
-                    console.error('Error fetching delivery chart data:', error);
                     showError(deliveryChartError, `เกิดข้อผิดพลาด: ${error.message}`);
                     
                     // Fallback to sample data
@@ -1098,7 +1459,7 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                 hideError(statusChartError);
 
                 try {
-                    const response = await fetch('api/get_status_chart_data.php', {
+                    const response = await fetch('function/api/get_status_chart_data.php', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -1121,7 +1482,6 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                     }
 
                 } catch (error) {
-                    console.error('Error fetching status chart data:', error);
                     showError(statusChartError, `เกิดข้อผิดพลาด: ${error.message}`);
                     
                     // Fallback to sample data
@@ -1398,24 +1758,837 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                 fetchDeliveryChartData();
                 fetchStatusChartData();
             }, 1000);
+
+            // Add row click functionality for delivery details
+            $(document).on('click', 'tbody tr[data-delivery-id]', function() {
+                const deliveryId = $(this).data('delivery-id');
+                if (deliveryId) {
+                    openDeliveryDetail(deliveryId);
+                }
+            });
         });
 
-
         // Mobile Warning
-         function checkScreenSize() {
-        const mobileModal = document.getElementById('mobileWarningModal');
+        function checkScreenSize() {
+            const mobileModal = document.getElementById('mobileWarningModal');
             if (window.innerWidth < 768) {
                 if (mobileModal) mobileModal.style.display = 'block';
             } else {
                 if (mobileModal) mobileModal.style.display = 'none';
             }
+        }
+
+        checkScreenSize();
+        window.addEventListener('resize', checkScreenSize);
+
+        // Function to change page for historical data
+        function changePage(page) {
+            const selectedDate = document.querySelector('input[name="selected_date"]').value;
+            if (!selectedDate) {
+                alert('กรุณาเลือกวันที่ก่อน');
+                return;
             }
 
-            checkScreenSize();
-            window.addEventListener('resize', checkScreenSize);
+            // Create form and submit
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '';
 
-            // Initialize
-            fetchAndUpdateCharts();
+            const dateInput = document.createElement('input');
+            dateInput.type = 'hidden';
+            dateInput.name = 'selected_date';
+            dateInput.value = selectedDate;
+
+            const pageInput = document.createElement('input');
+            pageInput.type = 'hidden';
+            pageInput.name = 'page';
+            pageInput.value = page;
+
+            form.appendChild(dateInput);
+            form.appendChild(pageInput);
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        // Function to open statistics modal
+        function openStatModal(type, title) {
+            const modal = new bootstrap.Modal(document.getElementById('statModal'));
+            const modalTitle = document.getElementById('statModalTitle');
+            const modalContent = document.getElementById('statModalContent');
+            
+            modalTitle.innerHTML = `<i class="bi bi-info-circle me-2"></i>${title}`;
+            
+            // Show or hide tabs based on type
+            if (type === 'all_bills') {
+                fetchBillData(type);
+            } else {
+                modalContent.innerHTML = '<div class="text-center p-4"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">กำลังโหลดข้อมูล...</p></div>';
+                fetchStatData(type);
+            }
+            
+            modal.show();
+        }
+
+        // Function to fetch bill data with IC/IV separation
+        function fetchBillData(type) {
+            const modalContent = document.getElementById('statModalContent');
+            
+            // Show loading first
+            modalContent.innerHTML = `
+                <div class="text-center p-4">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-2">กำลังโหลดข้อมูล...</p>
+                </div>
+            `;
+            
+            Promise.all([
+                fetch('function/api/get_bill_data.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: type, bill_type: 'ic' })
+                }).then(response => response.json()),
+                
+                fetch('function/api/get_bill_data.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: type, bill_type: 'iv' })
+                }).then(response => response.json())
+            ])
+            .then(([icData, ivData]) => {
+                // Combine data and display
+                const icItems = icData.items || [];
+                const ivItems = ivData.items || [];
+                const totalItems = icItems.length + ivItems.length;
+                
+                let content = `
+                    <div style="max-height: 600px; overflow-y: auto;">
+                        <h6 style="color: #F0592E; margin-bottom: 15px;">
+                            <i class="bi bi-list-ul"></i> รายการทั้งหมด (${totalItems} รายการ)
+                        </h6>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <div class="text-center p-3" style="background: rgba(33, 150, 243, 0.1); border-radius: 8px;">
+                                    <h5 style="color: #2196F3; margin: 0;">บิล IC</h5>
+                                    <span style="font-size: 1.5rem; font-weight: bold; color: #1976D2;">${icItems.length}</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-center p-3" style="background: rgba(156, 39, 176, 0.1); border-radius: 8px;">
+                                    <h5 style="color: #9C27B0; margin: 0;">บิล IV</h5>
+                                    <span style="font-size: 1.5rem; font-weight: bold; color: #7B1FA2;">${ivItems.length}</span>
+                                </div>
+                            </div>
+                        </div>
+                `;
+                
+                // Add IC bills
+                if (icItems.length > 0) {
+                    content += '<h6 style="color: #2196F3; margin-bottom: 10px;"><i class="bi bi-receipt me-2"></i>บิล IC</h6>';
+                    icItems.forEach(item => {
+                        content += generateBillCard(item, 'IC');
+                    });
+                }
+                
+                // Add IV bills
+                if (ivItems.length > 0) {
+                    content += '<h6 style="color: #9C27B0; margin-bottom: 10px; margin-top: 20px;"><i class="bi bi-file-text me-2"></i>บิล IV</h6>';
+                    ivItems.forEach(item => {
+                        content += generateBillCard(item, 'IV');
+                    });
+                }
+                
+                if (totalItems === 0) {
+                    content += `
+                        <div class="text-center p-4">
+                            <i class="bi bi-inbox" style="font-size: 3rem; color: #adb5bd;"></i>
+                            <h3>ไม่พบข้อมูล</h3>
+                            <p>ไม่มีบิลในหมวดหมู่นี้</p>
+                        </div>
+                    `;
+                }
+                
+                content += '</div>';
+                
+                modalContent.innerHTML = content;
+            })
+            .catch(error => {
+                const modalContent = document.getElementById('statModalContent');
+                if (modalContent) {
+                    modalContent.innerHTML = `
+                        <div class="text-center p-4">
+                            <i class="bi bi-exclamation-triangle text-danger" style="font-size: 3rem;"></i>
+                            <h3>เกิดข้อผิดพลาด</h3>
+                            <p>ไม่สามารถดึงข้อมูลได้: ${error.message}</p>
+                            <p class="text-muted">โปรดตรวจสอบ Console สำหรับรายละเอียดเพิ่มเติม</p>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        // Function to generate individual bill card
+        function generateBillCard(item, type) {
+            const typeColor = type === 'IC' ? '#2196F3' : '#9C27B0';
+            const typeBg = type === 'IC' ? 'rgba(33, 150, 243, 0.1)' : 'rgba(156, 39, 176, 0.1)';
+            
+            return `
+                <div style="background: white; border-radius: 12px; margin-bottom: 15px; border: 1px solid #dee2e6; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <div style="background: ${typeBg}; padding: 15px; border-bottom: 1px solid #dee2e6;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <div style="margin: 0; color: #2d3748; font-size: 1.1rem;">
+                                <i class="bi bi-receipt" style="color: ${typeColor}; margin-right: 8px;"></i>
+                                <strong>${item.bill_number || 'ไม่ระบุเลขบิล'}</strong>
+                            </div>
+                            <span style="background: ${typeColor}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 500;">
+                                บิล ${type}
+                            </span>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; font-size: 0.9rem;">
+                            <div>
+                                <div style="font-weight: 600; color: #495057;">ลูกค้า:</div>
+                                <div style="color: #6c757d;">${item.bill_customer_name || 'ไม่ระบุ'}</div>
+                            </div>
+                            <div>
+                                <div style="font-weight: 600; color: #495057;">จำนวนรายการ:</div>
+                                <div>
+                                    <span style="background: rgba(240, 89, 46, 0.1); color: #F0592E; padding: 2px 8px; border-radius: 8px; font-weight: 600;">
+                                        ${item.item_count || 0} รายการ
+                                    </span>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="font-weight: 600; color: #495057;">วันที่สร้าง:</div>
+                                <div style="color: #6c757d;">${formatDate(item.bill_date)}</div>
+                            </div>
+                        </div>
+                        
+                        ${item.total_amount && item.total_amount > 0 ? `
+                        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.1);">
+                            <strong style="color: #495057;">ยอดรวม:</strong>
+                            <span style="color: #28a745; font-weight: 600; font-size: 1.1rem;">฿${parseFloat(item.total_amount).toLocaleString()}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Function to fetch regular stat data
+        function fetchStatData(type) {
+            // Show loading in modal
+            const modalContent = document.getElementById('statModalContent');
+            modalContent.innerHTML = '<div class="text-center p-4"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">กำลังโหลดข้อมูล...</p></div>';
+
+            // Determine delivery status filter based on type
+            let statusFilter = '';
+            switch(type) {
+                case 'preparing':
+                    statusFilter = '1';
+                    break;
+                case 'sending_center':
+                    statusFilter = '2';
+                    break;
+                case 'at_center':
+                    statusFilter = '3';
+                    break;
+                case 'delivering':
+                    statusFilter = '4';
+                    break;
+                case 'completed':
+                    statusFilter = '5';
+                    break;
+                case 'problem':
+                    statusFilter = '99';
+                    break;
+                case 'all_delivery':
+                    statusFilter = 'all';
+                    break;
+                default:
+                    statusFilter = 'all';
+                    break;
+            }
+
+            // Fetch data
+            fetch('function/api/get_stat_data.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    type: type,
+                    status: statusFilter
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.items) {
+                    openStatModalWithData(data);
+                } else {
+                    const modalContent = document.getElementById('statModalContent');
+                    if (modalContent) {
+                        modalContent.innerHTML = `
+                            <div class="text-center p-4">
+                                <i class="bi bi-inbox" style="font-size: 3rem; color: #adb5bd;"></i>
+                                <h3>ไม่พบข้อมูล</h3>
+                                <p>ไม่มีข้อมูลสำหรับหมวดหมู่นี้</p>
+                            </div>
+                        `;
+                    }
+                }
+            })
+            .catch(error => {
+                const modalContent = document.getElementById('statModalContent');
+                if (modalContent) {
+                    modalContent.innerHTML = `
+                        <div class="text-center p-4">
+                            <i class="bi bi-exclamation-triangle text-danger" style="font-size: 3rem;"></i>
+                            <h3>เกิดข้อผิดพลาด</h3>
+                            <p>ไม่สามารถดึงข้อมูลได้: ${error.message}</p>
+                            <p class="text-muted">โปรดตรวจสอบ Console สำหรับรายละเอียดเพิ่มเติม</p>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        // Function to open stat modal with data
+        function openStatModalWithData(data) {
+            const modalContent = document.getElementById('statModalContent');
+            
+            let content = `
+                <div style="max-height: 600px; overflow-y: auto;">
+                    <h6 style="color: #F0592E; margin-bottom: 15px;">
+                        <i class="bi bi-list-ul"></i> รายการทั้งหมด (${data.items.length} รายการ)
+                    </h6>`;
+            
+            if (data.items && data.items.length > 0) {
+                data.items.forEach((item, index) => {
+                    // Check if this is a bill (not delivery)
+                    if (item.type === 'bill') {
+                        // Display bill information
+                        content += `
+                            <div style="background: white; border-radius: 12px; margin-bottom: 15px; border: 1px solid #dee2e6; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                <div style="background: linear-gradient(135deg, rgba(240, 89, 46, 0.1), rgba(255, 138, 101, 0.1)); padding: 15px; border-bottom: 1px solid #dee2e6;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                        <h6 style="margin: 0; color: #2d3748; font-size: 1.1rem;">
+                                            <i class="bi bi-receipt" style="color: #F0592E; margin-right: 8px;"></i>
+                                            <strong>${item.delivery_number}</strong>
+                                        </h6>
+                                        <span style="background: #17a2b8; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 500;">
+                                            ยังไม่ได้รวมเป็นเลขขนส่ง
+                                        </span>
+                                    </div>
+                                    
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; font-size: 0.9rem;">
+                                        <div>
+                                            <strong style="color: #495057;">ลูกค้า:</strong><br>
+                                            <span style="color: #6c757d;">${item.bill_customer_name || 'ไม่ระบุ'}</span>
+                                        </div>
+                                        <div>
+                                            <strong style="color: #495057;">จำนวนรายการ:</strong><br>
+                                            <span style="background: rgba(240, 89, 46, 0.1); color: #F0592E; padding: 2px 8px; border-radius: 8px; font-weight: 600;">${item.item_count} รายการ</span>
+                                        </div>
+                                        <div>
+                                            <strong style="color: #495057;">วันที่สร้าง:</strong><br>
+                                            <span style="color: #6c757d;">${formatDate(item.delivery_date)}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    ${item.total_amount ? `
+                                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.1);">
+                                        <strong style="color: #495057;">ยอดรวม:</strong>
+                                        <span style="color: #28a745; font-weight: 600; font-size: 1.1rem;">฿${parseFloat(item.total_amount).toLocaleString()}</span>
+                                    </div>
+                                    ` : ''}
+                                </div>
+                                
+                                <div style="padding: 12px 15px; text-align: center; background: rgba(23, 162, 184, 0.05); color: #17a2b8; font-size: 0.9rem;">
+                                    <i class="bi bi-info-circle me-1"></i> บิลนี้ยังไม่ได้รวมเข้าในการขนส่ง สามารถนำไปสร้างเลขขนส่งได้
+                                </div>
+                            </div>`;
+                    } else {
+                        // Display delivery information (existing code)
+                        let statusText = 'ไม่ทราบสถานะ';
+                        let statusColor = '#6c757d';
+                        
+                        switch (parseInt(item.delivery_status)) {
+                            case 1:
+                                statusText = 'รับคำสั่งซื้อ';
+                                statusColor = '#007bff';
+                                break;
+                            case 2:
+                                statusText = 'กำลังจัดส่งไปศูนย์';
+                                statusColor = '#ffc107';
+                                break;
+                            case 3:
+                                statusText = 'ถึงศูนย์กระจาย';
+                                statusColor = '#6c757d';
+                                break;
+                            case 4:
+                                statusText = 'กำลังส่งลูกค้า';
+                                statusColor = '#6f42c1';
+                                break;
+                            case 5:
+                                statusText = 'ส่งสำเร็จ';
+                                statusColor = '#28a745';
+                                break;
+                            case 99:
+                                statusText = 'เกิดปัญหา';
+                                statusColor = '#dc3545';
+                                break;
+                        }
+
+                        content += `
+                            <div style="background: white; border-radius: 12px; margin-bottom: 15px; border: 1px solid #dee2e6; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: pointer;" onclick="openDeliveryDetail(${item.delivery_id})">
+                                <div style="background: linear-gradient(135deg, rgba(240, 89, 46, 0.1), rgba(255, 138, 101, 0.1)); padding: 15px; border-bottom: 1px solid #dee2e6;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                        <h6 style="margin: 0; color: #2d3748; font-size: 1.1rem;">
+                                            <i class="bi bi-truck" style="color: #F0592E; margin-right: 8px;"></i>
+                                            <strong>${item.delivery_number}</strong>
+                                        </h6>
+                                        <span style="background: ${statusColor}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 500;">
+                                            ${statusText}
+                                        </span>
+                                    </div>
+                                    
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; font-size: 0.9rem;">
+                                        <div>
+                                            <strong style="color: #495057;">จำนวนรายการ:</strong><br>
+                                            <span style="background: rgba(240, 89, 46, 0.1); color: #F0592E; padding: 2px 8px; border-radius: 8px; font-weight: 600;">${item.item_count} รายการ</span>
+                                        </div>
+                                        <div>
+                                            <strong style="color: #495057;">วันที่สร้าง:</strong><br>
+                                            <span style="color: #6c757d;">${formatDate(item.delivery_date)}</span>
+                                        </div>
+                                        <div>
+                                            <strong style="color: #495057;">ประเภทขนส่ง:</strong><br>
+                                            <span style="background: rgba(33, 150, 243, 0.1); color: #2196F3; padding: 2px 8px; border-radius: 6px; font-weight: 500;">${item.transfer_type || 'ทั่วไป'}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    ${parseInt(item.delivery_status) === 99 && item.delivery_problem_desc ? `
+                                    <div style="margin-top: 12px; padding: 10px; background: rgba(220, 53, 69, 0.1); border-radius: 8px; border-left: 4px solid #dc3545;">
+                                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
+                                            <i class="bi bi-exclamation-triangle" style="color: #dc3545; font-size: 1.1rem;"></i>
+                                            <strong style="color: #721c24; font-size: 0.9rem;">รายละเอียดปัญหา:</strong>
+                                        </div>
+                                        <div style="color: #721c24; font-size: 0.85rem; font-weight: 500; padding-left: 24px;">
+                                            ${item.delivery_problem_desc}
+                                        </div>
+                                    </div>
+                                    ` : ''}
+                                </div>
+                                
+                                <div style="padding: 12px 15px; text-align: center; color: #6c757d; font-size: 0.9rem;">
+                                    <i class="bi bi-hand-index me-1"></i> คลิกเพื่อดูรายละเอียดเพิ่มเติม
+                                </div>
+                            </div>`;
+                    }
+                });
+            }
+            
+            content += `</div>`;
+            modalContent.innerHTML = content;
+        }
+
+        // Function to open delivery detail modal (same as history.php)
+        function openDeliveryDetail(deliveryId) {
+            if (!deliveryId) return;
+            
+            // Hide stat modal first
+            const statModal = bootstrap.Modal.getInstance(document.getElementById('statModal'));
+            if (statModal) {
+                statModal.hide();
+            }
+            
+            // Show loading
+            Swal.fire({
+                title: 'กำลังโหลดข้อมูล...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Fetch data and show modal
+            $.ajax({
+                url: 'function/fetch_modal_data.php',
+                type: 'POST',
+                data: {
+                    deliveryIds: deliveryId.toString()
+                },
+                success: function(data) {
+                    Swal.close();
+                    
+                    if (data.error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'เกิดข้อผิดพลาด',
+                            text: data.error,
+                            confirmButtonColor: '#F0592E'
+                        });
+                        return;
+                    }
+
+                    if (!data.items || data.items.length === 0) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'ไม่พบข้อมูล',
+                            text: 'ไม่มีข้อมูลที่สามารถแสดงได้',
+                            confirmButtonColor: '#F0592E'
+                        });
+                        return;
+                    }
+
+                    openModal(data);
+                    const modal = new bootstrap.Modal(document.getElementById('detailModal'));
+                    modal.show();
+                },
+                error: function(xhr, status, error) {
+                    Swal.close();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'เกิดข้อผิดพลาด',
+                        text: 'ไม่สามารถดึงข้อมูลได้: ' + error,
+                        confirmButtonColor: '#F0592E'
+                    });
+                }
+            });
+        }
+
+        // Function to open modal (copied from history.php)
+        function openModal(data) {
+            const modalContent = document.getElementById('modalContent');
+            if (!modalContent) {
+                return;
+            }
+            
+            let content = '';
+            
+            if (data.items && data.items.length > 0) {
+                content = `
+                    <div style="max-height: 600px; overflow-y: auto;">
+                        <h6 style="color: #F0592E; margin-bottom: 15px;">
+                            <i class="bi bi-list-ul"></i> รายละเอียดการจัดส่ง (${data.items.length} รายการ)
+                        </h6>`;
+                
+                data.items.forEach((item, index) => {
+                    // Determine status text and color
+                    let statusText = 'ไม่ทราบสถานะ';
+                    let statusColor = '#6c757d';
+                    
+                    switch (parseInt(item.delivery_status)) {
+                        case 1:
+                            statusText = 'รับคำสั่งซื้อ';
+                            statusColor = '#007bff';
+                            break;
+                        case 2:
+                            statusText = 'กำลังจัดส่งไปศูนย์';
+                            statusColor = '#ffc107';
+                            break;
+                        case 3:
+                            statusText = 'ถึงศูนย์กระจาย';
+                            statusColor = '#6c757d';
+                            break;
+                        case 4:
+                            statusText = 'กำลังส่งลูกค้า';
+                            statusColor = '#6f42c1';
+                            break;
+                        case 5:
+                            statusText = 'ส่งสำเร็จ';
+                            statusColor = '#28a745';
+                            break;
+                        case 99:
+                            statusText = 'เกิดปัญหา';
+                            statusColor = '#dc3545';
+                            break;
+                    }
+
+                    // Generate timeline HTML
+                    const timelineHtml = generateTimelineHtml(item);
+                    
+                    // Generate items detail HTML
+                    let itemsHtml = '';
+                    if (item.items && item.items.length > 0) {
+                        itemsHtml = `
+                            <div class="delivery-items" id="items-${item.delivery_id}" style="display: none; margin-top: 15px;">
+                                <div style="background: rgba(248, 249, 250, 1); border-radius: 8px; padding: 15px; border: 1px solid #dee2e6;">
+                                    <h6 style="color: #495057; margin-bottom: 15px; font-size: 1rem;">
+                                        <i class="bi bi-box-seam"></i> รายละเอียดสินค้า (${item.items.length} รายการ)
+                                    </h6>`;
+                        
+                        item.items.forEach((deliveryItem, itemIndex) => {
+                            itemsHtml += `
+                                <div style="background: white; border-radius: 6px; padding: 12px; margin-bottom: 10px; border-left: 4px solid #F0592E; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.9rem;">
+                                        <div><strong style="color: #495057;">เลขบิล:</strong> ${deliveryItem.bill_number}</div>
+                                        <div><strong style="color: #495057;">ลูกค้า:</strong> ${deliveryItem.bill_customer_name}</div>
+                                        <div><strong style="color: #495057;">รหัสสินค้า:</strong> <code style="background: #e9ecef; padding: 2px 6px; border-radius: 4px;">${deliveryItem.item_code}</code></div>
+                                        <div><strong style="color: #495057;">จำนวน:</strong> <span style="color: #F0592E; font-weight: 600;">${deliveryItem.item_quantity} ${deliveryItem.item_unit}</span></div>
+                                    </div>
+                                    <div style="margin-top: 8px;">
+                                        <strong style="color: #495057;">รายละเอียด:</strong> 
+                                        <span style="color: #6c757d;">${deliveryItem.item_desc}</span>
+                                    </div>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 8px; font-size: 0.85rem;">
+                                        <div><strong style="color: #495057;">ราคา:</strong> <span style="color: #28a745;">฿${parseFloat(deliveryItem.item_price).toLocaleString()}</span></div>
+                                        <div><strong style="color: #495057;">รวม:</strong> <span style="color: #F0592E; font-weight: 600;">฿${parseFloat(deliveryItem.line_total).toLocaleString()}</span></div>
+                                        <div><strong style="color: #495057;">น้ำหนัก:</strong> ${deliveryItem.item_weight} กก.</div>
+                                    </div>
+                                </div>`;
+                        });
+                        
+                        itemsHtml += `
+                                </div>
+                            </div>`;
+                    }
+                    
+                    content += `
+                        <div style="background: white; border-radius: 12px; margin-bottom: 15px; border: 1px solid #dee2e6; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <div style="background: linear-gradient(135deg, rgba(240, 89, 46, 0.1), rgba(255, 138, 101, 0.1)); padding: 15px; border-bottom: 1px solid #dee2e6;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                    <h6 style="margin: 0; color: #2d3748; font-size: 1.1rem;">
+                                        <i class="bi bi-truck" style="color: #F0592E; margin-right: 8px;"></i>
+                                        <strong>${item.delivery_number}</strong>
+                                    </h6>
+                                    <span style="background: ${statusColor}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 500;">
+                                        ${statusText}
+                                    </span>
+                                </div>
+                                
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; font-size: 0.9rem;">
+                                    <div>
+                                        <strong style="color: #495057;">จำนวนรายการ:</strong><br>
+                                        <span style="background: rgba(240, 89, 46, 0.1); color: #F0592E; padding: 2px 8px; border-radius: 8px; font-weight: 600;">${item.item_count} รายการ</span>
+                                    </div>
+                                    <div>
+                                        <strong style="color: #495057;">วันที่สร้าง:</strong><br>
+                                        <span style="color: #6c757d;">${formatDate(item.delivery_date)}</span>
+                                    </div>
+                                    <div>
+                                        <strong style="color: #495057;">ประเภทขนส่ง:</strong><br>
+                                        <span style="background: rgba(33, 150, 243, 0.1); color: #2196F3; padding: 2px 8px; border-radius: 6px; font-weight: 500;">${item.transfer_type}</span>
+                                    </div>
+                                </div>
+                                
+                                ${parseInt(item.delivery_status) === 99 && item.delivery_problem_desc ? `
+                                <div style="margin-top: 15px; padding: 12px; background: rgba(220, 53, 69, 0.1); border-radius: 8px; border-left: 4px solid #dc3545;">
+                                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                                        <i class="bi bi-exclamation-triangle" style="color: #dc3545; font-size: 1.2rem;"></i>
+                                        <strong style="color: #721c24; font-size: 1rem;">รายละเอียดปัญหา:</strong>
+                                    </div>
+                                    <div style="color: #721c24; font-size: 0.9rem; font-weight: 500; padding-left: 28px; line-height: 1.4;">
+                                        ${item.delivery_problem_desc}
+                                    </div>
+                                </div>
+                                ` : ''}
+                            </div>
+                            
+                            <!-- Timeline Section -->
+                            <div style="padding: 15px; background: rgba(249, 249, 249, 0.5);">
+                                <h6 style="color: #495057; margin-bottom: 15px; font-size: 1rem;">
+                                    <i class="bi bi-clock-history"></i> Timeline การขนส่ง
+                                </h6>
+                                ${timelineHtml}
+                            </div>
+                            
+                            <div style="padding: 12px 15px; border-top: 1px solid #dee2e6;">
+                                <button 
+                                    type="button" 
+                                    class="btn btn-sm" 
+                                    onclick="toggleDeliveryItems(${item.delivery_id})"
+                                    style="background: linear-gradient(135deg, #F0592E, #FF8A65); color: white; border: none; border-radius: 6px; padding: 6px 12px; font-size: 0.85rem; font-weight: 500; transition: all 0.3s ease; display: flex; align-items: center; gap: 6px;"
+                                    onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(240, 89, 46, 0.3)'"
+                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'"
+                                >
+                                    <i class="bi bi-chevron-down" id="icon-${item.delivery_id}"></i>
+                                    <span id="text-${item.delivery_id}">ดูรายละเอียดสินค้า</span>
+                                </button>
+                            </div>
+                            
+                            ${itemsHtml}
+                        </div>`;
+                });
+                
+                content += `</div>`;
+            } else {
+                content = `
+                    <div style="text-align: center; padding: 40px 20px; color: #718096;">
+                        <i class="bi bi-inbox" style="font-size: 3rem; color: #adb5bd; margin-bottom: 15px; display: block;"></i>
+                        <h5 style="color: #2d3748; margin-bottom: 8px;">ไม่พบข้อมูล</h5>
+                        <p style="font-size: 0.9rem;">ไม่มีรายการการจัดส่งที่สามารถแสดงได้</p>
+                    </div>
+                `;
+            }
+            
+            modalContent.innerHTML = content;
+        }
+
+        // Function to generate timeline HTML
+        function generateTimelineHtml(item) {
+            const steps = [
+                {
+                    id: 1,
+                    title: 'รับคำสั่งซื้อ',
+                    description: 'ระบบรับคำสั่งซื้อเข้าสู่ระบบ',
+                    timestamp: item.delivery_step1_received,
+                    icon: 'bi-clipboard-check',
+                    color: '#007bff'
+                },
+                {
+                    id: 2,
+                    title: 'กำลังจัดส่งไปศูนย์',
+                    description: 'สินค้าอยู่ระหว่างการขนส่งไปยังศูนย์กระจาย',
+                    timestamp: item.delivery_step2_transit,
+                    icon: 'bi-truck',
+                    color: '#ffc107'
+                },
+                {
+                    id: 3,
+                    title: 'ถึงศูนย์กระจาย',
+                    description: 'สินค้าถึงศูนย์กระจายสินค้าปลายทาง',
+                    timestamp: item.delivery_step3_warehouse,
+                    icon: 'bi-building',
+                    color: '#6c757d'
+                },
+                {
+                    id: 4,
+                    title: 'กำลังส่งลูกค้า',
+                    description: 'สินค้าอยู่ระหว่างการนำส่งให้ลูกค้า',
+                    timestamp: item.delivery_step4_last_mile,
+                    icon: 'bi-geo-alt',
+                    color: '#6f42c1'
+                },
+                {
+                    id: 5,
+                    title: 'ส่งสำเร็จ',
+                    description: 'สินค้าถึงลูกค้าเรียบร้อยแล้ว',
+                    timestamp: item.delivery_step5_completed,
+                    icon: 'bi-check-circle',
+                    color: '#28a745'
+                }
+            ];
+
+            let timelineHtml = '<div style="position: relative;">';
+            
+            steps.forEach((step, index) => {
+                const isCompleted = step.timestamp && step.timestamp !== null;
+                const isCurrent = parseInt(item.delivery_status) === step.id;
+                const isProblem = parseInt(item.delivery_status) === 99;
+                
+                let stepStatus = '';
+                let stepColor = '#e9ecef';
+                let textColor = '#6c757d';
+                let iconClass = 'bi-circle';
+                
+                if (isCompleted) {
+                    stepStatus = 'completed';
+                    stepColor = step.color;
+                    textColor = '#2d3748';
+                    iconClass = step.icon;
+                } else if (isCurrent && !isProblem) {
+                    stepStatus = 'current';
+                    stepColor = step.color;
+                    textColor = '#2d3748';
+                    iconClass = step.icon;
+                } else if (isProblem && isCompleted) {
+                    stepStatus = 'problem';
+                    stepColor = '#dc3545';
+                    textColor = '#721c24';
+                    iconClass = 'bi-exclamation-triangle';
+                }
+                
+                timelineHtml += `
+                    <div style="display: flex; align-items: flex-start; margin-bottom: ${index === steps.length - 1 ? '0' : '20px'}; position: relative;">
+                        ${index < steps.length - 1 ? `
+                            <div style="position: absolute; left: 19px; top: 40px; height: 20px; width: 2px; background: ${isCompleted ? stepColor : '#e9ecef'};"></div>
+                        ` : ''}
+                        
+                        <div style="width: 38px; height: 38px; border-radius: 50%; background: ${stepColor}; display: flex; align-items: center; justify-content: center; margin-right: 15px; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.15); position: relative; z-index: 1;">
+                            <i class="${iconClass}" style="color: white; font-size: 16px;"></i>
+                        </div>
+                        
+                        <div style="flex: 1;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <h6 style="margin: 0; color: ${textColor}; font-size: 0.95rem; font-weight: 600;">
+                                    ${step.title}
+                                </h6>
+                                ${isCompleted ? `
+                                    <span style="background: rgba(40, 167, 69, 0.1); color: #28a745; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 500;">
+                                        ${formatDate(step.timestamp)}
+                                    </span>
+                                ` : isCurrent ? `
+                                    <span style="background: rgba(255, 193, 7, 0.1); color: #e0a800; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 500;">
+                                        กำลังดำเนินการ
+                                    </span>
+                                ` : `
+                                    <span style="color: #adb5bd; font-size: 0.8rem; font-style: italic;">
+                                        รอดำเนินการ
+                                    </span>
+                                `}
+                            </div>
+                            <p style="margin: 0; color: #6c757d; font-size: 0.85rem; line-height: 1.4;">
+                                ${step.description}
+                            </p>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            timelineHtml += '</div>';
+            return timelineHtml;
+        }
+
+        // Function to toggle delivery items visibility
+        function toggleDeliveryItems(deliveryId) {
+            const itemsDiv = document.getElementById(`items-${deliveryId}`);
+            const icon = document.getElementById(`icon-${deliveryId}`);
+            const text = document.getElementById(`text-${deliveryId}`);
+            
+            if (itemsDiv && itemsDiv.style.display === 'none') {
+                // Show items
+                itemsDiv.style.display = 'block';
+                if (icon) icon.className = 'bi bi-chevron-up';
+                if (text) text.textContent = 'ซ่อนรายละเอียดสินค้า';
+                
+                // Add smooth animation
+                itemsDiv.style.opacity = '0';
+                itemsDiv.style.transform = 'translateY(-10px)';
+                setTimeout(() => {
+                    itemsDiv.style.transition = 'all 0.3s ease';
+                    itemsDiv.style.opacity = '1';
+                    itemsDiv.style.transform = 'translateY(0)';
+                }, 10);
+            } else if (itemsDiv) {
+                // Hide items
+                itemsDiv.style.transition = 'all 0.3s ease';
+                itemsDiv.style.opacity = '0';
+                itemsDiv.style.transform = 'translateY(-10px)';
+                
+                setTimeout(() => {
+                    itemsDiv.style.display = 'none';
+                    if (icon) icon.className = 'bi bi-chevron-down';
+                    if (text) text.textContent = 'ดูรายละเอียดสินค้า';
+                }, 300);
+            }
+        }
+
+        // Utility function to format date
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return '-';
+            
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear();
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            
+            return `${day}/${month}/${year} ${hours}:${minutes}`;
+        }
     </script>
 </body>
 </html>

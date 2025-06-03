@@ -558,7 +558,7 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
 
         <!-- Import Head CSV Section -->
         <div class="content-container animate__fadeInUp">
-            <a href="../dashboard.php" class="back-button">
+            <a href="dashboard" class="back-button">
                 <i class="bi bi-arrow-left"></i> กลับไปหน้า Dashboard
             </a>
             

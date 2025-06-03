@@ -5,7 +5,7 @@
         position: relative;
         background: linear-gradient(45deg, #F0592E, #FF4B2B);
         color: #fff;
-        padding: 50px 0;
+        padding: 50px 0px;
         box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.3);
     }
 
@@ -45,6 +45,11 @@
         transform: scale(1.2);
     }
 
+    .wedev-logo {
+        width: 55px;
+        height: 50px;
+    }
+
     .powered-by a {
         color: #fff;
         text-decoration: none;
@@ -61,49 +66,60 @@
 
     .footer-text {
         font-size: 16px;
-        margin-top: 20px;
         text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        margin: 0;
     }
 
-    .wedev-logo {
-        width: 55px;
-        height: 50px;
-        margin-top: 20px;
-        margin-right: 700px;
+    .footer-text-center {
+        text-align: center;
+    }
+
+    @media (max-width: 768px) {
+        .footer-content {
+            text-align: center;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .wedev-logo {
+            margin: 0;
+        }
     }
 
     @media (max-width: 576px) {
         .footer-content {
-            text-align: center;
-            flex-direction: column;
-        }
-
-        .wedev-logo {
-            margin: 20px auto;
+            gap: 15px;
         }
     }
 </style>
 
-<div class="container">
-    <div class="footer-content">
-        <div class="footer-logo">
-            <img src="../view/assets/img/logo/logo.png" alt="Company Logo">
+<footer>
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="../view/assets/img/logo/logo.png" alt="Company Logo">
+            </div>
+            
+            <img src="../view/assets/img/wedev.png" class="wedev-logo" alt="WEDEV Logo">
+            
+            <div class="footer-text-center">
+                <div class="powered-by">
+                    <span>พัฒนาโดย:</span> <a href="https://www.facebook.com/profile.php?id=61558770879804">WE.DEV</a>
+                </div>
+                <div class="footer-text">
+                    <p>&copy; 2024 Wanawat Hardware Company Limited. สงวนสิทธิ์ทุกประการ.</p>
+                </div>
+            </div>
+            
+            <div class="social-icons">
+                <a href="https://www.facebook.com/WeHomeOnline" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://maps.app.goo.gl/d4iug4bQ4Z5tMJAC9" target="_blank"><i class="fas fa-map-marker-alt"></i></a>
+                <a href="https://wehome.co.th" target="_blank"><i class="fas fa-globe"></i></a>
+                <a href="#" onclick="confirmCall()"><i class="fas fa-phone-alt"></i></a>
+            </div>
         </div>
-        <img src="../view/assets/img/wedev.png" class="wedev-logo" alt="WEDEV Logo">
-        <div class="social-icons">
-            <a href="https://www.facebook.com/WeHomeOnline" target="_blank"><i class="fab fa-facebook-f"></i></a>
-            <a href="https://maps.app.goo.gl/d4iug4bQ4Z5tMJAC9" target="_blank"><i class="fas fa-map-marker-alt"></i></a>
-            <a href="https://wehome.co.th" target="_blank"><i class="fas fa-globe"></i></a>
-            <a href="#" onclick="confirmCall()"><i class="fas fa-phone-alt"></i></a>
-        </div>
     </div>
-    <div class="powered-by text-center">
-        <p><?php echo isset($lang) && $lang == 'th' ? 'พัฒนาโดย:' : 'Powered By:'; ?> <a href="https://www.facebook.com/profile.php?id=61558770879804">WE.DEV</a></p>
-    </div>
-    <div class="footer-text text-center">
-        <p>&copy; 2024 Wanawat Hardware Company Limited. <?php echo isset($lang) && $lang == 'th' ? 'สงวนสิทธิ์ทุกประการ' : 'All rights reserved'; ?>.</p>
-    </div>
-</div>
+</footer>
 
 <!-- Bootstrap JS -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -140,7 +156,5 @@ function confirmCall() {
 }
 
 // ตั้งค่าภาษาจาก PHP
-<?php if (isset($lang)): ?>
-window.currentLang = '<?php echo $lang; ?>';
-<?php endif; ?>
+// window.currentLang = 'th'; // ตัวอย่างการตั้งค่า
 </script>
