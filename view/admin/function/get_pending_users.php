@@ -4,37 +4,40 @@ if (!isset($_SESSION)) {
     session_start();
 }
 
+// Security headers
+header('Content-Type: application/json; charset=utf-8');
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: DENY');
+header('X-XSS-Protection: 1; mode=block');
+
 // ตรวจสอบการเข้าสู่ระบบ
 if (!isset($_SESSION['login'])) {
     http_response_code(401);
-    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+    echo json_encode([
+        'success' => false,
+        'error' => 'Unauthorized access',
+        'message' => 'กรุณาเข้าสู่ระบบ'
+    ]);
     exit;
 }
 
-require_once('../../config/connect.php');
-
-// ดึงข้อมูล permissions จาก session
+// Check if user has permission to manage users
 $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
-
-// ตรวจสอบสิทธิ์ในการเข้าถึง
 if (!isset($permissions['manage_permission']) || $permissions['manage_permission'] != 1) {
     http_response_code(403);
-    echo json_encode(['success' => false, 'message' => 'Access denied']);
+    echo json_encode([
+        'success' => false,
+        'error' => 'Access denied',
+        'message' => 'คุณไม่มีสิทธิ์จัดการผู้ใช้งาน'
+    ]);
     exit;
 }
 
-// ตั้งค่า header สำหรับ JSON response
-header('Content-Type: application/json; charset=utf-8');
+// Include database connection
+require_once('../../config/connect.php');
 
 try {
-    $user_type = isset($_GET['user_type']) ? intval($_GET['user_type']) : null;
-    
-    if ($user_type === null) {
-        echo json_encode(['success' => false, 'message' => 'User type is required']);
-        exit;
-    }
-    
-    // สร้าง SQL query - แสดงผู้ใช้ทุกสถานะ (1, 0, 9)
+    // Get all users with status = 9 (pending approval)
     $sql = "SELECT 
                 user_id,
                 user_firstname, 
@@ -48,13 +51,13 @@ try {
                 customer_id,
                 province_id,
                 amphure_id,
-                district_id
+                district_id,
+                user_create_at
             FROM tb_user 
-            WHERE user_type = ? AND user_status IN (0, 1, 9)
-            ORDER BY user_status DESC, user_firstname ASC, user_lastname ASC";
+            WHERE user_status = 9
+            ORDER BY user_create_at DESC";
     
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $user_type);
     $stmt->execute();
     $result = $stmt->get_result();
     
@@ -71,12 +74,12 @@ try {
     
     echo json_encode([
         'success' => true, 
-        'data' => $users,
+        'users' => $users,
         'count' => count($users)
     ]);
     
 } catch (Exception $e) {
-    error_log("Error in get_users.php: " . $e->getMessage());
+    error_log("Error in get_pending_users.php: " . $e->getMessage());
     echo json_encode([
         'success' => false, 
         'message' => 'เกิดข้อผิดพลาดในการดึงข้อมูล: ' . $e->getMessage()

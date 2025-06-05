@@ -50,6 +50,7 @@ $provinces_result = $conn->query($provinces_query);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- CSS Dependencies -->
+    <link rel="icon" type="image/x-icon" href="https://wehome.co.th/wp-content/uploads/2023/01/logo-WeHome-BUILDER-788x624.png">
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
@@ -349,6 +350,11 @@ $provinces_result = $conn->query($provinces_query);
             color: white;
         }
 
+        .status-pending {
+            background: linear-gradient(135deg, #ffc107, #e0a800);
+            color: #212529;
+        }
+
         /* Action Buttons in Table */
         .table-action-btn {
             padding: 6px 12px;
@@ -516,6 +522,61 @@ $provinces_result = $conn->query($provinces_query);
             }
         }
 
+        /* Image Preview Styling */
+        .image-preview {
+            position: relative;
+            display: inline-block;
+            border: 2px dashed rgba(240, 89, 46, 0.3);
+            border-radius: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .image-preview:hover {
+            border-color: #F0592E;
+            background: rgba(240, 89, 46, 0.05);
+        }
+
+        .preview-image {
+            max-width: 200px;
+            max-height: 200px;
+            width: auto;
+            height: auto;
+            border-radius: 8px;
+            object-fit: cover;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .remove-image {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .remove-image:hover {
+            background: linear-gradient(135deg, #c82333, #bd2130);
+            transform: translateY(-1px);
+            color: white;
+        }
+
+        /* File input styling enhancement */
+        .form-control[type="file"] {
+            padding: 8px 12px;
+        }
+
+        .form-control[type="file"]:focus {
+            border-color: #F0592E;
+            box-shadow: 0 0 0 0.2rem rgba(240, 89, 46, 0.25);
+        }
+
         /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
@@ -679,45 +740,40 @@ $provinces_result = $conn->query($provinces_query);
     </div>
 
     <!-- User Modal -->
-    <div class="modal fade" id="userModal" tabindex="-1">
+    <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalTitle" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="userModalTitle">เพิ่มผู้ใช้</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="userForm" enctype="multipart/form-data">
                         <input type="hidden" id="userId" name="user_id">
                         <input type="hidden" id="userType" name="user_type">
                         <input type="hidden" id="actionType" name="action">
+                        <input type="hidden" id="removeImageFlag" name="remove_image" value="0">
                         
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="firstName" class="form-label">ชื่อ</label>
+                                    <label for="firstName" class="form-label">ชื่อ <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="firstName" name="firstname" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="lastName" class="form-label">นามสกุล</label>
+                                    <label for="lastName" class="form-label">นามสกุล <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="lastName" name="lastname" required>
                                 </div>
                             </div>
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <div class="mb-3">
-                                    <label for="email" class="form-label">อีเมล</label>
+                                    <label for="email" class="form-label">อีเมล <span class="text-danger">*</span></label>
                                     <input type="email" class="form-control" id="email" name="email" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="password" class="form-label">รหัสผ่าน</label>
-                                    <input type="password" class="form-control" id="password" name="password" required>
                                 </div>
                             </div>
                         </div>
@@ -778,6 +834,12 @@ $provinces_result = $conn->query($provinces_query);
                                 <div class="mb-3">
                                     <label for="userImage" class="form-label">รูปภาพ</label>
                                     <input type="file" class="form-control" id="userImage" name="user_img" accept="image/*">
+                                    <div class="image-preview mt-3" id="imagePreview" style="display: none;">
+                                        <img id="previewImg" src="" alt="Preview" class="preview-image">
+                                        <button type="button" class="btn btn-sm btn-danger remove-image" id="removeImage">
+                                            <i class="bi bi-x-circle"></i> ลบรูป
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -786,6 +848,7 @@ $provinces_result = $conn->query($provinces_query);
                                     <select class="form-select" id="status" name="status" required>
                                         <option value="1">อยู่ในระบบ</option>
                                         <option value="0">ไม่อยู่ในระบบ</option>
+                                        <option value="9" selected>รอการยืนยัน</option>
                                     </select>
                                 </div>
                             </div>
@@ -794,7 +857,7 @@ $provinces_result = $conn->query($provinces_query);
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
-                    <button type="submit" form="userForm" class="btn btn-primary">บันทึกข้อมูล</button>
+                    <button type="submit" form="userForm" class="btn btn-primary" id="saveUserBtn">บันทึกข้อมูล</button>
                 </div>
             </div>
         </div>
@@ -861,8 +924,6 @@ $provinces_result = $conn->query($provinces_query);
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // ไม่ต้องมี sidebar JavaScript ที่นี่ เพราะ sidebar.php จะจัดการให้แล้ว
-
         // Tab functionality
         const tabButtons = document.querySelectorAll('.tab-button');
         const tabContents = document.querySelectorAll('.tab-content');
@@ -890,15 +951,16 @@ $provinces_result = $conn->query($provinces_query);
             });
         });
 
-        // Modal functionality
+        // Modal functionality with proper accessibility
         const userModal = document.getElementById('userModal');
         userModal.addEventListener('show.bs.modal', function(event) {
             const button = event.relatedTarget;
-            const action = button.getAttribute('data-action');
-            const type = button.getAttribute('data-type');
+            const action = button ? button.getAttribute('data-action') : 'add';
+            const type = button ? button.getAttribute('data-type') : 'user';
             
             document.getElementById('actionType').value = action;
             document.getElementById('userType').value = getUserTypeId(type);
+            document.getElementById('removeImageFlag').value = '0';
             
             // Update modal title
             const titles = {
@@ -920,13 +982,88 @@ $provinces_result = $conn->query($provinces_query);
             if (action === 'add') {
                 document.getElementById('userForm').reset();
                 document.getElementById('userId').value = '';
+                document.getElementById('removeImageFlag').value = '0';
+                // Set default status for new user
+                document.getElementById('status').value = '9';
+                // Hide image preview for new user
+                document.getElementById('imagePreview').style.display = 'none';
             }
         });
 
-        // Form submissions
+        // Proper modal cleanup
+        userModal.addEventListener('hidden.bs.modal', function() {
+            // Reset form
+            document.getElementById('userForm').reset();
+            document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('removeImageFlag').value = '0';
+            // Set default status for new user
+            document.getElementById('status').value = '9';
+            
+            // Clear any validation messages
+            const formControls = userModal.querySelectorAll('.form-control, .form-select');
+            formControls.forEach(control => {
+                control.classList.remove('is-invalid');
+            });
+        });
+
+        // Form submissions with improved modal handling
         document.getElementById('userForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            
+            // Disable submit button to prevent double submission
+            const submitBtn = document.getElementById('saveUserBtn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>กำลังบันทึก...';
+            
+            // Validate required fields
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            
+            if (!firstName || !lastName || !email) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'ข้อมูลไม่ครบถ้วน',
+                    text: 'กรุณากรอกชื่อ นามสกุล และอีเมลให้ครบถ้วน'
+                });
+                return;
+            }
+            
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'อีเมลไม่ถูกต้อง',
+                    text: 'กรุณากรอกอีเมลในรูปแบบที่ถูกต้อง'
+                });
+                return;
+            }
+            
             const formData = new FormData(this);
+            
+            // Handle remove image flag
+            const removeImageFlag = document.getElementById('removeImageFlag').value;
+            if (removeImageFlag === '1') {
+                formData.set('remove_image', '1');
+            }
+            
+            // Debug: Check if image file is being sent
+            const imageFile = document.getElementById('userImage').files[0];
+            if (imageFile) {
+                console.log('Image file selected:', {
+                    name: imageFile.name,
+                    size: imageFile.size,
+                    type: imageFile.type
+                });
+            } else {
+                console.log('No image file selected');
+            }
             
             $.ajax({
                 url: 'function/user_actions.php',
@@ -936,30 +1073,73 @@ $provinces_result = $conn->query($provinces_query);
                 contentType: false,
                 dataType: 'json',
                 success: function(response) {
+                    // Re-enable submit button
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                    
                     if (response.success) {
-                        $('#userModal').modal('hide');
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'สำเร็จ',
-                            text: response.message,
-                            timer: 1500
-                        }).then(() => {
-                            const activeType = document.querySelector('.tab-button.active').getAttribute('data-type');
-                            loadUsers(activeType);
-                        });
+                        // Get the modal instance and hide it properly
+                        const modalElement = document.getElementById('userModal');
+                        const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                        
+                        if (modalInstance) {
+                            modalInstance.hide();
+                        }
+                        
+                        // Debug: Log success response
+                        console.log('Success response:', response);
+                        
+                        // Wait for modal to be hidden before showing success message
+                        modalElement.addEventListener('hidden.bs.modal', function() {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'สำเร็จ',
+                                text: response.message,
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(() => {
+                                const activeType = document.querySelector('.tab-button.active').getAttribute('data-type');
+                                loadUsers(activeType);
+                            });
+                        }, { once: true });
+                        
                     } else {
                         Swal.fire({
                             icon: 'error',
                             title: 'เกิดข้อผิดพลาด',
-                            text: response.message
+                            text: response.message || 'ไม่สามารถดำเนินการได้'
                         });
                     }
                 },
-                error: function() {
+                error: function(xhr, status, error) {
+                    // Re-enable submit button
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                    
+                    console.error('AJAX Error:', {
+                        status: xhr.status,
+                        statusText: xhr.statusText,
+                        responseText: xhr.responseText,
+                        error: error
+                    });
+                    
+                    let errorMessage = 'ไม่สามารถประมวลผลคำขอได้';
+                    
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    } else if (xhr.status === 400) {
+                        errorMessage = 'ข้อมูลที่ส่งไม่ถูกต้อง กรุณาตรวจสอบและลองใหม่';
+                    } else if (xhr.status === 403) {
+                        errorMessage = 'คุณไม่มีสิทธิ์ในการดำเนินการนี้';
+                    } else if (xhr.status === 500) {
+                        errorMessage = 'เกิดข้อผิดพลาดของเซิร์ฟเวอร์';
+                    }
+                    
                     Swal.fire({
                         icon: 'error',
                         title: 'เกิดข้อผิดพลาด',
-                        text: 'ไม่สามารถประมวลผลคำขอได้'
+                        text: errorMessage,
+                        footer: xhr.status !== 200 ? `รหัสข้อผิดพลาด: ${xhr.status}` : ''
                     });
                 }
             });
@@ -981,6 +1161,15 @@ $provinces_result = $conn->query($provinces_query);
                 return;
             }
             
+            if (newPassword.length < 6) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'รหัสผ่านสั้นเกินไป',
+                    text: 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร'
+                });
+                return;
+            }
+            
             const formData = new FormData(this);
             
             $.ajax({
@@ -990,13 +1179,24 @@ $provinces_result = $conn->query($provinces_query);
                 dataType: 'json',
                 success: function(response) {
                     if (response.success) {
-                        $('#resetPasswordModal').modal('hide');
+                        // Hide modal properly
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('resetPasswordModal'));
+                        if (modal) {
+                            modal.hide();
+                        } else {
+                            $('#resetPasswordModal').modal('hide');
+                        }
+                        
                         Swal.fire({
                             icon: 'success',
                             title: 'สำเร็จ',
                             text: 'เปลี่ยนรหัสผ่านเรียบร้อยแล้ว',
-                            timer: 1500
+                            timer: 1500,
+                            showConfirmButton: false
                         });
+                        
+                        // Clear form
+                        document.getElementById('resetPasswordForm').reset();
                     } else {
                         Swal.fire({
                             icon: 'error',
@@ -1004,6 +1204,13 @@ $provinces_result = $conn->query($provinces_query);
                             text: response.message
                         });
                     }
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'เกิดข้อผิดพลาด',
+                        text: 'ไม่สามารถเปลี่ยนรหัสผ่านได้'
+                    });
                 }
             });
         });
@@ -1011,6 +1218,28 @@ $provinces_result = $conn->query($provinces_query);
         // Customer ID form
         document.getElementById('customerIdForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            
+            const customerId = document.getElementById('customerId').value.trim();
+            if (!customerId) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'กรุณากรอกรหัสลูกค้า',
+                    text: 'รหัสลูกค้าไม่สามารถเว้นว่างได้'
+                });
+                return;
+            }
+            
+            // Validate customer ID format
+            const customerIdRegex = /^[A-Za-z0-9]{1,20}$/;
+            if (!customerIdRegex.test(customerId)) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'รูปแบบรหัสลูกค้าไม่ถูกต้อง',
+                    text: 'รหัสลูกค้าต้องเป็นตัวอักษรและตัวเลข ไม่เกิน 20 ตัวอักษร'
+                });
+                return;
+            }
+            
             const formData = new FormData(this);
             
             $.ajax({
@@ -1020,15 +1249,26 @@ $provinces_result = $conn->query($provinces_query);
                 dataType: 'json',
                 success: function(response) {
                     if (response.success) {
-                        $('#customerIdModal').modal('hide');
+                        // Hide modal properly
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('customerIdModal'));
+                        if (modal) {
+                            modal.hide();
+                        } else {
+                            $('#customerIdModal').modal('hide');
+                        }
+                        
                         Swal.fire({
                             icon: 'success',
                             title: 'สำเร็จ',
                             text: 'อัปเดตรหัสลูกค้าเรียบร้อยแล้ว',
-                            timer: 1500
+                            timer: 1500,
+                            showConfirmButton: false
                         }).then(() => {
                             loadUsers('user');
                         });
+                        
+                        // Clear form
+                        document.getElementById('customerIdForm').reset();
                     } else {
                         Swal.fire({
                             icon: 'error',
@@ -1036,6 +1276,87 @@ $provinces_result = $conn->query($provinces_query);
                             text: response.message
                         });
                     }
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'เกิดข้อผิดพลาด',
+                        text: 'ไม่สามารถอัปเดตรหัสลูกค้าได้'
+                    });
+                }
+            });
+        });
+
+        // Image preview functionality
+        document.getElementById('userImage').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('imagePreview');
+            const previewImg = document.getElementById('previewImg');
+            
+            if (file) {
+                // Check if file is an image
+                if (file.type.startsWith('image/')) {
+                    // Check file size (max 5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'ไฟล์ใหญ่เกินไป',
+                            text: 'กรุณาเลือกไฟล์รูปภาพที่มีขนาดไม่เกิน 5MB'
+                        });
+                        e.target.value = '';
+                        preview.style.display = 'none';
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImg.src = e.target.result;
+                        preview.style.display = 'block';
+                        // Reset remove image flag when new image is selected
+                        document.getElementById('removeImageFlag').value = '0';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'ไฟล์ไม่ถูกต้อง',
+                        text: 'กรุณาเลือกไฟล์รูปภาพเท่านั้น (JPG, PNG, GIF)'
+                    });
+                    e.target.value = '';
+                    preview.style.display = 'none';
+                }
+            } else {
+                preview.style.display = 'none';
+            }
+        });
+
+        // Remove image functionality
+        document.getElementById('removeImage').addEventListener('click', function() {
+            Swal.fire({
+                title: 'ยืนยันการลบรูป',
+                text: 'คุณต้องการลบรูปภาพนี้หรือไม่?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'ลบ',
+                cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Clear file input
+                    document.getElementById('userImage').value = '';
+                    // Hide preview
+                    document.getElementById('imagePreview').style.display = 'none';
+                    // Set remove flag
+                    document.getElementById('removeImageFlag').value = '1';
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'ลบรูปแล้ว',
+                        text: 'รูปภาพจะถูกลบเมื่อบันทึกข้อมูล',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
                 }
             });
         });
@@ -1146,8 +1467,11 @@ $provinces_result = $conn->query($provinces_query);
                     `data:image/jpeg;base64,${user.user_img}` : 
                     '../../view/assets/img/logo/mascot.png';
                 
-                const statusClass = user.user_status == 1 ? 'status-active' : 'status-inactive';
-                const statusText = user.user_status == 1 ? 'อยู่ในระบบ' : 'ไม่อยู่ในระบบ';
+                // Debug: Log user image status
+                console.log(`User ${user.user_id}: Has image = ${!!user.user_img}, Image size = ${user.user_img ? user.user_img.length : 0}`);
+                
+                const statusClass = user.user_status == 1 ? 'status-active' : user.user_status == 9 ? 'status-pending' : 'status-inactive';
+                const statusText = user.user_status == 1 ? 'อยู่ในระบบ' : user.user_status == 9 ? 'รอการยืนยัน' : 'ไม่อยู่ในระบบ';
                 
                 html += `<tr>`;
                 
@@ -1175,6 +1499,9 @@ $provinces_result = $conn->query($provinces_query);
                 html += `
                     <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                     <td>
+                        <button class="table-action-btn btn-edit" onclick="editUser(${user.user_id}, '${type}')">
+                            <i class="bi bi-pencil"></i> แก้ไข
+                        </button>
                         <button class="table-action-btn btn-reset" onclick="resetPassword(${user.user_id})">
                             <i class="bi bi-key"></i> Reset
                         </button>
@@ -1200,7 +1527,82 @@ $provinces_result = $conn->query($provinces_query);
             tableBody.innerHTML = html;
         }
 
-        // Global functions
+        window.editUser = function(userId, userType) {
+            // Fetch user data
+            $.ajax({
+                url: 'function/get_user_detail.php',
+                type: 'GET',
+                data: { user_id: userId },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        const user = response.data;
+                        
+                        // Populate form fields
+                        document.getElementById('userId').value = user.user_id;
+                        document.getElementById('actionType').value = 'edit';
+                        document.getElementById('userType').value = getUserTypeId(userType);
+                        document.getElementById('removeImageFlag').value = '0';
+                        document.getElementById('firstName').value = user.user_firstname || '';
+                        document.getElementById('lastName').value = user.user_lastname || '';
+                        document.getElementById('email').value = user.user_email || '';
+                        document.getElementById('status').value = user.user_status || '1';
+                        
+                        // Populate extra fields for users
+                        if (userType === 'user') {
+                            document.getElementById('phone').value = user.user_tel || '';
+                            document.getElementById('address').value = user.user_address || '';
+                            
+                            // Set location selectors
+                            if (user.province_id) {
+                                $('#province').val(user.province_id).trigger('change');
+                                
+                                // Load amphures and set value
+                                setTimeout(() => {
+                                    if (user.amphure_id) {
+                                        $('#amphure').val(user.amphure_id).trigger('change');
+                                        
+                                        // Load districts and set value
+                                        setTimeout(() => {
+                                            if (user.district_id) {
+                                                $('#district').val(user.district_id);
+                                            }
+                                        }, 500);
+                                    }
+                                }, 500);
+                            }
+                        }
+                        
+                        // Show existing image if available
+                        if (user.user_img) {
+                            const previewImg = document.getElementById('previewImg');
+                            const preview = document.getElementById('imagePreview');
+                            previewImg.src = `data:image/jpeg;base64,${user.user_img}`;
+                            preview.style.display = 'block';
+                        } else {
+                            document.getElementById('imagePreview').style.display = 'none';
+                        }
+                        
+                        // Show modal
+                        $('#userModal').modal('show');
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'เกิดข้อผิดพลาด',
+                            text: 'ไม่สามารถดึงข้อมูลผู้ใช้ได้'
+                        });
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'เกิดข้อผิดพลาด',
+                        text: 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้'
+                    });
+                }
+            });
+        };
+
         window.resetPassword = function(userId) {
             document.getElementById('resetUserId').value = userId;
             $('#resetPasswordModal').modal('show');

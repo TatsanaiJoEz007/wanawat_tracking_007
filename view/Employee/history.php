@@ -17,6 +17,7 @@
         <title>ประวัติการจัดส่ง - Wanawat Tracking System</title>
         
         <!-- CSS Dependencies -->
+         <link rel="icon" type="image/x-icon" href="https://wehome.co.th/wp-content/uploads/2023/01/logo-WeHome-BUILDER-788x624.png">
         <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
         <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -767,6 +768,8 @@
                 .tab-button {
                     justify-content: center;
                     text-align: center;
+                    padding: 10px 16px;
+                    font-size: 0.9rem;
                 }
 
                 .search-bar {
@@ -847,6 +850,11 @@
 
                 table {
                     min-width: 1100px;
+                }
+
+                .tab-button {
+                    padding: 8px 12px;
+                    font-size: 0.85rem;
                 }
             }
 
@@ -949,35 +957,45 @@
                 $search_term = isset($_GET['search']) ? $_GET['search'] : '';
                 
                 // Pagination settings
-                $items_per_page = 20;
+                $items_per_page = 10;
                 $current_page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
                 $offset = ($current_page - 1) * $items_per_page;
                 ?>
 
-                <!-- Status Tabs -->
+                <!-- Status Tabs - แก้ไขให้ครบทุกสถานะ -->
                 <div class="status-tabs">
                     <a href="?status=all<?php echo $search_term ? '&search=' . urlencode($search_term) : ''; ?>" 
                        class="tab-button <?php echo $status_filter == 'all' ? 'active' : ''; ?>">
                         <i class="bi bi-list-ul"></i>
                         ทั้งหมด
                     </a>
-                    <a href="?status=preparing<?php echo $search_term ? '&search=' . urlencode($search_term) : ''; ?>" 
-                       class="tab-button <?php echo $status_filter == 'preparing' ? 'active' : ''; ?>">
-                        <i class="bi bi-box-seam"></i>
-                        กำลังจัดเตรียม
+                    <a href="?status=1<?php echo $search_term ? '&search=' . urlencode($search_term) : ''; ?>" 
+                       class="tab-button <?php echo $status_filter == '1' ? 'active' : ''; ?>">
+                        <i class="bi bi-clipboard-check"></i>
+                        รับคำสั่งซื้อ
                     </a>
-                    <a href="?status=sending<?php echo $search_term ? '&search=' . urlencode($search_term) : ''; ?>" 
-                       class="tab-button <?php echo $status_filter == 'sending' ? 'active' : ''; ?>">
+                    <a href="?status=2<?php echo $search_term ? '&search=' . urlencode($search_term) : ''; ?>" 
+                       class="tab-button <?php echo $status_filter == '2' ? 'active' : ''; ?>">
                         <i class="bi bi-truck"></i>
-                        อยู่ระหว่างขนส่ง
+                        กำลังจัดส่งไปศูนย์
                     </a>
-                    <a href="?status=completed<?php echo $search_term ? '&search=' . urlencode($search_term) : ''; ?>" 
-                       class="tab-button <?php echo $status_filter == 'completed' ? 'active' : ''; ?>">
+                    <a href="?status=3<?php echo $search_term ? '&search=' . urlencode($search_term) : ''; ?>" 
+                       class="tab-button <?php echo $status_filter == '3' ? 'active' : ''; ?>">
+                        <i class="bi bi-building"></i>
+                        ถึงศูนย์กระจาย
+                    </a>
+                    <a href="?status=4<?php echo $search_term ? '&search=' . urlencode($search_term) : ''; ?>" 
+                       class="tab-button <?php echo $status_filter == '4' ? 'active' : ''; ?>">
+                        <i class="bi bi-geo-alt"></i>
+                        กำลังส่งลูกค้า
+                    </a>
+                    <a href="?status=5<?php echo $search_term ? '&search=' . urlencode($search_term) : ''; ?>" 
+                       class="tab-button <?php echo $status_filter == '5' ? 'active' : ''; ?>">
                         <i class="bi bi-check-circle"></i>
-                        สำเร็จแล้ว
+                        ส่งสำเร็จ
                     </a>
-                    <a href="?status=problem<?php echo $search_term ? '&search=' . urlencode($search_term) : ''; ?>" 
-                       class="tab-button <?php echo $status_filter == 'problem' ? 'active' : ''; ?>">
+                    <a href="?status=99<?php echo $search_term ? '&search=' . urlencode($search_term) : ''; ?>" 
+                       class="tab-button <?php echo $status_filter == '99' ? 'active' : ''; ?>">
                         <i class="bi bi-exclamation-triangle"></i>
                         มีปัญหา
                     </a>
@@ -1002,19 +1020,25 @@
                 </div>
 
                 <?php
-                // Build status condition based on filter
+                // Build status condition based on filter - แก้ไขให้รองรับสถานะใหม่
                 $status_condition = '';
                 switch ($status_filter) {
-                    case 'preparing':
+                    case '1':
                         $status_condition = "AND d.delivery_status = 1";
                         break;
-                    case 'sending':
-                        $status_condition = "AND d.delivery_status IN (2, 3, 4)";
+                    case '2':
+                        $status_condition = "AND d.delivery_status = 2";
                         break;
-                    case 'completed':
+                    case '3':
+                        $status_condition = "AND d.delivery_status = 3";
+                        break;
+                    case '4':
+                        $status_condition = "AND d.delivery_status = 4";
+                        break;
+                    case '5':
                         $status_condition = "AND d.delivery_status = 5";
                         break;
-                    case 'problem':
+                    case '99':
                         $status_condition = "AND d.delivery_status = 99";
                         break;
                     default:
@@ -1089,19 +1113,25 @@
                     exit;
                 }
 
-                // Get status name for display
+                // Get status name for display - แก้ไขให้รองรับสถานะใหม่
                 $status_name = '';
                 switch ($status_filter) {
-                    case 'preparing':
-                        $status_name = 'กำลังจัดเตรียม';
+                    case '1':
+                        $status_name = 'รับคำสั่งซื้อ';
                         break;
-                    case 'sending':
-                        $status_name = 'อยู่ระหว่างขนส่ง';
+                    case '2':
+                        $status_name = 'กำลังจัดส่งไปศูนย์';
                         break;
-                    case 'completed':
-                        $status_name = 'สำเร็จแล้ว';
+                    case '3':
+                        $status_name = 'ถึงศูนย์กระจาย';
                         break;
-                    case 'problem':
+                    case '4':
+                        $status_name = 'กำลังส่งลูกค้า';
+                        break;
+                    case '5':
+                        $status_name = 'ส่งสำเร็จ';
+                        break;
+                    case '99':
                         $status_name = 'มีปัญหา';
                         break;
                     default:

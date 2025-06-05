@@ -40,6 +40,37 @@ if (isset($data['login'])) {
                 // Regenerate session ID for security
                 session_regenerate_id(true);
 
+                // Get user activity tracking data
+                $current_time = date('Y-m-d H:i:s');
+                $user_ip = getUserIP();
+                $user_browser = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
+                $device_info = getDeviceInfo();
+                $current_session_id = session_id();
+
+                // Update user activity tracking
+                $update_activity = "UPDATE tb_user SET 
+                    user_last_login = ?,
+                    user_is_online = 1,
+                    user_last_ip = ?,
+                    user_last_browser = ?,
+                    user_device_info = ?,
+                    user_current_session_id = ?,
+                    user_login_count = user_login_count + 1,
+                    user_last_activity = ?
+                    WHERE user_id = ?";
+                
+                $update_stmt = $conn->prepare($update_activity);
+                $update_stmt->bind_param("ssssssi", 
+                    $current_time, 
+                    $user_ip, 
+                    $user_browser, 
+                    $device_info, 
+                    $current_session_id, 
+                    $current_time,
+                    $user['user_id']
+                );
+                $update_stmt->execute();
+
                 // Set basic session variables
                 $_SESSION['login'] = true;
                 $_SESSION['user_id'] = $user['user_id'];
@@ -48,6 +79,7 @@ if (isset($data['login'])) {
                 $_SESSION['user_lastname'] = $user['user_lastname'];
                 $_SESSION['user_email'] = $user['user_email'];
                 $_SESSION['user_create_at'] = $user['user_create_at'];
+                $_SESSION['login_time'] = time(); // Store login timestamp for session duration calculation
                 $user_type = $user['user_type'];
 
                 // ดึงข้อมูลสิทธิ์จาก tb_role ตาม user_type
@@ -79,7 +111,7 @@ if (isset($data['login'])) {
                 $action = 'login';
                 $entity = 'user';
                 $entity_id = $user['user_id'];
-                $additional_info = "User logged in with email: " . $user_email;
+                $additional_info = "User logged in with email: " . $user_email . " from IP: " . $user_ip . " using: " . $device_info;
                 logAdminActivity($admin_user_id, $action, $entity, $entity_id, $additional_info);
 
                 // Set user type in session
@@ -110,5 +142,65 @@ if (isset($data['login'])) {
     }
 } else {
     echo json_encode('no_post');
+}
+
+// Function to get user's real IP address
+function getUserIP() {
+    $ip_keys = ['HTTP_CF_CONNECTING_IP', 'HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR'];
+    
+    foreach ($ip_keys as $key) {
+        if (array_key_exists($key, $_SERVER) === true) {
+            foreach (array_map('trim', explode(',', $_SERVER[$key])) as $ip) {
+                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false) {
+                    return $ip;
+                }
+            }
+        }
+    }
+    
+    return $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+}
+
+// Function to get device information
+function getDeviceInfo() {
+    $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+    
+    // Detect browser
+    $browser = 'Unknown';
+    if (preg_match('/Chrome/i', $user_agent)) {
+        $browser = 'Chrome';
+    } elseif (preg_match('/Firefox/i', $user_agent)) {
+        $browser = 'Firefox';
+    } elseif (preg_match('/Safari/i', $user_agent)) {
+        $browser = 'Safari';
+    } elseif (preg_match('/Edge/i', $user_agent)) {
+        $browser = 'Edge';
+    } elseif (preg_match('/Opera/i', $user_agent)) {
+        $browser = 'Opera';
+    }
+    
+    // Detect operating system
+    $os = 'Unknown';
+    if (preg_match('/Windows/i', $user_agent)) {
+        $os = 'Windows';
+    } elseif (preg_match('/Mac/i', $user_agent)) {
+        $os = 'macOS';
+    } elseif (preg_match('/Linux/i', $user_agent)) {
+        $os = 'Linux';
+    } elseif (preg_match('/Android/i', $user_agent)) {
+        $os = 'Android';
+    } elseif (preg_match('/iOS/i', $user_agent)) {
+        $os = 'iOS';
+    }
+    
+    // Detect device type
+    $device_type = 'Desktop';
+    if (preg_match('/Mobile/i', $user_agent)) {
+        $device_type = 'Mobile';
+    } elseif (preg_match('/Tablet/i', $user_agent)) {
+        $device_type = 'Tablet';
+    }
+    
+    return $browser . ' on ' . $os . ' (' . $device_type . ')';
 }
 ?>

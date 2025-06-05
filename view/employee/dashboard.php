@@ -172,6 +172,7 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- CSS Dependencies -->
+    <link rel="icon" type="image/x-icon" href="https://wehome.co.th/wp-content/uploads/2023/01/logo-WeHome-BUILDER-788x624.png">
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
@@ -965,12 +966,12 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                 </div>
 
                 <div class="col-lg-3 col-md-6 col-sm-6 mb-3">
-                    <div class="stat-card status-yellow" onclick="openStatModal('preparing', 'คำสั่งซื้อที่กำลังจัดเตรียม')">
+                    <div class="stat-card status-yellow" onclick="openStatModal('preparing', 'คำสั่งซื้อเข้าสู่ระบบ')">
                         <div class="stat-icon">
                             <i class="bi bi-hourglass-split"></i>
                         </div>
                         <div class="stat-number"><?php echo number_format($total_delivery_preparing_box); ?></div>
-                        <div class="stat-title">คำสั่งซื้อที่กำลังจัดเตรียม</div>
+                        <div class="stat-title">คำสั่งซื้อเข้าสู่ระบบ</div>
                     </div>
                 </div>
 

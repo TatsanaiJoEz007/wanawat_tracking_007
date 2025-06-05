@@ -21,12 +21,14 @@ if (!isset($permissions['manage_logs']) || $permissions['manage_logs'] != 1) {
     exit;
 }
 
+// Get action filter and search term
+$action_filter = isset($_GET['action']) ? $_GET['action'] : 'all';
+$search = isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '';
+
 // Determine sorting order
 $sort_order = isset($_GET['sort']) && $_GET['sort'] == 'asc' ? 'asc' : 'desc';
 $new_sort_order = $sort_order == 'asc' ? 'desc' : 'asc';
 $icon = $sort_order == 'asc' ? 'bi-sort-up' : 'bi-sort-down';
-
-$search = isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '';
 ?>
 
 <!DOCTYPE html>
@@ -37,6 +39,7 @@ $search = isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '';
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- CSS Dependencies -->
+    <link rel="icon" type="image/x-icon" href="https://wehome.co.th/wp-content/uploads/2023/01/logo-WeHome-BUILDER-788x624.png">
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -173,6 +176,54 @@ $search = isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '';
 
         .back-button i {
             margin-right: 5px;
+        }
+
+        /* Action Tabs */
+        .action-tabs {
+            margin-bottom: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            background: rgba(240, 89, 46, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(240, 89, 46, 0.2);
+        }
+
+        .tab-button {
+            padding: 12px 24px;
+            border: 2px solid rgba(240, 89, 46, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #F0592E;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .tab-button:hover {
+            background: rgba(240, 89, 46, 0.1);
+            color: #D84315;
+            text-decoration: none;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(240, 89, 46, 0.2);
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, #F0592E, #FF8A65);
+            color: white;
+            border-color: #F0592E;
+            box-shadow: 0 5px 15px rgba(240, 89, 46, 0.4);
+        }
+
+        .tab-button i {
+            font-size: 1.1rem;
         }
 
         /* ส่วนค้นหา */
@@ -463,6 +514,83 @@ $search = isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '';
         ::-webkit-scrollbar-thumb:hover {
             background: linear-gradient(135deg, #D84315, #F0592E);
         }
+
+        /* Responsive tabs */
+        @media (max-width: 768px) {
+            .action-tabs {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .tab-button {
+                justify-content: center;
+                text-align: center;
+            }
+
+            .search-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+
+        /* Pagination styles */
+        .pagination-link {
+            padding: 10px 16px;
+            border: 2px solid rgba(240, 89, 46, 0.3);
+            border-radius: 10px;
+            color: #F0592E;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            min-width: 45px;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .pagination-link:hover {
+            background: rgba(240, 89, 46, 0.1);
+            color: #D84315;
+            text-decoration: none;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(240, 89, 46, 0.2);
+        }
+
+        .pagination-link.active {
+            background: linear-gradient(135deg, #F0592E, #FF8A65);
+            color: white;
+            border-color: #F0592E;
+            box-shadow: 0 5px 15px rgba(240, 89, 46, 0.4);
+        }
+
+        .pagination-info {
+            margin: 15px 0;
+            text-align: center;
+            color: #6c757d;
+            font-size: 0.9rem;
+            padding: 10px;
+            background: rgba(240, 89, 46, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(240, 89, 46, 0.1);
+        }
+
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .pagination-ellipsis {
+            padding: 10px 16px;
+            border: none;
+            background: transparent;
+            cursor: default;
+            color: #6c757d;
+        }
     </style>
 
 </head>
@@ -486,19 +614,82 @@ $search = isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '';
                 <i class="bi bi-activity"></i>Admin Activity Log
             </div>
 
+            <?php
+            // Get action name for display
+            $action_name = '';
+            switch ($action_filter) {
+                case 'create':
+                    $action_name = 'สร้าง';
+                    break;
+                case 'update':
+                    $action_name = 'แก้ไข';
+                    break;
+                case 'delete':
+                    $action_name = 'ลบ';
+                    break;
+                case 'login':
+                    $action_name = 'เข้าสู่ระบบ';
+                    break;
+                case 'logout':
+                    $action_name = 'ออกจากระบบ';
+                    break;
+                default:
+                    $action_name = 'ทั้งหมด';
+                    break;
+            }
+            ?>
+
+            <!-- Action Tabs -->
+            <div class="action-tabs">
+                <a href="?action=all<?php echo $search ? '&search=' . urlencode($search) : ''; ?><?php echo isset($_GET['sort']) ? '&sort=' . $_GET['sort'] : ''; ?>" 
+                   class="tab-button <?php echo $action_filter == 'all' ? 'active' : ''; ?>">
+                    <i class="bi bi-list-ul"></i>
+                    ทั้งหมด
+                </a>
+                <a href="?action=create<?php echo $search ? '&search=' . urlencode($search) : ''; ?><?php echo isset($_GET['sort']) ? '&sort=' . $_GET['sort'] : ''; ?>" 
+                   class="tab-button <?php echo $action_filter == 'create' ? 'active' : ''; ?>">
+                    <i class="bi bi-plus-circle"></i>
+                    สร้าง
+                </a>
+                <a href="?action=update<?php echo $search ? '&search=' . urlencode($search) : ''; ?><?php echo isset($_GET['sort']) ? '&sort=' . $_GET['sort'] : ''; ?>" 
+                   class="tab-button <?php echo $action_filter == 'update' ? 'active' : ''; ?>">
+                    <i class="bi bi-pencil-square"></i>
+                    แก้ไข
+                </a>
+                <a href="?action=delete<?php echo $search ? '&search=' . urlencode($search) : ''; ?><?php echo isset($_GET['sort']) ? '&sort=' . $_GET['sort'] : ''; ?>" 
+                   class="tab-button <?php echo $action_filter == 'delete' ? 'active' : ''; ?>">
+                    <i class="bi bi-trash"></i>
+                    ลบ
+                </a>
+                <a href="?action=login<?php echo $search ? '&search=' . urlencode($search) : ''; ?><?php echo isset($_GET['sort']) ? '&sort=' . $_GET['sort'] : ''; ?>" 
+                   class="tab-button <?php echo $action_filter == 'login' ? 'active' : ''; ?>">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    เข้าสู่ระบบ
+                </a>
+                <a href="?action=logout<?php echo $search ? '&search=' . urlencode($search) : ''; ?><?php echo isset($_GET['sort']) ? '&sort=' . $_GET['sort'] : ''; ?>" 
+                   class="tab-button <?php echo $action_filter == 'logout' ? 'active' : ''; ?>">
+                    <i class="bi bi-box-arrow-right"></i>
+                    ออกจากระบบ
+                </a>
+            </div>
+
             <!-- Search Section -->
             <div class="search-section">
                 <div class="search-header">
-                    <i class="bi bi-search"></i> ค้นหาข้อมูล Activity Log
+                    <i class="bi bi-search"></i> ค้นหาข้อมูล Activity Log - <?php echo $action_name; ?>
                 </div>
                 
                 <form method="GET" action="" class="search-form">
-                    <input class="search-input" type="text" name="search" placeholder="ค้นหา รหัสผู้ใช้, การกระทำ, รูปแบบ, หรือข้อมูลเพิ่มเติม..." value="<?php echo $search; ?>">
+                    <input type="hidden" name="action" value="<?php echo htmlspecialchars($action_filter); ?>">
+                    <?php if (isset($_GET['sort'])): ?>
+                        <input type="hidden" name="sort" value="<?php echo htmlspecialchars($_GET['sort']); ?>">
+                    <?php endif; ?>
+                    <input class="search-input" type="text" name="search" placeholder="ค้นหา รหัสผู้ใช้, ชื่อ-นามสกุล, การกระทำ, รูปแบบ, หรือข้อมูลเพิ่มเติม..." value="<?php echo $search; ?>">
                     <button type="submit" class="search-btn">
                         <i class="bi bi-search"></i> ค้นหา
                     </button>
                     <?php if (!empty($search)): ?>
-                        <a href="?" class="clear-btn">
+                        <a href="?action=<?php echo $action_filter; ?><?php echo isset($_GET['sort']) ? '&sort=' . $_GET['sort'] : ''; ?>" class="clear-btn">
                             <i class="bi bi-x-circle"></i> ล้าง
                         </a>
                     <?php endif; ?>
@@ -507,7 +698,7 @@ $search = isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '';
                 <?php if (!empty($search)): ?>
                     <div class="search-result-info show">
                         <i class="bi bi-info-circle me-2"></i>
-                        ผลลัพธ์การค้นหาสำหรับ: "<strong><?php echo htmlspecialchars($search); ?></strong>"
+                        ผลลัพธ์การค้นหาสำหรับ: "<strong><?php echo htmlspecialchars($search); ?></strong>" ใน <?php echo $action_name; ?>
                     </div>
                 <?php endif; ?>
             </div>
@@ -523,37 +714,108 @@ $search = isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '';
                         <thead>
                             <tr>
                                 <th scope="col" style="text-align: center; width: 5%;">#</th>
-                                <th scope="col" style="text-align: center; width: 10%;">รหัสผู้ใช้</th>
+                                <th scope="col" style="text-align: center; width: 15%;">ชื่อ-นามสกุล</th>
                                 <th scope="col" style="text-align: center; width: 15%;">การกระทำ</th>
                                 <th scope="col" style="text-align: center; width: 12%;">รูปแบบ</th>
                                 <th scope="col" style="text-align: center; width: 10%;">รหัสรูปแบบ</th>
                                 <th scope="col" style="text-align: center; width: 18%;" class="sortable-column">
-                                    <a href="?sort=<?php echo $new_sort_order; ?><?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>">
+                                    <a href="?action=<?php echo $action_filter; ?>&sort=<?php echo $new_sort_order; ?><?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>">
                                         กระทำเมื่อ <i class="bi <?php echo $icon; ?>"></i>
                                     </a>
                                 </th>
-                                <th scope="col" style="text-align: center; width: 30%;">ข้อมูลเพิ่มเติม</th>
+                                <th scope="col" style="text-align: center; width: 25%;">ข้อมูลเพิ่มเติม</th>
                             </tr>
                         </thead>
                         <tbody class="text-center">
                             <?php
-                            $i = 1;
-                            // SQL query with search functionality - ตรวจสอบว่าตาราง admin_activity_log มีอยู่หรือไม่
+                            // Pagination settings
+                            $items_per_page = 20;
+                            $current_page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+                            $offset = ($current_page - 1) * $items_per_page;
+
+                            // Build action condition based on filter
+                            $action_condition = '';
+                            switch ($action_filter) {
+                                case 'create':
+                                    $action_condition = " AND (aal.action LIKE '%create%' OR aal.action LIKE '%add%')";
+                                    break;
+                                case 'update':
+                                    $action_condition = " AND (aal.action LIKE '%update%' OR aal.action LIKE '%edit%' OR aal.action LIKE '%modify%')";
+                                    break;
+                                case 'delete':
+                                    $action_condition = " AND (aal.action LIKE '%delete%' OR aal.action LIKE '%remove%')";
+                                    break;
+                                case 'login':
+                                    $action_condition = " AND aal.action LIKE '%login%'";
+                                    break;
+                                case 'logout':
+                                    $action_condition = " AND aal.action LIKE '%logout%'";
+                                    break;
+                                default:
+                                    $action_condition = ""; // Show all actions
+                                    break;
+                            }
+
+                            // SQL query with action filter and search functionality
                             try {
-                                $sql = "SELECT * FROM admin_activity_log 
-                                        WHERE (userId LIKE ? 
-                                           OR action LIKE ? 
-                                           OR entity LIKE ? 
-                                           OR entity_id LIKE ? 
-                                           OR create_at LIKE ? 
-                                           OR additional_info LIKE ?)
-                                        ORDER BY create_at $sort_order";
+                                // Count total records for pagination
+                                $count_sql = "SELECT COUNT(*) as total 
+                                             FROM admin_activity_log aal
+                                             LEFT JOIN tb_user u ON aal.userId = u.user_id
+                                             WHERE (aal.userId LIKE ? 
+                                                OR u.user_firstname LIKE ?
+                                                OR u.user_lastname LIKE ?
+                                                OR CONCAT(COALESCE(u.user_firstname, ''), ' ', COALESCE(u.user_lastname, '')) LIKE ?
+                                                OR aal.action LIKE ? 
+                                                OR aal.entity LIKE ? 
+                                                OR aal.entity_id LIKE ? 
+                                                OR aal.create_at LIKE ? 
+                                                OR aal.additional_info LIKE ?)
+                                             $action_condition";
                                 
                                 $searchTerm = '%' . $search . '%';
+                                $count_stmt = $conn->prepare($count_sql);
+                                $count_stmt->bind_param("sssssssss", $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm);
+                                $count_stmt->execute();
+                                $count_result = $count_stmt->get_result();
+                                $total_records = $count_result->fetch_assoc()['total'];
+                                $total_pages = ceil($total_records / $items_per_page);
+
+                                // Main query with JOIN and pagination
+                                $sql = "SELECT aal.*, 
+                                               CONCAT(COALESCE(u.user_firstname, ''), 
+                                                     CASE 
+                                                         WHEN u.user_firstname IS NOT NULL AND u.user_lastname IS NOT NULL 
+                                                         THEN ' ' 
+                                                         ELSE '' 
+                                                     END, 
+                                                     COALESCE(u.user_lastname, '')) as full_name,
+                                               u.user_firstname,
+                                               u.user_lastname
+                                        FROM admin_activity_log aal
+                                        LEFT JOIN tb_user u ON aal.userId = u.user_id
+                                        WHERE (aal.userId LIKE ? 
+                                           OR u.user_firstname LIKE ?
+                                           OR u.user_lastname LIKE ?
+                                           OR CONCAT(COALESCE(u.user_firstname, ''), ' ', COALESCE(u.user_lastname, '')) LIKE ?
+                                           OR aal.action LIKE ? 
+                                           OR aal.entity LIKE ? 
+                                           OR aal.entity_id LIKE ? 
+                                           OR aal.create_at LIKE ? 
+                                           OR aal.additional_info LIKE ?)
+                                        $action_condition
+                                        ORDER BY aal.create_at $sort_order
+                                        LIMIT $items_per_page OFFSET $offset";
+                                
                                 $stmt = $conn->prepare($sql);
-                                $stmt->bind_param("ssssss", $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm);
+                                $stmt->bind_param("sssssssss", $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm);
                                 $stmt->execute();
                                 $result = $stmt->get_result();
+
+                                // Calculate pagination info
+                                $start_record = $offset + 1;
+                                $end_record = min($offset + $items_per_page, $total_records);
+                                $i = $start_record;
                                 
                                 if ($result && $result->num_rows > 0):
                                     while ($row = $result->fetch_assoc()) :
@@ -575,7 +837,18 @@ $search = isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '';
                                 <tr>
                                     <td><?php echo $i++; ?></td>
                                     <td class="align-middle">
-                                        <strong><?php echo htmlspecialchars($row['userId']); ?></strong>
+                                        <strong>
+                                            <?php 
+                                            // แสดงชื่อ-นามสกุล หากไม่มีจะแสดงรหัสผู้ใช้
+                                            if (!empty(trim($row['full_name']))) {
+                                                echo htmlspecialchars($row['full_name']);
+                                            } else {
+                                                echo htmlspecialchars($row['userId']);
+                                            }
+                                            ?>
+                                        </strong>
+                                        <br>
+                                        <small class="text-muted"><?php echo htmlspecialchars($row['userId']); ?></small>
                                     </td>
                                     <td class="align-middle">
                                         <span class="action-badge <?php echo $action_class; ?>">
@@ -610,31 +883,116 @@ $search = isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '';
                                     <td colspan="7" class="no-data">
                                         <i class="bi bi-inbox mb-2" style="font-size: 2rem; display: block; color: #adb5bd;"></i>
                                         <?php if (!empty($search)): ?>
-                                            ไม่พบข้อมูล Activity Log ที่ตรงกับการค้นหา "<?php echo htmlspecialchars($search); ?>"
+                                            ไม่พบข้อมูล Activity Log ที่ตรงกับการค้นหา "<?php echo htmlspecialchars($search); ?>" ใน <?php echo $action_name; ?>
                                         <?php else: ?>
-                                            ไม่พบข้อมูล Activity Log ในระบบ
+                                            ไม่พบข้อมูล Activity Log ใน <?php echo $action_name; ?>
                                         <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php 
                                 endif;
-                                $stmt->close();
-                            } catch (Exception $e) {
-                                error_log("Error in activity.php: " . $e->getMessage());
-                            ?>
-                                <tr>
-                                    <td colspan="7" class="no-data">
-                                        <i class="bi bi-exclamation-triangle mb-2" style="font-size: 2rem; display: block; color: #dc3545;"></i>
-                                        เกิดข้อผิดพลาดในการดึงข้อมูล: <?php echo htmlspecialchars($e->getMessage()); ?>
-                                    </td>
-                                </tr>
-                            <?php
-                            }
                             ?>
                         </tbody>
                     </table>
                 </div>
             </div>
+
+            <!-- Pagination Info -->
+            <?php if ($total_records > 0): ?>
+            <div class="pagination-info">
+                <i class="bi bi-info-circle me-1"></i>
+                แสดงรายการที่ <?php echo number_format($start_record); ?> - <?php echo number_format($end_record); ?> 
+                จากทั้งหมด <?php echo number_format($total_records); ?> รายการ
+                <?php if ($search): ?>
+                    <span style="color: #F0592E; font-weight: 600;">
+                        (ผลการค้นหา: "<?php echo htmlspecialchars($search); ?>")
+                    </span>
+                <?php endif; ?>
+            </div>
+            <?php endif; ?>
+
+            <!-- Pagination -->
+            <?php if ($total_pages > 1): ?>
+            <div class="pagination-container">
+                <?php if ($current_page > 1): ?>
+                    <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $current_page - 1])); ?>" class="pagination-link">
+                        <i class="bi bi-chevron-left"></i> ก่อนหน้า
+                    </a>
+                <?php endif; ?>
+
+                <?php 
+                // Show page numbers with smart pagination
+                $start_page = max(1, $current_page - 2);
+                $end_page = min($total_pages, $current_page + 2);
+                
+                // Show first page if not in range
+                if ($start_page > 1) {
+                    echo '<a href="?' . http_build_query(array_merge($_GET, ['page' => 1])) . '" class="pagination-link">1</a>';
+                    if ($start_page > 2) {
+                        echo '<span class="pagination-ellipsis">...</span>';
+                    }
+                }
+                
+                // Show page range
+                for ($i = $start_page; $i <= $end_page; $i++): 
+                    $active_class = ($i == $current_page) ? ' active' : '';
+                ?>
+                    <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $i])); ?>" 
+                       class="pagination-link<?php echo $active_class; ?>">
+                        <?php echo $i; ?>
+                    </a>
+                <?php endfor; ?>
+                
+                <?php
+                // Show last page if not in range
+                if ($end_page < $total_pages) {
+                    if ($end_page < $total_pages - 1) {
+                        echo '<span class="pagination-ellipsis">...</span>';
+                    }
+                    echo '<a href="?' . http_build_query(array_merge($_GET, ['page' => $total_pages])) . '" class="pagination-link">' . $total_pages . '</a>';
+                }
+                ?>
+
+                <?php if ($current_page < $total_pages): ?>
+                    <a href="?<?php echo http_build_query(array_merge($_GET, ['page' => $current_page + 1])); ?>" class="pagination-link">
+                        ถัดไป <i class="bi bi-chevron-right"></i>
+                    </a>
+                <?php endif; ?>
+            </div>
+            <?php endif; ?>
+
+            <?php
+                $stmt->close();
+                $count_stmt->close();
+            } catch (Exception $e) {
+                error_log("Error in activity.php: " . $e->getMessage());
+            ?>
+                <div class="table-container">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col" style="text-align: center; width: 5%;">#</th>
+                                <th scope="col" style="text-align: center; width: 15%;">ชื่อ-นามสกุล</th>
+                                <th scope="col" style="text-align: center; width: 15%;">การกระทำ</th>
+                                <th scope="col" style="text-align: center; width: 12%;">รูปแบบ</th>
+                                <th scope="col" style="text-align: center; width: 10%;">รหัสรูปแบบ</th>
+                                <th scope="col" style="text-align: center; width: 18%;">กระทำเมื่อ</th>
+                                <th scope="col" style="text-align: center; width: 25%;">ข้อมูลเพิ่มเติม</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-center">
+                            <tr>
+                                <td colspan="7" class="no-data">
+                                    <i class="bi bi-exclamation-triangle mb-2" style="font-size: 2rem; display: block; color: #dc3545;"></i>
+                                    เกิดข้อผิดพลาดในการดึงข้อมูล: <?php echo htmlspecialchars($e->getMessage()); ?>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            <?php
+            }
+            ?>
         </div>
     </div>
 
@@ -660,9 +1018,10 @@ $search = isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '';
             }, 500);
         }
 
-        // Add loading effect to search form
+        // Add loading effect to search form and tabs
         const searchForm = document.querySelector('.search-form');
         const loadingOverlay = document.getElementById('loadingOverlay');
+        const tabButtons = document.querySelectorAll('.tab-button');
 
         if (searchForm) {
             searchForm.addEventListener('submit', function() {
@@ -678,13 +1037,32 @@ $search = isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '';
             });
         }
 
-        // Add smooth scrolling to sortable columns
+        // Add loading effect to tab clicks
+        tabButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                if (loadingOverlay) {
+                    loadingOverlay.style.display = 'flex';
+                }
+            });
+        });
+
+        // Add smooth scrolling to pagination, tabs, and sortable columns
+        const paginationLinks = document.querySelectorAll('.pagination-link');
         const sortableLinks = document.querySelectorAll('.sortable-column a');
-        sortableLinks.forEach(link => {
+        
+        [...paginationLinks, ...sortableLinks].forEach(link => {
             link.addEventListener('click', function() {
                 if (loadingOverlay) {
                     loadingOverlay.style.display = 'flex';
                 }
+                
+                // Smooth scroll to top of content
+                setTimeout(() => {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                }, 100);
             });
         });
 
@@ -704,7 +1082,7 @@ $search = isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '';
             row.classList.add('fade-in');
         });
 
-        // Add hover effect to stat cards (action badges)
+        // Add hover effect to action badges
         const actionBadges = document.querySelectorAll('.action-badge');
         actionBadges.forEach(badge => {
             badge.addEventListener('mouseenter', function() {
@@ -741,6 +1119,20 @@ $search = isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '';
                 setTimeout(() => {
                     ripple.remove();
                 }, 600);
+            });
+        });
+
+        // Tab button hover effects
+        const allTabButtons = document.querySelectorAll('.tab-button');
+        allTabButtons.forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                if (!this.classList.contains('active')) {
+                    this.querySelector('i').style.transform = 'scale(1.1)';
+                }
+            });
+            
+            button.addEventListener('mouseleave', function() {
+                this.querySelector('i').style.transform = 'scale(1)';
             });
         });
 
@@ -832,8 +1224,12 @@ $search = isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '';
             animation: fadeIn 0.8s ease-out;
         }
 
-        .search-section {
+        .action-tabs {
             animation: fadeIn 1s ease-out 0.2s both;
+        }
+
+        .search-section {
+            animation: fadeIn 1s ease-out 0.3s both;
         }
 
         .table-container {
@@ -850,7 +1246,7 @@ $search = isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '';
             box-shadow: 0 4px 15px rgba(240, 89, 46, 0.1);
         }
 
-        .back-button, .search-btn, .clear-btn {
+        .back-button, .search-btn, .clear-btn, .tab-button {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -860,6 +1256,10 @@ $search = isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '';
 
         .search-input:focus {
             transform: translateY(-2px);
+        }
+
+        .tab-button i {
+            transition: all 0.3s ease;
         }
     `;
     document.head.appendChild(style);

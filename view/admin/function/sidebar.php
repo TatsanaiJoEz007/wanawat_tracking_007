@@ -51,6 +51,22 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
 
 // ดึงข้อมูล permissions จาก session
 $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
+
+// แสดงประเภทผู้ใช้งาน
+$userTypeText = 'Admin';
+if (isset($_SESSION['user_type'])) {
+    switch ($_SESSION['user_type']) {
+        case 999:
+            $userTypeText = 'Admin';
+            break;
+        case 1:
+            $userTypeText = 'Employee';
+            break;
+        default:
+            $userTypeText = 'User';
+            break;
+    }
+}
 ?>
 
 <style>
@@ -371,92 +387,91 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
 
 <!-- Sidebar HTML -->
 <!-- Sidebar -->
-    <div class="sidebar close">
-        <div class="logo-details">
-            <img src="../../view/assets/img/logo/logo.png" alt="logo" height="50px" style="padding-left:8px; padding-right:10px;" />
-            <span class="logo_name"><?php echo $_SESSION['user_type'] ?? 'Admin'; ?></span>
-        </div>
-        <ul class="nav-links">
-            <!-- Dashboard -->
-            <li>
-                <a href="dashboard.php">
-                    <i class="bx bx-grid-alt"></i>
-                    <span class="link_name">Dashboard</span>
+<div class="sidebar close">
+    <div class="logo-details">
+        <img src="../../view/assets/img/logo/logo.png" alt="logo" height="50px" style="padding-left:8px; padding-right:10px;" />
+        <span class="logo_name"><?php echo htmlspecialchars($userTypeText); ?></span>
+    </div>
+    <ul class="nav-links">
+        <!-- Dashboard -->
+        <li>
+            <a href="dashboard.php">
+                <i class="bx bx-grid-alt"></i>
+                <span class="link_name">Dashboard</span>
+            </a>
+            <ul class="sub-menu blank">
+                <li><a class="link_name" href="dashboard.php">Dashboard</a></li>
+            </ul>
+        </li>
+
+        <!-- ผู้ใช้งานในระบบ - เมนูสำหรับผู้ดูแลระบบ -->
+        <?php if (isset($permissions['manage_permission']) && $permissions['manage_permission'] == 1): ?>
+        <li>
+            <a href="../admin/edituser.php">
+                <i class="bx bx-user nav_icon"></i>
+                <span class="link_name">ตารางข้อมูลผู้ใช้งานในระบบ</span>
+            </a>
+            <ul class="sub-menu blank">
+                <li><a class="link_name" href="../admin/edituser.php">ตารางข้อมูลผู้ใช้งานในระบบ</a></li>
+            </ul>
+        </li>
+        <?php endif; ?>
+
+        <!-- ควบคุมสิทธิ์การเข้าถึง -->
+        <?php if (isset($permissions['manage_permission']) && $permissions['manage_permission'] == 1): ?>
+        <li>
+            <a href="../admin/Manage.php">
+                <i class="bx bxs-heart"></i>
+                <span class="link_name">ควบคุมสิทธิ์การเข้าถึง</span>
+            </a>
+            <ul class="sub-menu blank">
+                <li><a class="link_name" href="../admin/Manage.php">ควบคุมสิทธิ์การเข้าถึง</a></li>
+            </ul>
+        </li>
+        <?php endif; ?>
+
+        <!-- จัดการหน้าเว็บไซต์ -->
+        <?php if (isset($permissions['manage_website']) && $permissions['manage_website'] == 1): ?>
+        <li>
+            <div class="iocn-link">
+                <a href="#">
+                    <i class="bx bx-cog nav_icon"></i>
+                    <span class="link_name">จัดการหน้าเว็บไซต์</span>
                 </a>
-                <ul class="sub-menu blank">
-                    <li><a class="link_name" href="dashboard.php">Dashboard</a></li>
-                </ul>
-            </li>
+                <i class='bx bxs-chevron-down arrow'></i>
+            </div>
+            <ul class="sub-menu">
+                <li><a class="link_name" href="#">จัดการหน้าเว็บไซต์</a></li>
+                <li><a href="../admin/banner">หน้าแบนเนอร์</a></li>
+                <li><a href="../admin/question.php">หน้าคำถามที่พบบ่อย</a></li>
+            </ul>
+        </li>
+        <?php endif; ?>
 
-            <!-- ผู้ใช้งานในระบบ - เมนูสำหรับผู้ดูแลระบบ -->
-            <?php if (isset($permissions['manage_permission']) && $permissions['manage_permission'] == 1): ?>
-            <li>
-                <a href="../admin/edituser.php">
-                    <i class="bx bx-user nav_icon"></i>
-                    <span class="link_name">ตารางข้อมูลผู้ใช้งานในระบบ</span>
-                </a>
-                <ul class="sub-menu blank">
-                    <li><a class="link_name" href="../admin/Manage.php">ตารางข้อมูลผู้ใช้งานในระบบ</a></li>
-                </ul>
-            </li>
-            <?php endif; ?>
-
-            <!-- ควบคุมสิทธิ์การเข้าถึง -->
-            <?php if (isset($permissions['manage_permission']) && $permissions['manage_permission'] == 1): ?>
-            <li>
-                <a href="../admin/Manage.php">
-                    <i class="bx bxs-heart"></i>
-                    <span class="link_name">ควบคุมสิทธิ์การเข้าถึง</span>
-                </a>
-                <ul class="sub-menu blank">
-                    <li><a class="link_name" href="../admin/Manage.php">ควบคุมสิทธิ์การเข้าถึง</a></li>
-                </ul>
-            </li>
-            <?php endif; ?>
-
-            <!-- จัดการหน้าเว็บไซต์ -->
-            <?php if (isset($permissions['manage_website']) && $permissions['manage_website'] == 1): ?>
-            <li>
-                <div class="iocn-link">
-                    <a href="#">
-                        <i class="bx bx-cog nav_icon"></i>
-                        <span class="link_name">จัดการหน้าเว็บไซต์</span>
-                    </a>
-                    <i class='bx bxs-chevron-down arrow'></i>
-                </div>
-                <ul class="sub-menu">
-                    <li><a class="link_name" href="#">จัดการหน้าเว็บไซต์</a></li>
-                    <li><a href="../admin/banner">หน้าแบนเนอร์</a></li>
-                    <li><a href="../admin/question.php">หน้าคำถามที่พบบ่อย</a></li>
-                </ul>
-            </li>
-            <?php endif; ?>
-
-            <!-- เมนูอื่นๆ ตาม permissions -->
-            <?php if (isset($permissions['manage_logs']) && $permissions['manage_logs'] == 1): ?>
-            <li>
-                <a href="../admin/activity.php">
-                    <i class="bi bi-activity nav_icon"></i>
-                    <span class="link_name">ประวัติกิจกรรม</span>
-                </a>
-                <ul class="sub-menu blank">
-                    <li><a class="link_name" href="../admin/activity">ประวัติกิจกรรม</a></li>
-                </ul>
-            </li>
-            <?php endif; ?>
-        </ul>
-
+        <!-- เมนูอื่นๆ ตาม permissions -->
+        <?php if (isset($permissions['manage_logs']) && $permissions['manage_logs'] == 1): ?>
+        <li>
+            <a href="../admin/activity.php">
+                <i class="bi bi-activity nav_icon"></i>
+                <span class="link_name">ประวัติกิจกรรม</span>
+            </a>
+            <ul class="sub-menu blank">
+                <li><a class="link_name" href="../admin/activity.php">ประวัติกิจกรรม</a></li>
+            </ul>
+        </li>
+        <?php endif; ?>
+    </ul>
 
     <!-- Profile Details -->
     <div class="profile-details">
         <div class="profile-content">
-            <img src="<?php echo $imageBase64; ?>" alt="profileImg">
+            <img src="<?php echo htmlspecialchars($imageBase64); ?>" alt="profileImg">
         </div>
         <div class="name-job">
-            <div class="profile_name"><?php echo $myprofile['user_firstname'] ?? 'Admin'; ?> <?php echo $myprofile['user_lastname'] ?? ''; ?></div>
-            <div class="job"><?php echo $myprofile['user_email'] ?? 'admin@example.com'; ?></div>
+            <div class="profile_name"><?php echo htmlspecialchars($myprofile['user_firstname'] ?? 'Admin'); ?> <?php echo htmlspecialchars($myprofile['user_lastname'] ?? ''); ?></div>
+            <div class="job"><?php echo htmlspecialchars($myprofile['user_email'] ?? 'admin@example.com'); ?></div>
         </div>
-        <i class='bx bx-log-out' id="sidebar-logout-btn"></i>
+        <i class='bx bx-log-out' id="sidebar-logout-btn" title="ออกจากระบบ"></i>
     </div>
 </div>
 
@@ -505,7 +520,9 @@ document.addEventListener("DOMContentLoaded", function() {
     // Logout functionality
     const sidebarLogoutBtn = document.getElementById('sidebar-logout-btn');
     if (sidebarLogoutBtn) {
-        sidebarLogoutBtn.addEventListener('click', function() {
+        sidebarLogoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
                     title: 'ยืนยันการออกจากระบบ',
@@ -518,37 +535,113 @@ document.addEventListener("DOMContentLoaded", function() {
                     cancelButtonText: 'ยกเลิก'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // ส่งคำขอ logout ไปยัง server
-                        fetch('../../view/admin/function/logout.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                csrf_token: '<?php echo $_SESSION['csrf_token'] ?? ''; ?>'
-                            })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                window.location.href = '../../view/login';
-                            } else {
-                                Swal.fire('เกิดข้อผิดพลาด', data.message, 'error');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            window.location.href = '../../view/login';
-                        });
+                        performLogout();
                     }
                 });
             } else {
                 // หาก SweetAlert ไม่มี ใช้ confirm ธรรมดา
                 if (confirm('คุณต้องการออกจากระบบใช่หรือไม่?')) {
-                    window.location.href = '../../view/login';
+                    performLogout();
                 }
             }
         });
+    }
+
+    // ฟังก์ชันสำหรับทำการ logout
+    function performLogout() {
+        // แสดง loading (ถ้ามี SweetAlert)
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'กำลังออกจากระบบ...',
+                text: 'กรุณารอสักครู่',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+        }
+
+        // ส่งคำขอ logout ไปยัง server
+        fetch('../../view/function/action_logout.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({
+                csrf_token: '<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? ''); ?>'
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Logout response:', data);
+            
+            if (data.success) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: 'ออกจากระบบสำเร็จ!',
+                        text: data.message || 'ขอบคุณที่ใช้บริการ',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        redirectToLogin();
+                    });
+                } else {
+                    redirectToLogin();
+                }
+            } else {
+                console.error('Logout failed:', data);
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: 'เกิดข้อผิดพลาด',
+                        text: data.message || 'ไม่สามารถออกจากระบบได้',
+                        icon: 'error',
+                        confirmButtonColor: '#F0592E'
+                    }).then(() => {
+                        // ถึงแม้จะมี error ก็ควรส่งไป login page เพื่อความปลอดภัย
+                        redirectToLogin();
+                    });
+                } else {
+                    alert('เกิดข้อผิดพลาด: ' + (data.message || 'ไม่สามารถออกจากระบบได้'));
+                    redirectToLogin();
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Logout error:', error);
+            
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'เกิดข้อผิดพลาด',
+                    text: 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้',
+                    icon: 'error',
+                    confirmButtonColor: '#F0592E'
+                }).then(() => {
+                    redirectToLogin();
+                });
+            } else {
+                alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+                redirectToLogin();
+            }
+        });
+    }
+
+    // ฟังก์ชันเปลี่ยนเส้นทางไป login page
+    function redirectToLogin() {
+        // ล้าง localStorage (ถ้ามี)
+        if (typeof(Storage) !== "undefined") {
+            localStorage.clear();
+            sessionStorage.clear();
+        }
+        
+        // เปลี่ยนเส้นทางไป login page
+        window.location.href = '../../view/login';
     }
 });
 </script>

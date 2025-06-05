@@ -51,6 +51,22 @@ $imageBase64 = !empty($myprofile['user_img']) ? getImageBase64($myprofile['user_
 
 // ดึงข้อมูล permissions จาก session
 $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
+
+// แสดงประเภทผู้ใช้งาน
+$userTypeText = 'Employee';
+if (isset($_SESSION['user_type'])) {
+    switch ($_SESSION['user_type']) {
+        case 999:
+            $userTypeText = 'Admin';
+            break;
+        case 1:
+            $userTypeText = 'Employee';
+            break;
+        default:
+            $userTypeText = 'User';
+            break;
+    }
+}
 ?>
 
 <style>
@@ -373,7 +389,7 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
 <div class="sidebar close">
     <div class="logo-details">
         <img src="../../view/assets/img/logo/logo.png" alt="logo" height="50px" style="padding-left:8px; padding-right:10px;" />
-        <span class="logo_name"><?php echo $_SESSION['user_type'] ?? 'Employee'; ?></span>
+        <span class="logo_name"><?php echo htmlspecialchars($userTypeText); ?></span>
     </div>
     <ul class="nav-links">
         <!-- Dashboard -->
@@ -408,7 +424,7 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                 <span class="link_name">จัดการสถานะขนส่ง</span>
             </a>
             <ul class="sub-menu blank">
-                <li><a class="link_name" href="../employee/importCSV">สถานะขนส่ง</a></li>
+                <li><a class="link_name" href="../employee/statusbill">สถานะขนส่ง</a></li>
             </ul>
         </li>
         <?php endif; ?>
@@ -456,13 +472,13 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
     <!-- Profile Details -->
     <div class="profile-details">
         <div class="profile-content">
-            <img src="<?php echo $imageBase64; ?>" alt="profileImg">
+            <img src="<?php echo htmlspecialchars($imageBase64); ?>" alt="profileImg">
         </div>
         <div class="name-job">
-            <div class="profile_name"><?php echo $myprofile['user_firstname'] ?? 'Employee'; ?> <?php echo $myprofile['user_lastname'] ?? ''; ?></div>
-            <div class="job"><?php echo $myprofile['user_email'] ?? 'employee@example.com'; ?></div>
+            <div class="profile_name"><?php echo htmlspecialchars($myprofile['user_firstname'] ?? 'Employee'); ?> <?php echo htmlspecialchars($myprofile['user_lastname'] ?? ''); ?></div>
+            <div class="job"><?php echo htmlspecialchars($myprofile['user_email'] ?? 'employee@example.com'); ?></div>
         </div>
-        <i class='bx bx-log-out' id="sidebar-logout-btn"></i>
+        <i class='bx bx-log-out' id="sidebar-logout-btn" title="ออกจากระบบ"></i>
     </div>
 </div>
 
@@ -483,7 +499,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // Submenu toggle (ไม่มี submenu ใน employee sidebar แต่เก็บไว้สำหรับอนาคต)
+    // Submenu toggle
     let arrows = document.querySelectorAll(".arrow");
     arrows.forEach(arrow => {
         arrow.addEventListener("click", (e) => {
@@ -508,10 +524,12 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    // Logout functionality
+    // Logout functionality - ใช้โครงสร้างเดียวกันกับ admin sidebar
     const sidebarLogoutBtn = document.getElementById('sidebar-logout-btn');
     if (sidebarLogoutBtn) {
-        sidebarLogoutBtn.addEventListener('click', function() {
+        sidebarLogoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
                     title: 'ยืนยันการออกจากระบบ',
@@ -524,37 +542,113 @@ document.addEventListener("DOMContentLoaded", function() {
                     cancelButtonText: 'ยกเลิก'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // ส่งคำขอ logout ไปยัง server
-                        fetch('../../view/admin/function/logout.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                csrf_token: '<?php echo $_SESSION['csrf_token'] ?? ''; ?>'
-                            })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                window.location.href = '../../view/login';
-                            } else {
-                                Swal.fire('เกิดข้อผิดพลาด', data.message, 'error');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            window.location.href = '../../view/login';
-                        });
+                        performLogout();
                     }
                 });
             } else {
                 // หาก SweetAlert ไม่มี ใช้ confirm ธรรมดา
                 if (confirm('คุณต้องการออกจากระบบใช่หรือไม่?')) {
-                    window.location.href = '../../view/login';
+                    performLogout();
                 }
             }
         });
+    }
+
+    // ฟังก์ชันสำหรับทำการ logout
+    function performLogout() {
+        // แสดง loading (ถ้ามี SweetAlert)
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'กำลังออกจากระบบ...',
+                text: 'กรุณารอสักครู่',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+        }
+
+        // ส่งคำขอ logout ไปยัง server (ใช้ JSON เหมือน admin)
+        fetch('../../view/function/action_logout.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({
+                csrf_token: '<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? ''); ?>'
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Employee logout response:', data);
+            
+            if (data.success) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: 'ออกจากระบบสำเร็จ!',
+                        text: data.message || 'ขอบคุณที่ใช้บริการ',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        redirectToLogin();
+                    });
+                } else {
+                    redirectToLogin();
+                }
+            } else {
+                console.error('Employee logout failed:', data);
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: 'เกิดข้อผิดพลาด',
+                        text: data.message || 'ไม่สามารถออกจากระบบได้',
+                        icon: 'error',
+                        confirmButtonColor: '#F0592E'
+                    }).then(() => {
+                        // ถึงแม้จะมี error ก็ควรส่งไป login page เพื่อความปลอดภัย
+                        redirectToLogin();
+                    });
+                } else {
+                    alert('เกิดข้อผิดพลาด: ' + (data.message || 'ไม่สามารถออกจากระบบได้'));
+                    redirectToLogin();
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Employee logout error:', error);
+            
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'เกิดข้อผิดพลาด',
+                    text: 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้',
+                    icon: 'error',
+                    confirmButtonColor: '#F0592E'
+                }).then(() => {
+                    redirectToLogin();
+                });
+            } else {
+                alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+                redirectToLogin();
+            }
+        });
+    }
+
+    // ฟังก์ชันเปลี่ยนเส้นทางไป login page
+    function redirectToLogin() {
+        // ล้าง localStorage (ถ้ามี)
+        if (typeof(Storage) !== "undefined") {
+            localStorage.clear();
+            sessionStorage.clear();
+        }
+        
+        // เปลี่ยนเส้นทางไป login page
+        window.location.href = '../../view/login';
     }
 });
 </script>

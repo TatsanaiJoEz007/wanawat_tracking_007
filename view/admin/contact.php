@@ -8,6 +8,7 @@
     <!-- Bootstrap CSS from CDN -->
     <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
     <!-- Custom CSS -->
+    <link rel="icon" type="image/x-icon" href="https://wehome.co.th/wp-content/uploads/2023/01/logo-WeHome-BUILDER-788x624.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- SweetAlert2 CSS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

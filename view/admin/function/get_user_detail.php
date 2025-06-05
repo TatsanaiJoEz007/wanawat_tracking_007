@@ -27,14 +27,14 @@ if (!isset($permissions['manage_permission']) || $permissions['manage_permission
 header('Content-Type: application/json; charset=utf-8');
 
 try {
-    $user_type = isset($_GET['user_type']) ? intval($_GET['user_type']) : null;
+    $user_id = isset($_GET['user_id']) ? intval($_GET['user_id']) : null;
     
-    if ($user_type === null) {
-        echo json_encode(['success' => false, 'message' => 'User type is required']);
+    if (!$user_id) {
+        echo json_encode(['success' => false, 'message' => 'User ID is required']);
         exit;
     }
     
-    // สร้าง SQL query - แสดงผู้ใช้ทุกสถานะ (1, 0, 9)
+    // สร้าง SQL query เพื่อดึงข้อมูลผู้ใช้รายบุคคล
     $sql = "SELECT 
                 user_id,
                 user_firstname, 
@@ -50,33 +50,35 @@ try {
                 amphure_id,
                 district_id
             FROM tb_user 
-            WHERE user_type = ? AND user_status IN (0, 1, 9)
-            ORDER BY user_status DESC, user_firstname ASC, user_lastname ASC";
+            WHERE user_id = ?";
     
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $user_type);
+    $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
     
-    $users = [];
-    while ($row = $result->fetch_assoc()) {
+    if ($row = $result->fetch_assoc()) {
         // แปลง image เป็น base64 ถ้ามี
         if ($row['user_img']) {
             $row['user_img'] = base64_encode($row['user_img']);
         }
-        $users[] = $row;
+        
+        $stmt->close();
+        
+        echo json_encode([
+            'success' => true, 
+            'data' => $row
+        ]);
+    } else {
+        $stmt->close();
+        echo json_encode([
+            'success' => false, 
+            'message' => 'ไม่พบข้อมูลผู้ใช้'
+        ]);
     }
     
-    $stmt->close();
-    
-    echo json_encode([
-        'success' => true, 
-        'data' => $users,
-        'count' => count($users)
-    ]);
-    
 } catch (Exception $e) {
-    error_log("Error in get_users.php: " . $e->getMessage());
+    error_log("Error in get_user_detail.php: " . $e->getMessage());
     echo json_encode([
         'success' => false, 
         'message' => 'เกิดข้อผิดพลาดในการดึงข้อมูล: ' . $e->getMessage()
