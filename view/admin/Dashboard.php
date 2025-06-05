@@ -16,6 +16,26 @@ if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
+// ตรวจสอบสถานะผู้ใช้งานจาก database - ถ้าเป็น 9 ต้องบังคับเปลี่ยนรหัสผ่าน
+$force_update_profile = false;
+try {
+    if (isset($_SESSION['user_id'])) {
+        $user_id = $_SESSION['user_id'];
+        $stmt = $conn->prepare("SELECT user_status FROM tb_user WHERE user_id = ?");
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $user_data = $result->fetch_assoc();
+        $stmt->close();
+        
+        if ($user_data && $user_data['user_status'] == 9) {
+            $force_update_profile = true;
+        }
+    }
+} catch (Exception $e) {
+    error_log("Error checking user status: " . $e->getMessage());
+}
+
 // Get statistics data (same as employee dashboard)
 try {
     // Total bills (แสดงบิลทั้งหมดที่มีสถานะ 1)
@@ -507,6 +527,22 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
             max-width: 90%;
         }
 
+        /* Profile Update Modal Styles */
+        .profile-update-modal {
+            backdrop-filter: blur(10px);
+        }
+
+        .location-select {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            transition: border-color 0.3s ease;
+        }
+
+        .location-select:focus {
+            border-color: #F0592E;
+            box-shadow: 0 0 0 0.2rem rgba(240, 89, 46, 0.25);
+        }
+
         /* Responsive Design */
         @media screen and (max-width: 1200px) {
             .stat-card {
@@ -884,6 +920,148 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
         </div>
     </div>
 
+    <!-- Modal เปลี่ยนรหัสผ่านและที่อยู่ -->
+    <div class="modal fade profile-update-modal" id="updateProfileModal" tabindex="-1" role="dialog" aria-labelledby="updateProfileModalLabel" 
+         aria-hidden="true" data-bs-backdrop="<?php echo $force_update_profile ? 'static' : 'true'; ?>" 
+         data-bs-keyboard="<?php echo $force_update_profile ? 'false' : 'true'; ?>">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, #F0592E, #FF8A65); color: white;">
+                    <h5 class="modal-title" id="updateProfileModalLabel">
+                        <i class="bi bi-person-gear me-2"></i>
+                        <?php echo $force_update_profile ? 'ยืนยันข้อมูลและเปลี่ยนรหัสผ่าน (จำเป็น)' : 'เปลี่ยนรหัสผ่านและที่อยู่'; ?>
+                    </h5>
+                    <?php if (!$force_update_profile): ?>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <?php endif; ?>
+                </div>
+                
+                <form id="updateProfileForm">
+                    <div class="modal-body">
+                        <?php if ($force_update_profile): ?>
+                        <div class="alert alert-warning" role="alert">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <strong>จำเป็นต้องยืนยันข้อมูล:</strong> กรุณาเปลี่ยนรหัสผ่านและระบุที่อยู่เพื่อเปิดใช้งานบัญชีของคุณ
+                        </div>
+                        <?php endif; ?>
+                        
+                        <div class="row">
+                            <!-- ส่วนรหัสผ่าน -->
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-header" style="background: rgba(240, 89, 46, 0.1); border-bottom: 1px solid rgba(240, 89, 46, 0.2);">
+                                        <h6 class="mb-0" style="color: #F0592E;">
+                                            <i class="bi bi-shield-lock me-2"></i>
+                                            เปลี่ยนรหัสผ่าน
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label for="new_password" class="form-label">รหัสผ่านใหม่ <span class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">
+                                                    <i class="bi bi-key"></i>
+                                                </span>
+                                                <input type="password" class="form-control" id="new_password" name="new_password" required 
+                                                       placeholder="กรอกรหัสผ่านใหม่" minlength="6">
+                                                <button type="button" class="btn btn-outline-secondary" id="toggleNewPassword">
+                                                    <i class="bi bi-eye"></i>
+                                                </button>
+                                            </div>
+                                            <div class="form-text">รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร</div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="confirm_password" class="form-label">ยืนยันรหัสผ่าน <span class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">
+                                                    <i class="bi bi-key-fill"></i>
+                                                </span>
+                                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required 
+                                                       placeholder="ยืนยันรหัสผ่านใหม่" minlength="6">
+                                                <button type="button" class="btn btn-outline-secondary" id="toggleConfirmPassword">
+                                                    <i class="bi bi-eye"></i>
+                                                </button>
+                                            </div>
+                                            <div class="invalid-feedback" id="passwordError"></div>
+                                        </div>
+                                        
+                                        <div class="password-strength" id="passwordStrength" style="display: none;">
+                                            <div class="mb-2">
+                                                <small class="text-muted">ความแข็งแกร่งของรหัสผ่าน:</small>
+                                                <div class="progress" style="height: 5px;">
+                                                    <div class="progress-bar" id="strengthBar" role="progressbar" style="width: 0%"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ส่วนที่อยู่ -->
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-header" style="background: rgba(33, 150, 243, 0.1); border-bottom: 1px solid rgba(33, 150, 243, 0.2);">
+                                        <h6 class="mb-0" style="color: #2196F3;">
+                                            <i class="bi bi-geo-alt me-2"></i>
+                                            ข้อมูลที่อยู่
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label for="address" class="form-label">ที่อยู่ <span class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">
+                                                    <i class="bi bi-house"></i>
+                                                </span>
+                                                <textarea class="form-control" id="address" name="address" rows="3" required 
+                                                          placeholder="กรอกที่อยู่ เช่น 123 หมู่ 1 ถนนสุขุมวิท"></textarea>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="province_id" class="form-label">จังหวัด</label>
+                                            <select class="form-select location-select" id="province_id" name="province_id">
+                                                <option value="">กำลังโหลด...</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="amphure_id" class="form-label">อำเภอ/เขต</label>
+                                            <select class="form-select location-select" id="amphure_id" name="amphure_id" disabled>
+                                                <option value="">เลือกจังหวัดก่อน</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="district_id" class="form-label">ตำบล/แขวง</label>
+                                            <select class="form-select location-select" id="district_id" name="district_id" disabled>
+                                                <option value="">เลือกอำเภอก่อน</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" id="submitProfileUpdate" style="background: linear-gradient(135deg, #F0592E, #FF8A65); border: none;">
+                            <i class="bi bi-check-circle me-2"></i>
+                            <?php echo $force_update_profile ? 'ยืนยันและเปิดใช้งานบัญชี' : 'บันทึกการเปลี่ยนแปลง'; ?>
+                        </button>
+                        <?php if (!$force_update_profile): ?>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle me-2"></i>
+                            ยกเลิก
+                        </button>
+                        <?php endif; ?>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -910,6 +1088,21 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
             const filterButtons = document.querySelectorAll('.filter-btn');
             const statusChartYear = document.getElementById('statusChartYear');
 
+            // Check if user needs to update profile
+            const forceUpdateProfile = <?php echo $force_update_profile ? 'true' : 'false'; ?>;
+            
+            // Show profile update modal if needed
+            if (forceUpdateProfile) {
+                const profileModal = new bootstrap.Modal(document.getElementById('updateProfileModal'), {
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                profileModal.show();
+                
+                // Load location data when modal is shown
+                loadProvinces();
+            }
+
             // Filter Buttons Event Listeners
             filterButtons.forEach(button => {
                 button.addEventListener('click', function() {
@@ -920,6 +1113,12 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
                     fetchDeliveryChartData();
                 });
             });
+
+            // Profile Update Form Handlers
+            setupProfileUpdateForm();
+            setupPasswordToggle();
+            setupPasswordValidation();
+            setupLocationSelects();
 
             // Chart Functions
             function showError(element, message) {
@@ -1362,19 +1561,269 @@ $permissions = isset($_SESSION['permissions']) ? $_SESSION['permissions'] : [];
             checkScreenSize();
             window.addEventListener('resize', checkScreenSize);
 
-            // Initialize everything
-            setTimeout(() => {
-                fetchDeliveryChartData();
-                fetchStatusChartData();
-                fetchOnlineUsers();
-                fetchRecentActivity();
-            }, 1000);
+            // Profile Update Functions
+            function setupProfileUpdateForm() {
+                const form = document.getElementById('updateProfileForm');
+                const submitBtn = document.getElementById('submitProfileUpdate');
+                
+                form.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    // Validate passwords match
+                    const newPassword = document.getElementById('new_password').value;
+                    const confirmPassword = document.getElementById('confirm_password').value;
+                    const address = document.getElementById('address').value.trim();
+                    
+                    if (newPassword !== confirmPassword) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'รหัสผ่านไม่ตรงกัน',
+                            text: 'กรุณาตรวจสอบรหัสผ่านให้ตรงกัน',
+                            confirmButtonColor: '#F0592E'
+                        });
+                        return;
+                    }
+                    
+                    if (newPassword.length < 6) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'รหัสผ่านสั้นเกินไป',
+                            text: 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร',
+                            confirmButtonColor: '#F0592E'
+                        });
+                        return;
+                    }
+                    
+                    if (!address) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'กรุณากรอกที่อยู่',
+                            text: 'ที่อยู่เป็นข้อมูลที่จำเป็น',
+                            confirmButtonColor: '#F0592E'
+                        });
+                        return;
+                    }
+                    
+                    // Show loading
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="bi bi-spinner-border spinner-border-sm me-2"></i>กำลังบันทึก...';
+                    
+                    try {
+                        const formData = new FormData(form);
+                        
+                        const response = await fetch('function/update_self_profile.php', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'บันทึกสำเร็จ!',
+                                text: data.message,
+                                confirmButtonColor: '#F0592E'
+                            }).then(() => {
+                                // Hide modal and reload page if profile was activated
+                                const profileModal = bootstrap.Modal.getInstance(document.getElementById('updateProfileModal'));
+                                if (profileModal) {
+                                    profileModal.hide();
+                                }
+                                
+                                if (data.activated) {
+                                    // Reload page to update session
+                                    window.location.reload();
+                                }
+                            });
+                        } else {
+                            throw new Error(data.message || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+                        }
+                        
+                    } catch (error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'เกิดข้อผิดพลาด',
+                            text: error.message,
+                            confirmButtonColor: '#F0592E'
+                        });
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = `
+                            <i class="bi bi-check-circle me-2"></i>
+                            ${forceUpdateProfile ? 'ยืนยันและเปิดใช้งานบัญชี' : 'บันทึกการเปลี่ยนแปลง'}
+                        `;
+                    }
+                });
+            }
+            
+            function setupPasswordToggle() {
+                const toggleNewPassword = document.getElementById('toggleNewPassword');
+                const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+                const newPasswordInput = document.getElementById('new_password');
+                const confirmPasswordInput = document.getElementById('confirm_password');
+                
+                toggleNewPassword.addEventListener('click', function() {
+                    const type = newPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    newPasswordInput.setAttribute('type', type);
+                    this.innerHTML = type === 'password' ? '<i class="bi bi-eye"></i>' : '<i class="bi bi-eye-slash"></i>';
+                });
+                
+                toggleConfirmPassword.addEventListener('click', function() {
+                    const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    confirmPasswordInput.setAttribute('type', type);
+                    this.innerHTML = type === 'password' ? '<i class="bi bi-eye"></i>' : '<i class="bi bi-eye-slash"></i>';
+                });
+            }
+            
+            function setupPasswordValidation() {
+                const newPasswordInput = document.getElementById('new_password');
+                const confirmPasswordInput = document.getElementById('confirm_password');
+                const passwordError = document.getElementById('passwordError');
+                const strengthIndicator = document.getElementById('passwordStrength');
+                const strengthBar = document.getElementById('strengthBar');
+                
+                newPasswordInput.addEventListener('input', function() {
+                    const password = this.value;
+                    if (password.length > 0) {
+                        strengthIndicator.style.display = 'block';
+                        updatePasswordStrength(password, strengthBar);
+                    } else {
+                        strengthIndicator.style.display = 'none';
+                    }
+                    
+                    validatePasswordMatch();
+                });
+                
+                confirmPasswordInput.addEventListener('input', validatePasswordMatch);
+                
+                function validatePasswordMatch() {
+                    const newPassword = newPasswordInput.value;
+                    const confirmPassword = confirmPasswordInput.value;
+                    
+                    if (confirmPassword.length > 0) {
+                        if (newPassword !== confirmPassword) {
+                            confirmPasswordInput.classList.add('is-invalid');
+                            passwordError.textContent = 'รหัสผ่านไม่ตรงกัน';
+                        } else {
+                            confirmPasswordInput.classList.remove('is-invalid');
+                            confirmPasswordInput.classList.add('is-valid');
+                            passwordError.textContent = '';
+                        }
+                    } else {
+                        confirmPasswordInput.classList.remove('is-invalid', 'is-valid');
+                        passwordError.textContent = '';
+                    }
+                }
+                
+                function updatePasswordStrength(password, strengthBar) {
+                    let strength = 0;
+                    let color = '';
+                    
+                    if (password.length >= 6) strength += 25;
+                    if (/[a-z]/.test(password)) strength += 25;
+                    if (/[A-Z]/.test(password)) strength += 25;
+                    if (/[0-9]/.test(password)) strength += 25;
+                    
+                    if (strength <= 25) {
+                        color = '#dc3545';
+                    } else if (strength <= 50) {
+                        color = '#ffc107';
+                    } else if (strength <= 75) {
+                        color = '#fd7e14';
+                    } else {
+                        color = '#28a745';
+                    }
+                    
+                    strengthBar.style.width = strength + '%';
+                    strengthBar.style.backgroundColor = color;
+                }
+            }
+            
+            function setupLocationSelects() {
+                const provinceSelect = document.getElementById('province_id');
+                const amphureSelect = document.getElementById('amphure_id');
+                const districtSelect = document.getElementById('district_id');
+                
+                provinceSelect.addEventListener('change', function() {
+                    const provinceId = this.value;
+                    amphureSelect.innerHTML = '<option value="">กำลังโหลด...</option>';
+                    amphureSelect.disabled = true;
+                    districtSelect.innerHTML = '<option value="">เลือกอำเภอก่อน</option>';
+                    districtSelect.disabled = true;
+                    
+                    if (provinceId) {
+                        loadAmphures(provinceId);
+                    } else {
+                        amphureSelect.innerHTML = '<option value="">เลือกจังหวัดก่อน</option>';
+                    }
+                });
+                
+                amphureSelect.addEventListener('change', function() {
+                    const amphureId = this.value;
+                    districtSelect.innerHTML = '<option value="">กำลังโหลด...</option>';
+                    districtSelect.disabled = true;
+                    
+                    if (amphureId) {
+                        loadDistricts(amphureId);
+                    } else {
+                        districtSelect.innerHTML = '<option value="">เลือกอำเภอก่อน</option>';
+                    }
+                });
+            }
+            
+            async function loadProvinces() {
+                try {
+                    const response = await fetch('function/get_provinces.php');
+                    const provinces = await response.text();
+                    document.getElementById('province_id').innerHTML = provinces;
+                } catch (error) {
+                    console.error('Error loading provinces:', error);
+                    document.getElementById('province_id').innerHTML = '<option value="">เกิดข้อผิดพลาด</option>';
+                }
+            }
+            
+            async function loadAmphures(provinceId) {
+                try {
+                    const response = await fetch(`function/get_amphures.php?province_id=${provinceId}`);
+                    const amphures = await response.text();
+                    const amphureSelect = document.getElementById('amphure_id');
+                    amphureSelect.innerHTML = amphures;
+                    amphureSelect.disabled = false;
+                } catch (error) {
+                    console.error('Error loading amphures:', error);
+                    document.getElementById('amphure_id').innerHTML = '<option value="">เกิดข้อผิดพลาด</option>';
+                }
+            }
+            
+            async function loadDistricts(amphureId) {
+                try {
+                    const response = await fetch(`function/get_districts.php?amphure_id=${amphureId}`);
+                    const districts = await response.text();
+                    const districtSelect = document.getElementById('district_id');
+                    districtSelect.innerHTML = districts;
+                    districtSelect.disabled = false;
+                } catch (error) {
+                    console.error('Error loading districts:', error);
+                    document.getElementById('district_id').innerHTML = '<option value="">เกิดข้อผิดพลาด</option>';
+                }
+            }
 
-            // Auto refresh online users and activity every 30 seconds
-            setInterval(() => {
-                fetchOnlineUsers();
-                fetchRecentActivity();
-            }, 30000);
+            // Initialize everything (only if not forced profile update)
+            if (!forceUpdateProfile) {
+                setTimeout(() => {
+                    fetchDeliveryChartData();
+                    fetchStatusChartData();
+                    fetchOnlineUsers();
+                    fetchRecentActivity();
+                }, 1000);
+
+                // Auto refresh online users and activity every 30 seconds
+                setInterval(() => {
+                    fetchOnlineUsers();
+                    fetchRecentActivity();
+                }, 30000);
+            }
         });
 
         // ========== MODAL FUNCTIONS (Copied from Employee Dashboard) ==========

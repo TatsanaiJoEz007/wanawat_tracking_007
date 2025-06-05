@@ -127,8 +127,8 @@ $permission_labels = [
     'manage_statusbill' => 'จัดการสถานะบิล',
     'manage_history' => 'จัดการประวัติ',
     'manage_problem' => 'จัดการปัญหา',
-    'manage_ic_delivery' => 'จัดการการขนส่งขาเข้า',
-    'manage_iv_delivery' => 'จัดการการขนส่งขาออก'
+    'manage_ic_delivery' => 'จัดการใบส่งสินค้า IC',
+    'manage_iv_delivery' => 'จัดการใบส่งสินค้า IV'
 ];
 ?>
 
