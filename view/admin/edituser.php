@@ -596,6 +596,22 @@ $provinces_result = $conn->query($provinces_query);
         ::-webkit-scrollbar-thumb:hover {
             background: linear-gradient(135deg, #D84315, #F0592E);
         }
+
+        /* Customer ID Field Highlight */
+        .customer-id-field {
+            background: rgba(33, 150, 243, 0.05);
+            border: 2px solid rgba(33, 150, 243, 0.3) !important;
+        }
+
+        .customer-id-field:focus {
+            border-color: #2196F3 !important;
+            box-shadow: 0 0 0 0.2rem rgba(33, 150, 243, 0.25) !important;
+        }
+
+        .customer-id-label {
+            color: #2196F3 !important;
+            font-weight: 600;
+        }
     </style>
 </head>
 
@@ -780,6 +796,23 @@ $provinces_result = $conn->query($provinces_query);
 
                         <!-- Additional fields for users -->
                         <div id="userExtraFields" style="display: none;">
+                            <!-- Customer ID Field - เพิ่มใหม่ -->
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label for="customerIdField" class="form-label customer-id-label">
+                                            <i class="bi bi-credit-card me-2"></i>รหัสลูกค้า <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" class="form-control customer-id-field" id="customerIdField" name="customer_id" 
+                                               placeholder="กรอกรหัสลูกค้า เช่น CUST001" maxlength="20" required>
+                                        <div class="form-text">
+                                            <i class="bi bi-info-circle me-1"></i>
+                                            รหัสลูกค้าต้องเป็นตัวอักษรและตัวเลข ไม่เกิน 20 ตัวอักษร (ห้ามซ้ำกับรหัสเดิม)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
@@ -972,10 +1005,16 @@ $provinces_result = $conn->query($provinces_query);
             
             // Show/hide extra fields for users
             const extraFields = document.getElementById('userExtraFields');
+            const customerIdField = document.getElementById('customerIdField');
+            
             if (type === 'user') {
                 extraFields.style.display = 'block';
+                // Make customer ID required for users
+                customerIdField.setAttribute('required', 'required');
             } else {
                 extraFields.style.display = 'none';
+                // Remove required attribute for non-users
+                customerIdField.removeAttribute('required');
             }
             
             // Clear form if adding new user
@@ -987,6 +1026,11 @@ $provinces_result = $conn->query($provinces_query);
                 document.getElementById('status').value = '9';
                 // Hide image preview for new user
                 document.getElementById('imagePreview').style.display = 'none';
+                
+                // Clear customer ID field for new users
+                if (type === 'user') {
+                    document.getElementById('customerIdField').value = '';
+                }
             }
         });
 
@@ -999,11 +1043,29 @@ $provinces_result = $conn->query($provinces_query);
             // Set default status for new user
             document.getElementById('status').value = '9';
             
+            // Clear customer ID field
+            document.getElementById('customerIdField').value = '';
+            
             // Clear any validation messages
             const formControls = userModal.querySelectorAll('.form-control, .form-select');
             formControls.forEach(control => {
                 control.classList.remove('is-invalid');
             });
+        });
+
+        // Customer ID validation
+        document.getElementById('customerIdField').addEventListener('input', function(e) {
+            const value = e.target.value;
+            // Allow only alphanumeric characters
+            const alphanumeric = value.replace(/[^A-Za-z0-9]/g, '');
+            if (value !== alphanumeric) {
+                e.target.value = alphanumeric;
+            }
+            
+            // Limit to 20 characters
+            if (alphanumeric.length > 20) {
+                e.target.value = alphanumeric.substring(0, 20);
+            }
         });
 
         // Form submissions with improved modal handling
@@ -1020,6 +1082,7 @@ $provinces_result = $conn->query($provinces_query);
             const firstName = document.getElementById('firstName').value.trim();
             const lastName = document.getElementById('lastName').value.trim();
             const email = document.getElementById('email').value.trim();
+            const userType = document.getElementById('userType').value;
             
             if (!firstName || !lastName || !email) {
                 submitBtn.disabled = false;
@@ -1030,6 +1093,34 @@ $provinces_result = $conn->query($provinces_query);
                     text: 'กรุณากรอกชื่อ นามสกุล และอีเมลให้ครบถ้วน'
                 });
                 return;
+            }
+            
+            // Validate customer ID for users
+            if (userType === '0') { // User type
+                const customerId = document.getElementById('customerIdField').value.trim();
+                if (!customerId) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'ข้อมูลไม่ครบถ้วน',
+                        text: 'กรุณากรอกรหัสลูกค้า'
+                    });
+                    return;
+                }
+                
+                // Validate customer ID format
+                const customerIdRegex = /^[A-Za-z0-9]{1,20}$/;
+                if (!customerIdRegex.test(customerId)) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'รูปแบบรหัสลูกค้าไม่ถูกต้อง',
+                        text: 'รหัสลูกค้าต้องเป็นตัวอักษรและตัวเลข ไม่เกิน 20 ตัวอักษร'
+                    });
+                    return;
+                }
             }
             
             // Validate email format
@@ -1550,6 +1641,7 @@ $provinces_result = $conn->query($provinces_query);
                         
                         // Populate extra fields for users
                         if (userType === 'user') {
+                            document.getElementById('customerIdField').value = user.customer_id || '';
                             document.getElementById('phone').value = user.user_tel || '';
                             document.getElementById('address').value = user.user_address || '';
                             

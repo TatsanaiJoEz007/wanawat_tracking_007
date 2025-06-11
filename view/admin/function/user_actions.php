@@ -66,10 +66,28 @@ try {
     $district_id = !empty($_POST['district_id']) ? $_POST['district_id'] : null;
     $status = isset($_POST['status']) ? (int)$_POST['status'] : 9;
     $remove_image = isset($_POST['remove_image']) ? (int)$_POST['remove_image'] : 0;
+    
+    // Get customer_id from form
+    $customer_id = trim($_POST['customer_id'] ?? '');
 
     // Validate required fields
     if (empty($action) || is_null($user_type) || empty($firstname) || empty($lastname) || empty($email)) {
         throw new Exception('กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน');
+    }
+
+    // Validate customer_id for users (user_type = 0)
+    if ($user_type == 0) {
+        if (empty($customer_id)) {
+            throw new Exception('กรุณากรอกรหัสลูกค้า');
+        }
+        
+        // Validate customer_id format
+        if (!preg_match('/^[A-Za-z0-9]{1,20}$/', $customer_id)) {
+            throw new Exception('รหัสลูกค้าต้องเป็นตัวอักษรและตัวเลข ไม่เกิน 20 ตัวอักษร');
+        }
+    } else {
+        // For admin and employee, customer_id should be null
+        $customer_id = null;
     }
 
     // Validate email format
@@ -83,11 +101,26 @@ try {
         throw new Exception('ประเภทผู้ใช้งานไม่ถูกต้อง');
     }
 
+    // Function to get default profile image
+    function getDefaultProfileImage() {
+        $default_image_path = '../../assets/img/logo/mascot.png';
+        
+        // Check if default image file exists
+        if (file_exists($default_image_path)) {
+            return file_get_contents($default_image_path);
+        } else {
+            // If mascot.png doesn't exist, create a simple placeholder
+            error_log("Default profile image not found at: " . $default_image_path);
+            return null;
+        }
+    }
+
     // Handle image upload
     $image_data = null;
     $update_image = false;
     
     if (isset($_FILES['user_img']) && $_FILES['user_img']['error'] === UPLOAD_ERR_OK) {
+        // User uploaded an image
         $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
         $file_type = $_FILES['user_img']['type'];
         
@@ -102,10 +135,22 @@ try {
         
         $image_data = file_get_contents($_FILES['user_img']['tmp_name']);
         $update_image = true;
+        
+        error_log("User uploaded image - Size: " . strlen($image_data) . " bytes");
+        
     } elseif ($remove_image == 1) {
-        // Remove image
-        $image_data = null;
+        // User wants to remove image - set to default
+        $image_data = getDefaultProfileImage();
         $update_image = true;
+        
+        error_log("Image removed - Using default image");
+        
+    } elseif ($action === 'add') {
+        // New user without uploaded image - use default image
+        $image_data = getDefaultProfileImage();
+        $update_image = true;
+        
+        error_log("New user without image - Using default image");
     }
 
     if ($action === 'add') {
@@ -120,10 +165,17 @@ try {
             throw new Exception('อีเมลนี้มีอยู่ในระบบแล้ว');
         }
 
-        // Generate customer ID for regular users (user_type = 0)
-        $customer_id = null;
-        if ($user_type == 0) {
-            $customer_id = generateCustomerId($conn);
+        // Check if customer_id already exists (for users only)
+        if ($user_type == 0 && !empty($customer_id)) {
+            $check_customer_id = $conn->prepare("SELECT user_id FROM tb_user WHERE customer_id = ?");
+            $check_customer_id->bind_param("s", $customer_id);
+            $check_customer_id->execute();
+            $existing_customer = $check_customer_id->get_result()->fetch_assoc();
+            $check_customer_id->close();
+            
+            if ($existing_customer) {
+                throw new Exception('รหัสลูกค้านี้มีอยู่ในระบบแล้ว กรุณาใช้รหัสอื่น');
+            }
         }
 
         // Default password for new users
@@ -139,6 +191,11 @@ try {
         // Force new users to have status = 9 (pending approval)
         $new_user_status = 9;
 
+        // For new users, always use an image (either uploaded or default)
+        if (!$update_image || $image_data === null) {
+            $image_data = getDefaultProfileImage();
+        }
+
         // Insert new user
         $sql = "INSERT INTO tb_user (
                     user_firstname, user_lastname, user_email, user_pass, user_type, 
@@ -148,7 +205,7 @@ try {
         
         $stmt = $conn->prepare($sql);
         
-        // Bind all parameters - use $new_user_status instead of $status
+        // Bind all parameters
         $stmt->bind_param("ssssiississss", 
             $firstname, $lastname, $email, $default_password, $user_type,
             $new_user_status, $phone, $address, $province_id, $amphure_id, $district_id,
@@ -159,15 +216,34 @@ try {
             $new_user_id = $conn->insert_id;
             $stmt->close();
             
+            // Prepare success message
+            $message = 'เพิ่มผู้ใช้งานเรียบร้อยแล้ว (สถานะ: รอการยืนยัน)';
+            if ($user_type == 0 && !empty($customer_id)) {
+                $message .= ' รหัสลูกค้า: ' . $customer_id;
+            }
+            
             // Log activity (if available)
-            logActivity($conn, $_SESSION['user_id'], 'CREATE_USER', 'tb_user', $new_user_id, "สร้างผู้ใช้ใหม่: {$firstname} {$lastname} (รอการยืนยัน)");
+            $log_details = "สร้างผู้ใช้ใหม่: {$firstname} {$lastname} (รอการยืนยัน)";
+            if ($user_type == 0 && !empty($customer_id)) {
+                $log_details .= " รหัสลูกค้า: {$customer_id}";
+            }
+            
+            // Add image info to log
+            if ($image_data) {
+                $log_details .= " (รูปโปรไฟล์: " . (isset($_FILES['user_img']) && $_FILES['user_img']['error'] === UPLOAD_ERR_OK ? "อัพโหลด" : "ค่าเริ่มต้น") . ")";
+            }
+            
+            logActivity($conn, $_SESSION['user_id'], 'CREATE_USER', 'tb_user', $new_user_id, $log_details);
+            
+            error_log("New user created with ID: $new_user_id, Image size: " . ($image_data ? strlen($image_data) : 0) . " bytes");
             
             echo json_encode([
                 'success' => true,
-                'message' => 'เพิ่มผู้ใช้งานเรียบร้อยแล้ว (สถานะ: รอการยืนยัน)',
+                'message' => $message,
                 'user_id' => $new_user_id,
                 'customer_id' => $customer_id,
-                'status' => $new_user_status
+                'status' => $new_user_status,
+                'has_image' => ($image_data !== null)
             ]);
         } else {
             throw new Exception('ไม่สามารถเพิ่มผู้ใช้งานได้: ' . $stmt->error);
@@ -179,8 +255,8 @@ try {
             throw new Exception('ไม่พบรหัสผู้ใช้งาน');
         }
         
-        // Check if user exists
-        $check_user = $conn->prepare("SELECT user_email FROM tb_user WHERE user_id = ?");
+        // Check if user exists and get current data
+        $check_user = $conn->prepare("SELECT user_email, customer_id, user_type FROM tb_user WHERE user_id = ?");
         $check_user->bind_param("i", $user_id);
         $check_user->execute();
         $existing_user = $check_user->get_result()->fetch_assoc();
@@ -201,12 +277,31 @@ try {
             throw new Exception('อีเมลนี้มีอยู่ในระบบแล้ว');
         }
         
+        // Check if customer_id already exists (for users only, except current user)
+        if ($user_type == 0 && !empty($customer_id)) {
+            $check_customer_id = $conn->prepare("SELECT user_id FROM tb_user WHERE customer_id = ? AND user_id != ?");
+            $check_customer_id->bind_param("si", $customer_id, $user_id);
+            $check_customer_id->execute();
+            $customer_conflict = $check_customer_id->get_result()->fetch_assoc();
+            $check_customer_id->close();
+            
+            if ($customer_conflict) {
+                throw new Exception('รหัสลูกค้านี้มีอยู่ในระบบแล้ว กรุณาใช้รหัสอื่น');
+            }
+        }
+        
         // Handle NULL values for optional fields in edit
         if ($province_id === null) $province_id = 1;
         if ($amphure_id === null) $amphure_id = 1;
         if ($district_id === null) $district_id = '100101';
         if (empty($phone)) $phone = '00000000';
         if (empty($address)) $address = 'Default';
+
+        // For edit mode, if remove_image is set, use default image
+        if ($remove_image == 1 && !$update_image) {
+            $image_data = getDefaultProfileImage();
+            $update_image = true;
+        }
 
         // Build update query
         if ($update_image) {
@@ -222,6 +317,7 @@ try {
                         province_id = ?,
                         amphure_id = ?,
                         district_id = ?,
+                        customer_id = ?,
                         user_img = ?,
                         user_last_activity = NOW()
                     WHERE user_id = ?";
@@ -230,7 +326,7 @@ try {
             $stmt->bind_param("sssiiississsi", 
                 $firstname, $lastname, $email, $user_type, $status, 
                 $phone, $address, $province_id, $amphure_id, $district_id,
-                $image_data, $user_id
+                $customer_id, $image_data, $user_id
             );
         } else {
             // Update without image
@@ -245,26 +341,47 @@ try {
                         province_id = ?,
                         amphure_id = ?,
                         district_id = ?,
+                        customer_id = ?,
                         user_last_activity = NOW()
                     WHERE user_id = ?";
             
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("sssiiissssi", 
                 $firstname, $lastname, $email, $user_type, $status, 
-                $phone, $address, $province_id, $amphure_id, $district_id, $user_id
+                $phone, $address, $province_id, $amphure_id, $district_id, 
+                $customer_id, $user_id
             );
         }
         
         if ($stmt->execute()) {
             $stmt->close();
             
+            // Prepare success message
+            $message = 'อัปเดตข้อมูลผู้ใช้งานเรียบร้อยแล้ว';
+            
             // Log activity
-            logActivity($conn, $_SESSION['user_id'], 'UPDATE_USER', 'tb_user', $user_id, "อัปเดตผู้ใช้: {$firstname} {$lastname}");
+            $log_details = "อัปเดตผู้ใช้: {$firstname} {$lastname}";
+            if ($user_type == 0 && !empty($customer_id)) {
+                $log_details .= " รหัสลูกค้า: {$customer_id}";
+                
+                // Check if customer_id was changed
+                if ($existing_user['customer_id'] !== $customer_id) {
+                    $message .= ' (รหัสลูกค้าได้รับการอัปเดต: ' . $customer_id . ')';
+                    $log_details .= " (เปลี่ยนจาก: {$existing_user['customer_id']})";
+                }
+            }
+            
+            if ($update_image) {
+                $log_details .= " (อัปเดตรูปโปรไฟล์)";
+            }
+            
+            logActivity($conn, $_SESSION['user_id'], 'UPDATE_USER', 'tb_user', $user_id, $log_details);
             
             echo json_encode([
                 'success' => true,
-                'message' => 'อัปเดตข้อมูลผู้ใช้งานเรียบร้อยแล้ว',
+                'message' => $message,
                 'user_id' => $user_id,
+                'customer_id' => $customer_id,
                 'image_updated' => $update_image
             ]);
         } else {
@@ -293,7 +410,7 @@ try {
     }
 }
 
-// Helper function to generate customer ID
+// Helper function to generate customer ID (kept for backup/reference)
 function generateCustomerId($conn) {
     $prefix = 'WH';
     $year = date('y'); // 2-digit year
